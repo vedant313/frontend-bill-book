@@ -9,7 +9,7 @@ export default defineConfig({
     port: 5173,
     proxy: {
       "/api": {
-        target: "http://localhost:4000",
+        target: "https://backend-fwio.onrender.com/api",
         changeOrigin: true,
       },
     },
