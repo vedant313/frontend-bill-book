@@ -16,6 +16,7 @@ import SettingsPage from "./components/SettingsPage";
 export default function App() {
   const [loaded, setLoaded] = useState(false);
   const [error, setError] = useState("");
+  const [waking, setWaking] = useState(false);
   const [business, setBusiness] = useState({ name: "My Business" });
   const [docs, setDocs] = useState([]); // invoices + estimates
   const [payments, setPayments] = useState([]);
@@ -28,19 +29,42 @@ export default function App() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   useEffect(() => {
-    (async () => {
-      try {
-        const [b, d, p] = await Promise.all([api.getBusiness(), api.getDocuments(), api.getPayments()]);
-        setBusiness(b);
-        setDocs(d);
-        setPayments(p);
-      } catch (e) {
-        console.error(e);
-        setError("Could not reach the backend. Make sure it's running (see README) on the expected port.");
-      } finally {
-        setLoaded(true);
+    let cancelled = false;
+    const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+
+    // Free hosting plans put the backend to sleep after inactivity — the first
+    // request after that can take 30-60s to wake it up. Retry several times
+    // with growing delays instead of giving up immediately.
+    const loadData = async () => {
+      const maxAttempts = 6;
+      for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+        try {
+          const [b, d, p] = await Promise.all([api.getBusiness(), api.getDocuments(), api.getPayments()]);
+          if (cancelled) return;
+          setBusiness(b);
+          setDocs(d);
+          setPayments(p);
+          setError("");
+          setWaking(false);
+          setLoaded(true);
+          return;
+        } catch (e) {
+          console.error(e);
+          if (cancelled) return;
+          if (attempt === 1) setWaking(true);
+          if (attempt < maxAttempts) {
+            await sleep(Math.min(5000 * attempt, 15000));
+          } else {
+            setError("Could not reach the backend after several tries. Please check your connection and refresh the page.");
+            setWaking(false);
+            setLoaded(true);
+          }
+        }
       }
-    })();
+    };
+
+    loadData();
+    return () => { cancelled = true; };
   }, []);
 
   const goto = (p, opts = {}) => {
@@ -117,8 +141,9 @@ export default function App() {
 
   if (!loaded) {
     return (
-      <div style={{ display: "flex", alignItems: "center", justifyContent: "center", height: "100vh", color: "var(--muted)" }}>
-        Loading your books…
+      <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", height: "100vh", color: "var(--muted)", gap: 10, textAlign: "center", padding: 20 }}>
+        <div>{waking ? "Waking up the server… this can take up to a minute on first load." : "Loading your books…"}</div>
+        {waking && <div style={{ fontSize: 12.5, maxWidth: 320 }}>Your data is safe — the free server just needs a moment to start after being idle.</div>}
       </div>
     );
   }

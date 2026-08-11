@@ -2,7 +2,7 @@
 // In dev, Vite proxies /api to http://localhost:4000 (see vite.config.js).
 // In production, set VITE_API_BASE to your deployed backend URL.
 
-const BASE = "https://backend-fwio.onrender.com/api";
+const BASE = import.meta.env.VITE_API_BASE || "/api";
 
 async function request(path, options = {}) {
   const res = await fetch(`${BASE}${path}`, {
