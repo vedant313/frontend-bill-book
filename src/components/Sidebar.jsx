@@ -1,6 +1,6 @@
-import { LayoutDashboard, FileText, FilePlus2, Wallet, Settings as SettingsIcon } from "lucide-react";
+import { LayoutDashboard, FileText, FilePlus2, Wallet, Settings as SettingsIcon, Palette, LogOut } from "lucide-react";
 
-export default function Sidebar({ page, listType, goto, sidebarOpen, setSidebarOpen }) {
+export default function Sidebar({ page, listType, goto, sidebarOpen, setSidebarOpen, user, onLogout }) {
   const isActive = (p, lt) => page === p && (!lt || listType === lt);
   return (
     <>
@@ -31,8 +31,20 @@ export default function Sidebar({ page, listType, goto, sidebarOpen, setSidebarO
         </div>
         <div className="bb-nav-spacer" />
         <div className="bb-nav-foot">
+          <button className={`bb-nav-item ${isActive("theme") ? "active" : ""}`} onClick={() => goto("theme")}>
+            <Palette size={16} /> Appearance
+          </button>
           <button className={`bb-nav-item ${isActive("settings") ? "active" : ""}`} onClick={() => goto("settings")}>
             <SettingsIcon size={16} /> Business Settings
+          </button>
+          {user && (
+            <div style={{ padding: "10px 10px 0", fontSize: 11.5, color: "#8a91a3", borderTop: "1px solid rgba(255,255,255,0.1)", marginTop: 6 }}>
+              Signed in as
+              <div style={{ color: "#edeff4", fontWeight: 600, fontSize: 12.5, marginBottom: 6 }}>{user.name || user.email}</div>
+            </div>
+          )}
+          <button className="bb-nav-item" onClick={onLogout}>
+            <LogOut size={16} /> Log Out
           </button>
         </div>
       </div>

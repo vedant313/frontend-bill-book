@@ -1,7 +1,10 @@
 import { useState, useEffect, useMemo } from "react";
 import * as api from "./api";
 import { monthLabel } from "./utils/helpers";
+import { resolveThemeVars, applyThemeVars } from "./utils/themes";
+import { exportAllData } from "./utils/exportExcel";
 
+import Login from "./components/Login";
 import Sidebar from "./components/Sidebar";
 import TopBar from "./components/TopBar";
 import Dashboard from "./components/Dashboard";
@@ -12,8 +15,12 @@ import PaymentList from "./components/PaymentList";
 import PaymentForm from "./components/PaymentForm";
 import PaymentPreview from "./components/PaymentPreview";
 import SettingsPage from "./components/SettingsPage";
+import ThemePicker from "./components/ThemePicker";
 
 export default function App() {
+  const [authChecked, setAuthChecked] = useState(false);
+  const [user, setUser] = useState(null);
+
   const [loaded, setLoaded] = useState(false);
   const [error, setError] = useState("");
   const [waking, setWaking] = useState(false);
@@ -21,14 +28,40 @@ export default function App() {
   const [docs, setDocs] = useState([]); // invoices + estimates
   const [payments, setPayments] = useState([]);
 
-  const [page, setPage] = useState("dashboard"); // dashboard | list | form | preview | settings
+  const [page, setPage] = useState("dashboard"); // dashboard | list | form | preview | settings | theme
   const [listType, setListType] = useState("invoice"); // invoice | estimate | payment
   const [editingId, setEditingId] = useState(null);
   const [previewId, setPreviewId] = useState(null);
   const [previewKind, setPreviewKind] = useState("doc");
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
+  // ---- Auth bootstrap: check for a stored token on first load ----
   useEffect(() => {
+    let cancelled = false;
+    const token = api.getToken();
+    if (!token) {
+      setAuthChecked(true);
+      return;
+    }
+    api
+      .me()
+      .then(({ user: u }) => {
+        if (cancelled) return;
+        setUser(u);
+      })
+      .catch(() => {
+        if (cancelled) return;
+        api.clearToken();
+      })
+      .finally(() => {
+        if (!cancelled) setAuthChecked(true);
+      });
+    return () => { cancelled = true; };
+  }, []);
+
+  // ---- Data load, once signed in ----
+  useEffect(() => {
+    if (!user) return;
     let cancelled = false;
     const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
@@ -65,7 +98,12 @@ export default function App() {
 
     loadData();
     return () => { cancelled = true; };
-  }, []);
+  }, [user]);
+
+  // ---- Theme: apply whenever the business profile's theme changes ----
+  useEffect(() => {
+    applyThemeVars(resolveThemeVars(business.theme));
+  }, [business.theme]);
 
   const goto = (p, opts = {}) => {
     setPage(p);
@@ -74,6 +112,16 @@ export default function App() {
     setEditingId(opts.editingId ?? null);
     if (opts.previewId !== undefined) setPreviewId(opts.previewId);
     if (opts.previewKind) setPreviewKind(opts.previewKind);
+  };
+
+  const logout = () => {
+    api.clearToken();
+    setUser(null);
+    setLoaded(false);
+    setBusiness({ name: "My Business" });
+    setDocs([]);
+    setPayments([]);
+    setPage("dashboard");
   };
 
   // ---- Documents (invoices/estimates) ----
@@ -114,6 +162,7 @@ export default function App() {
     setBusiness(saved);
     return saved;
   };
+  const saveTheme = async (theme) => saveBusiness({ ...business, theme });
 
   const stats = useMemo(() => {
     const invoices = docs.filter((d) => d.type === "invoice");
@@ -139,6 +188,18 @@ export default function App() {
       .slice(-6);
   }, [docs, payments]);
 
+  if (!authChecked) {
+    return (
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "center", height: "100vh", color: "var(--muted)" }}>
+        Loading…
+      </div>
+    );
+  }
+
+  if (!user) {
+    return <Login onAuthed={setUser} />;
+  }
+
   if (!loaded) {
     return (
       <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", height: "100vh", color: "var(--muted)", gap: 10, textAlign: "center", padding: 20 }}>
@@ -154,9 +215,9 @@ export default function App() {
         <div style={{ background: "#FBEBE8", color: "#B94A3F", padding: "10px 16px", fontSize: 13, textAlign: "center" }}>{error}</div>
       )}
       <div className="bb-shell no-print">
-        <Sidebar page={page} listType={listType} goto={goto} sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} />
+        <Sidebar page={page} listType={listType} goto={goto} sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} user={user} onLogout={logout} />
         <div className="bb-main">
-          <TopBar business={business} goto={goto} setSidebarOpen={setSidebarOpen} />
+          <TopBar business={business} goto={goto} setSidebarOpen={setSidebarOpen} onExportAll={() => exportAllData(docs, payments)} />
           <div className="bb-content">
             {page === "dashboard" && <Dashboard stats={stats} chartData={chartData} docs={docs} payments={payments} goto={goto} />}
 
@@ -193,8 +254,10 @@ export default function App() {
             )}
 
             {page === "settings" && (
-              <SettingsPage business={business} onSave={async (b) => { await saveBusiness(b); goto("dashboard"); }} onCancel={() => goto("dashboard")} />
+              <SettingsPage business={business} onSave={async (b) => { await saveBusiness({ ...business, ...b }); goto("dashboard"); }} onCancel={() => goto("dashboard")} />
             )}
+
+            {page === "theme" && <ThemePicker theme={business.theme} onSaveTheme={saveTheme} />}
           </div>
         </div>
       </div>

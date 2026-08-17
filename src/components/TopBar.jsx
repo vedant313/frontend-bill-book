@@ -1,6 +1,6 @@
-import { Menu, Plus } from "lucide-react";
+import { Menu, Plus, Download } from "lucide-react";
 
-export default function TopBar({ business, goto, setSidebarOpen }) {
+export default function TopBar({ business, goto, setSidebarOpen, onExportAll }) {
   return (
     <div className="bb-topbar">
       <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
@@ -13,6 +13,10 @@ export default function TopBar({ business, goto, setSidebarOpen }) {
         </div>
       </div>
       <div style={{ display: "flex", gap: 8 }}>
+        <button className="bb-btn bb-btn-ghost" onClick={onExportAll} title="Download invoices, estimates and payments as one Excel file">
+          <Download size={14} />
+          <span className="bb-hide-sm">Export All</span>
+        </button>
         <button className="bb-btn bb-btn-ghost" onClick={() => goto("form", { listType: "estimate" })}>
           <Plus size={14} />
           Estimate

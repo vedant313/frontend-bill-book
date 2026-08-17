@@ -48,6 +48,7 @@ h1, h2, h3, .display { font-family: "Manrope", sans-serif; }
   .bb-menu-btn { display: block; }
   .bb-content { padding: 14px; }
   .bb-topbar { padding: 12px 14px; }
+  .bb-hide-sm { display: none; }
 }
 
 /* Cards / grid */

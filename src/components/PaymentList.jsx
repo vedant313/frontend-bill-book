@@ -1,5 +1,6 @@
-import { Plus, Pencil, Trash2, Wallet, Printer } from "lucide-react";
+import { Plus, Pencil, Trash2, Wallet, Printer, Download } from "lucide-react";
 import { fmt, fmtDate } from "../utils/helpers";
+import { exportPayments } from "../utils/exportExcel";
 
 export default function PaymentList({ payments, goto, deletePayment }) {
   const sorted = [...payments].sort((a, b) => new Date(b.date) - new Date(a.date));
@@ -7,10 +8,16 @@ export default function PaymentList({ payments, goto, deletePayment }) {
     <div>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
         <h2 style={{ margin: 0, fontSize: 19 }}>Payment In</h2>
-        <button className="bb-btn bb-btn-primary" onClick={() => goto("form", { listType: "payment" })}>
-          <Plus size={14} />
-          New Payment
-        </button>
+        <div style={{ display: "flex", gap: 8 }}>
+          <button className="bb-btn bb-btn-ghost" onClick={() => exportPayments(payments)} title="Download payments as an Excel file">
+            <Download size={14} />
+            Excel
+          </button>
+          <button className="bb-btn bb-btn-primary" onClick={() => goto("form", { listType: "payment" })}>
+            <Plus size={14} />
+            New Payment
+          </button>
+        </div>
       </div>
       {sorted.length === 0 ? (
         <div className="bb-card bb-empty">

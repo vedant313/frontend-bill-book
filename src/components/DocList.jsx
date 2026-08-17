@@ -1,6 +1,7 @@
 import { useState } from "react";
-import { Plus, Search, Printer, Pencil, Trash2, FileText } from "lucide-react";
+import { Plus, Search, Printer, Pencil, Trash2, FileText, Download } from "lucide-react";
 import { fmt, fmtDate, DOC_META } from "../utils/helpers";
+import { exportInvoices, exportEstimates } from "../utils/exportExcel";
 import StatusBadge from "./StatusBadge";
 
 export default function DocList({ type, docs, goto, deleteDoc }) {
@@ -19,6 +20,14 @@ export default function DocList({ type, docs, goto, deleteDoc }) {
             <Search size={14} style={{ position: "absolute", left: 10, top: 10, color: "var(--muted)" }} />
             <input className="bb-input" style={{ paddingLeft: 30, width: 200 }} placeholder="Search party or number" value={q} onChange={(e) => setQ(e.target.value)} />
           </div>
+          <button
+            className="bb-btn bb-btn-ghost"
+            onClick={() => (type === "invoice" ? exportInvoices(docs) : exportEstimates(docs))}
+            title={`Download ${meta.short.toLowerCase()}s as an Excel file`}
+          >
+            <Download size={14} />
+            Excel
+          </button>
           <button className="bb-btn bb-btn-primary" onClick={() => goto("form", { listType: type })}>
             <Plus size={14} />
             New {meta.short}
