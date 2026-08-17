@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { ArrowLeft, Plus, X } from "lucide-react";
 import { uid, fmt, todayISO, DOC_META, calcTotals, nextNumber } from "../utils/helpers";
+import { DOCUMENT_DESIGNS, resolveDocumentDesign } from "../utils/documentDesigns";
 
 export default function DocForm({ type, docs, business, existing, onSave, onCancel }) {
   const meta = DOC_META[type];
@@ -16,8 +17,10 @@ export default function DocForm({ type, docs, business, existing, onSave, onCanc
   const [discount, setDiscount] = useState(existing?.discountAmt ?? 0);
   const [terms, setTerms] = useState(existing?.notes ?? business.terms ?? "");
   const [customFields, setCustomFields] = useState(existing?.customFields || []);
+  const [customSections, setCustomSections] = useState(existing?.customSections || []);
   const [items, setItems] = useState(existing?.items || [{ id: uid(), name: "", hsn: "", qty: 1, rate: 0, gstPct: 18 }]);
   const [saving, setSaving] = useState(false);
+  const [documentStyle, setDocumentStyle] = useState(existing?.documentStyle || business.documentStyle || {});
 
   const totals = calcTotals(items, discount);
 
@@ -27,6 +30,9 @@ export default function DocForm({ type, docs, business, existing, onSave, onCanc
   const addCustomField = () => setCustomFields([...customFields, { label: "", value: "" }]);
   const updateCustomField = (i, patch) => setCustomFields(customFields.map((x, idx) => idx === i ? { ...x, ...patch } : x));
   const removeCustomField = (i) => setCustomFields(customFields.filter((_, idx) => idx !== i));
+  const addCustomSection = () => setCustomSections([...customSections, { title:"Additional Information", body:"" }]);
+  const updateCustomSection = (i, patch) => setCustomSections(customSections.map((x,idx)=>idx===i?{...x,...patch}:x));
+  const removeCustomSection = (i) => setCustomSections(customSections.filter((_,idx)=>idx!==i));
 
   const handleSubmit = async () => {
     if (!partyName.trim()) {
@@ -51,7 +57,9 @@ export default function DocForm({ type, docs, business, existing, onSave, onCanc
       dueDate,
       status,
       notes: terms,
+      documentStyle,
       customFields: customFields.filter(x => String(x.label || "").trim() || String(x.value || "").trim()),
+      customSections: customSections.filter(x => String(x.title||"").trim() || String(x.body||"").trim()),
       items: cleanItems,
       ...calcTotals(cleanItems, discount),
     };
@@ -127,6 +135,26 @@ export default function DocForm({ type, docs, business, existing, onSave, onCanc
           <input type="number" className="bb-input" style={{ maxWidth: 200 }} value={discount} onChange={(e) => setDiscount(e.target.value)} />
         </div>
 
+        <div className="bb-card" style={{ marginTop: 14, padding: 14, background: "var(--paper)" }}>
+          <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",gap:10,marginBottom:10}}>
+            <div><div style={{fontWeight:700,fontSize:13.5}}>Document Template & Design</div><div style={{fontSize:11,color:"var(--muted)",marginTop:2}}>Choose a ready template or your saved custom template. You can fine-tune it in Document Designs.</div></div>
+            <button type="button" className="bb-btn bb-btn-ghost" onClick={()=>setDocumentStyle({...documentStyle, preset:"custom"})}>Custom</button>
+          </div>
+          <div className="template-picker-grid">
+            {DOCUMENT_DESIGNS.map(d=>{ const active=(documentStyle.preset||business.documentStyle?.preset||"classic")===d.id; return <button type="button" key={d.id} className={`template-picker-card ${active?"selected":""}`} onClick={()=>setDocumentStyle({...resolveDocumentDesign(d)})}>
+              <span className="template-swatch" style={{background:d.accent}}></span><span><b>{d.name}</b><small>{d.category}</small></span>
+            </button>})}
+            {(business.documentTemplates||[]).map(t=>{ const active=documentStyle.preset===t.id || documentStyle.templateId===t.id; return <button type="button" key={t.id} className={`template-picker-card ${active?"selected":""}`} onClick={()=>setDocumentStyle({...t.style,templateId:t.id,preset:"custom"})}>
+              <span className="template-swatch" style={{background:t.style?.accent||"#334155"}}></span><span><b>{t.name}</b><small>My Template</small></span>
+            </button>})}
+          </div>
+          <div className="template-inline-controls">
+            <label>Accent <input type="color" value={documentStyle.accent||"#16233f"} onChange={e=>setDocumentStyle({...documentStyle,accent:e.target.value,preset:"custom"})}/></label>
+            <label>Header <select className="bb-select" value={documentStyle.header||"classic"} onChange={e=>setDocumentStyle({...documentStyle,header:e.target.value,preset:"custom"})}><option>classic</option><option>modern</option><option>minimal</option><option>band</option></select></label>
+            <label>Table <select className="bb-select" value={documentStyle.table||"grid"} onChange={e=>setDocumentStyle({...documentStyle,table:e.target.value,preset:"custom"})}><option value="grid">Grid</option><option value="line">Lines</option><option value="soft">Soft</option></select></label>
+          </div>
+        </div>
+
         <div style={{ marginTop: 6, marginBottom: 8, fontWeight: 700, fontSize: 13.5 }}>Items</div>
         <div style={{ overflowX: "auto" }}>
           <table className="bb-table" style={{ minWidth: 680 }}>
@@ -187,6 +215,16 @@ export default function DocForm({ type, docs, business, existing, onSave, onCanc
             </div>
           ))}
           <button type="button" className="bb-btn bb-btn-ghost" onClick={addCustomField}><Plus size={14}/> Add Custom Field</button>
+        </div>
+
+        <div className="bb-field" style={{ marginTop: 18 }}>
+          <label>Custom Sections</label>
+          {customSections.map((section,i)=><div key={i} style={{display:"grid",gridTemplateColumns:".7fr 1.5fr auto",gap:7,marginBottom:7}}>
+            <input className="bb-input" placeholder="Section title" value={section.title} onChange={e=>updateCustomSection(i,{title:e.target.value})}/>
+            <textarea className="bb-textarea" rows={2} placeholder="Anything you want on the document" value={section.body} onChange={e=>updateCustomSection(i,{body:e.target.value})}/>
+            <button className="bb-icon-btn" onClick={()=>removeCustomSection(i)}><X size={15}/></button>
+          </div>)}
+          <button type="button" className="bb-btn bb-btn-ghost" onClick={addCustomSection}><Plus size={14}/> Add Custom Section</button>
         </div>
 
         <div className="bb-field" style={{ marginTop: 18 }}>

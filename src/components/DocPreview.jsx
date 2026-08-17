@@ -11,7 +11,7 @@ export default function DocPreview({ doc, business, payments = [], onBack, onEdi
   const totalSgst = summary.reduce((s, g) => s + g.sgstAmt, 0);
   const totalTax = summary.reduce((s, g) => s + g.totalTax, 0);
   const hasBank = business.bankName || business.accountNo || business.ifsc;
-  const design = business.documentStyle || {};
+  const design = doc.documentStyle || business.documentStyle || {};
   const show = (key, fallback=true) => design[key] === undefined ? fallback : design[key];
 
   const linkedPayments = doc.type === "invoice" ? payments.filter((p) => p.againstInvoice === doc.number) : [];
@@ -36,7 +36,7 @@ export default function DocPreview({ doc, business, payments = [], onBack, onEdi
         </div>
       </div>
 
-      <div className="inv-title">{meta.label}</div>
+      <div className="inv-title">{design.documentTitle || meta.label}</div>
       <div className={`inv-doc doc-design-${design.header || "classic"} doc-table-${design.table || "grid"}`} style={{"--doc-accent":design.accent || "#16233f","--doc-radius":`${design.radius ?? 0}px`,"--doc-font":design.font === "Georgia" ? "Georgia, serif" : "Inter, Arial, sans-serif","--doc-paper":design.paperBg || "#fff","--doc-line":design.lineColor || "#d8dde5"}}>
         {/* Header: logo + business + contact grid */}
         <div className="inv-block inv-header">
@@ -93,16 +93,18 @@ export default function DocPreview({ doc, business, payments = [], onBack, onEdi
           </div>
         )}
 
+        {doc.customSections?.map((section,i)=>(section.title||section.body)?<div className="inv-box" key={i} style={{marginBottom:10}}><div className="inv-box-head">{section.title||"Additional Information"}</div><div className="inv-box-body" style={{whiteSpace:"pre-wrap",fontWeight:400}}>{section.body}</div></div>:null)}
+
         {/* Items table */}
         <table className="inv-items">
           <thead>
             <tr>
               <th style={{ width: 28 }}>#</th>
               <th>Item name</th>
-              <th>HSN/ SAC</th>
-              <th className="r">Quantity</th>
-              <th className="r">Price/ Unit(₹)</th>
-              <th className="r">GST(₹)</th>
+              <th style={{display:design.showHsn===false?"none":undefined}}>HSN/ SAC</th>
+              <th className="r" style={{display:design.showQty===false?"none":undefined}}>Quantity</th>
+              <th className="r" style={{display:design.showRate===false?"none":undefined}}>Price/ Unit(₹)</th>
+              <th className="r" style={{display:design.showGst===false?"none":undefined}}>GST(₹)</th>
               <th className="r">Amount(₹)</th>
             </tr>
           </thead>
@@ -114,10 +116,10 @@ export default function DocPreview({ doc, business, payments = [], onBack, onEdi
                 <tr key={it.id}>
                   <td>{i + 1}</td>
                   <td>{it.name}</td>
-                  <td>{it.hsn || "—"}</td>
-                  <td className="r">{it.qty}</td>
-                  <td className="r">{fmt(it.rate)}</td>
-                  <td className="r">{fmt(gstAmt)} {it.gstPct ? `(${it.gstPct}%)` : ""}</td>
+                  <td style={{display:design.showHsn===false?"none":undefined}}>{it.hsn || "—"}</td>
+                  <td className="r" style={{display:design.showQty===false?"none":undefined}}>{it.qty}</td>
+                  <td className="r" style={{display:design.showRate===false?"none":undefined}}>{fmt(it.rate)}</td>
+                  <td className="r" style={{display:design.showGst===false?"none":undefined}}>{fmt(gstAmt)} {it.gstPct ? `(${it.gstPct}%)` : ""}</td>
                   <td className="r">{fmt(amt)}</td>
                 </tr>
               );
@@ -227,7 +229,7 @@ export default function DocPreview({ doc, business, payments = [], onBack, onEdi
             <div style={{ textAlign: "center", fontSize: 12, color: "var(--muted)", marginTop: 30, paddingBottom: 10 }}>Authorized Signatory</div>
           </div>
         </div>
-        {design.footerText && <div className="inv-custom-footer">{design.footerText}</div>}
+        {design.footerText && <div className="inv-custom-footer">{design.watermarkText && <span className="inv-watermark">{design.watermarkText}</span>}{design.footerText}</div>}
       </div>
     </div>
   );

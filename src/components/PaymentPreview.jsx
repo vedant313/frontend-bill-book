@@ -4,10 +4,10 @@ import { documentStyleVars, resolveDocumentDesign } from "../utils/documentDesig
 
 export default function PaymentPreview({ payment, business, docs, onBack, onEdit, onDuplicate }) {
   if (!payment) return null;
-  const docDesign = resolveDocumentDesign(business.documentStyle);
+  const docDesign = resolveDocumentDesign(payment.documentStyle || business.documentStyle);
   const linkedDoc = docs.find((d) => d.type === "invoice" && d.number === payment.againstInvoice);
   const hasBank = business.bankName || business.accountNo || business.ifsc;
-  const design = business.documentStyle || {};
+  const design = payment.documentStyle || business.documentStyle || {};
   const show = (key, fallback=true) => design[key] === undefined ? fallback : design[key];
 
   return (
@@ -27,7 +27,7 @@ export default function PaymentPreview({ payment, business, docs, onBack, onEdit
         </div>
       </div>
 
-      <div className="inv-title">Payment Receipt</div>
+      <div className="inv-title">{docDesign.documentTitle || "Payment Receipt"}</div>
       <div className={`inv-doc doc-design-${docDesign.header} doc-table-${docDesign.table || "grid"}`} style={documentStyleVars(docDesign)}><style>{`:root{--doc-font:${docDesign.font === "Georgia" ? "Georgia, serif" : "Inter, Arial, sans-serif"}}`}</style>
         {/* Header: logo + business + contact grid */}
         <div className="inv-block inv-header">
@@ -98,6 +98,9 @@ export default function PaymentPreview({ payment, business, docs, onBack, onEdit
           </div>
         </div>
 
+        {payment.customFields?.length>0 && <div className="inv-two-col">{payment.customFields.map((f,i)=><div className="inv-box" key={i}><div className="inv-box-head">{f.label||"Additional"}</div><div className="inv-box-body">{f.value||"—"}</div></div>)}</div>}
+        {payment.customSections?.map((section,i)=>(section.title||section.body)?<div className="inv-box" key={i} style={{marginBottom:12}}><div className="inv-box-head">{section.title||"Additional Information"}</div><div className="inv-box-body" style={{whiteSpace:"pre-wrap",fontWeight:400}}>{section.body}</div></div>:null)}
+
         {payment.notes && (
           <div className="inv-box" style={{ marginBottom: 12 }}>
             <div className="inv-box-head">Notes:</div>
@@ -124,7 +127,7 @@ export default function PaymentPreview({ payment, business, docs, onBack, onEdit
             <div style={{ textAlign: "center", fontSize: 12, color: "var(--muted)", marginTop: 30, paddingBottom: 10 }}>Authorized Signatory</div>
           </div>
         </div>
-        {design.footerText && <div className="inv-custom-footer">{design.footerText}</div>}
+        {design.footerText && <div className="inv-custom-footer">{design.watermarkText && <span className="inv-watermark">{design.watermarkText}</span>}{design.footerText}</div>}
       </div>
     </div>
   );
