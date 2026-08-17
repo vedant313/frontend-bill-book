@@ -28,7 +28,7 @@ export default function PaymentPreview({ payment, business, docs, onBack, onEdit
       </div>
 
       <div className="inv-title">{docDesign.documentTitle || "Payment Receipt"}</div>
-      <div className={`inv-doc doc-design-${docDesign.header} doc-table-${docDesign.table || "grid"}`} style={documentStyleVars(docDesign)}><style>{`:root{--doc-font:${docDesign.font === "Georgia" ? "Georgia, serif" : "Inter, Arial, sans-serif"}}`}</style>
+      <div className={`inv-doc doc-design-${docDesign.header} doc-table-${docDesign.table || "grid"}`} style={documentStyleVars(docDesign)}><CustomCanvas elements={design.canvasElements} payment={payment} business={business}/><style>{`:root{--doc-font:${docDesign.font === "Georgia" ? "Georgia, serif" : "Inter, Arial, sans-serif"}}`}</style>
         {/* Header: logo + business + contact grid */}
         <div className="inv-block inv-header">
           <div className="inv-header-top" style={{justifyContent: docDesign.logoPosition === "center" ? "center" : docDesign.logoPosition === "right" ? "flex-end" : "flex-start"}}>
@@ -132,3 +132,5 @@ export default function PaymentPreview({ payment, business, docs, onBack, onEdit
     </div>
   );
 }
+
+function CustomCanvas({elements=[],payment,business}){if(!elements?.length)return null;const val=e=>String(e.text||"").replace(/\{\{partyName\}\}/g,payment.partyName||"").replace(/\{\{date\}\}/g,payment.date||"").replace(/\{\{total\}\}/g,`₹ ${Number(payment.amount||0).toLocaleString("en-IN")}`).replace(/\{\{businessName\}\}/g,business.name||"");return <div className="inv-custom-canvas">{elements.map(e=><div key={e.id} className="inv-custom-element" style={{left:`${e.x}%`,top:`${e.y}%`,width:`${e.w}%`,height:`${e.h}%`,fontSize:e.fontSize,color:e.color,background:e.fill,borderColor:e.borderColor,textAlign:e.align,fontWeight:e.bold?700:400}}>{e.type==="logo"&&business.logoDataUrl?<img src={business.logoDataUrl} alt="logo"/>:e.type==="line"?<hr/>:e.type==="box"?<div className="custom-box"/>:e.type==="qr"?<div className="custom-qr">▦</div>:e.type==="total"?<b>₹ {Number(payment.amount||0).toLocaleString("en-IN")}</b>:val(e)}</div>)}</div>}

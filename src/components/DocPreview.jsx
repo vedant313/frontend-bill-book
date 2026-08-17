@@ -38,6 +38,7 @@ export default function DocPreview({ doc, business, payments = [], onBack, onEdi
 
       <div className="inv-title">{design.documentTitle || meta.label}</div>
       <div className={`inv-doc doc-design-${design.header || "classic"} doc-table-${design.table || "grid"}`} style={{"--doc-accent":design.accent || "#16233f","--doc-radius":`${design.radius ?? 0}px`,"--doc-font":design.font === "Georgia" ? "Georgia, serif" : "Inter, Arial, sans-serif","--doc-paper":design.paperBg || "#fff","--doc-line":design.lineColor || "#d8dde5"}}>
+        <CustomCanvas elements={design.canvasElements} doc={doc} business={business} />
         {/* Header: logo + business + contact grid */}
         <div className="inv-block inv-header">
           <div className="inv-header-top" style={{justifyContent: design.logoPosition === "center" ? "center" : design.logoPosition === "right" ? "flex-end" : "flex-start"}}>
@@ -234,3 +235,7 @@ export default function DocPreview({ doc, business, payments = [], onBack, onEdi
     </div>
   );
 }
+
+function CustomCanvas({elements=[],doc,business}){
+ const value=(e)=>{const m={"{{businessName}}":business.name,"{{partyName}}":doc.partyName,"{{partyPhone}}":doc.partyPhone,"{{invoiceNumber}}":doc.number,"{{date}}":doc.date,"{{total}}":`₹ ${Number(doc.total||0).toLocaleString("en-IN")}`,"{{balance}}":`₹ ${Number(doc.total||0).toLocaleString("en-IN")}`,"{{gstin}}":business.gstin,"{{address}}":business.address,"{{notes}}":doc.notes};return String(e.text||"").replace(/\{\{[^}]+\}\}/g,k=>m[k]??k)};
+ if(!elements?.length)return null; return <div className="inv-custom-canvas">{elements.map(e=><div key={e.id} className="inv-custom-element" style={{left:`${e.x}%`,top:`${e.y}%`,width:`${e.w}%`,height:`${e.h}%`,fontSize:e.fontSize,color:e.color,background:e.fill,borderColor:e.borderColor,textAlign:e.align,fontWeight:e.bold?700:400}}>{e.type==="logo"&&business.logoDataUrl?<img src={business.logoDataUrl} alt="logo"/>:e.type==="logo"?<b>LOGO</b>:e.type==="image"?<span>IMAGE</span>:e.type==="line"?<hr/>:e.type==="box"?<div className="custom-box"/>:e.type==="items"?<div className="custom-mini-table"><i/><i/><i/><i/></div>:e.type==="total"?<b>₹ {Number(doc.total||0).toLocaleString("en-IN")}</b>:e.type==="qr"?<div className="custom-qr">▦</div>:value(e)}</div>)}</div> }
