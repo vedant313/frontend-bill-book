@@ -2,8 +2,8 @@ import { useState } from "react";
 import { FileText } from "lucide-react";
 import * as api from "../api";
 
-export default function Login({ onAuthed }) {
-  const [mode, setMode] = useState("login"); // login | signup
+export default function Login({ onAuthed, mode: initialMode = "login", onClose }) {
+  const [mode, setMode] = useState(initialMode); // login | signup
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -36,7 +36,8 @@ export default function Login({ onAuthed }) {
         padding: 20,
       }}
     >
-      <div className="bb-card" style={{ width: "100%", maxWidth: 380 }}>
+      <div className="bb-card" style={{ width: "100%", maxWidth: 380, position: "relative" }}>
+        {onClose && <button type="button" onClick={onClose} className="bb-icon-btn" style={{position:"absolute",right:12,top:12}} aria-label="Close">×</button>}
         <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 22, justifyContent: "center" }}>
           <div className="bb-brand-mark" style={{ background: "var(--teal)" }}>
             <FileText size={16} color="#fff" />

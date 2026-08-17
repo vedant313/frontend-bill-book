@@ -13,7 +13,7 @@ export default function TopBar({ business, goto, setSidebarOpen, onExportAll }) 
         </div>
       </div>
       <div style={{ display: "flex", gap: 8 }}>
-        <button className="bb-btn bb-btn-ghost" onClick={onExportAll} title="Download invoices, estimates and payments as one Excel file">
+        <button className="bb-btn bb-btn-ghost" onClick={onExportAll} title="Choose dates and download Excel reports">
           <Download size={14} />
           <span className="bb-hide-sm">Export All</span>
         </button>

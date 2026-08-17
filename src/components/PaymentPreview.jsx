@@ -1,8 +1,10 @@
 import { ArrowLeft, Pencil, Printer } from "lucide-react";
 import { fmt, fmtDate, amountInWords } from "../utils/helpers";
+import { documentStyleVars, resolveDocumentDesign } from "../utils/documentDesigns";
 
 export default function PaymentPreview({ payment, business, docs, onBack, onEdit }) {
   if (!payment) return null;
+  const docDesign = resolveDocumentDesign(business.documentStyle);
   const linkedDoc = docs.find((d) => d.type === "invoice" && d.number === payment.againstInvoice);
   const hasBank = business.bankName || business.accountNo || business.ifsc;
 
@@ -26,7 +28,7 @@ export default function PaymentPreview({ payment, business, docs, onBack, onEdit
       </div>
 
       <div className="inv-title">Payment Receipt</div>
-      <div className="inv-doc">
+      <div className={`inv-doc doc-design-${docDesign.header}`} style={documentStyleVars(docDesign)}>
         {/* Header: logo + business + contact grid */}
         <div className="inv-block inv-header">
           <div className="inv-header-top">

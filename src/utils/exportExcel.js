@@ -51,26 +51,37 @@ function todayStamp() {
 }
 
 // Exports just the invoices to an Excel file.
-export function exportInvoices(docs) {
+export function exportInvoices(docs, label = "invoices") {
   const invoices = docs.filter((d) => d.type === "invoice");
   const wb = XLSX.utils.book_new();
   XLSX.utils.book_append_sheet(wb, sheetFromRows(docRows(invoices)), "Invoices");
-  downloadWorkbook(wb, `invoices-${todayStamp()}.xlsx`);
+  downloadWorkbook(wb, `${label}-${todayStamp()}.xlsx`);
 }
 
 // Exports just the estimates to an Excel file.
-export function exportEstimates(docs) {
+export function exportEstimates(docs, label = "estimates") {
   const estimates = docs.filter((d) => d.type === "estimate");
   const wb = XLSX.utils.book_new();
   XLSX.utils.book_append_sheet(wb, sheetFromRows(docRows(estimates)), "Estimates");
-  downloadWorkbook(wb, `estimates-${todayStamp()}.xlsx`);
+  downloadWorkbook(wb, `${label}-${todayStamp()}.xlsx`);
 }
 
 // Exports just the payments to an Excel file.
-export function exportPayments(payments) {
+export function exportPayments(payments, label = "payments") {
   const wb = XLSX.utils.book_new();
   XLSX.utils.book_append_sheet(wb, sheetFromRows(paymentRows(payments)), "Payments");
-  downloadWorkbook(wb, `payments-${todayStamp()}.xlsx`);
+  downloadWorkbook(wb, `${label}-${todayStamp()}.xlsx`);
+}
+
+
+export function exportFilteredData(docs, payments, filename = "billbook-filtered") {
+  const invoices = docs.filter((d) => d.type === "invoice");
+  const estimates = docs.filter((d) => d.type === "estimate");
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, sheetFromRows(docRows(invoices)), "Invoices");
+  XLSX.utils.book_append_sheet(wb, sheetFromRows(docRows(estimates)), "Estimates");
+  XLSX.utils.book_append_sheet(wb, sheetFromRows(paymentRows(payments)), "Payments");
+  downloadWorkbook(wb, `${filename}-${todayStamp()}.xlsx`);
 }
 
 // Exports everything — invoices, estimates and payments — as one workbook

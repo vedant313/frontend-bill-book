@@ -15,6 +15,7 @@ export default function DocForm({ type, docs, business, existing, onSave, onCanc
   const [status, setStatus] = useState(existing?.status || meta.statuses[0]);
   const [discount, setDiscount] = useState(existing?.discountAmt ?? 0);
   const [terms, setTerms] = useState(existing?.notes ?? business.terms ?? "");
+  const [customFields, setCustomFields] = useState(existing?.customFields || []);
   const [items, setItems] = useState(existing?.items || [{ id: uid(), name: "", hsn: "", qty: 1, rate: 0, gstPct: 18 }]);
   const [saving, setSaving] = useState(false);
 
@@ -23,6 +24,9 @@ export default function DocForm({ type, docs, business, existing, onSave, onCanc
   const updateItem = (id, patch) => setItems(items.map((it) => (it.id === id ? { ...it, ...patch } : it)));
   const addItem = () => setItems([...items, { id: uid(), name: "", hsn: "", qty: 1, rate: 0, gstPct: 18 }]);
   const removeItem = (id) => setItems(items.length > 1 ? items.filter((it) => it.id !== id) : items);
+  const addCustomField = () => setCustomFields([...customFields, { label: "", value: "" }]);
+  const updateCustomField = (i, patch) => setCustomFields(customFields.map((x, idx) => idx === i ? { ...x, ...patch } : x));
+  const removeCustomField = (i) => setCustomFields(customFields.filter((_, idx) => idx !== i));
 
   const handleSubmit = async () => {
     if (!partyName.trim()) {
@@ -47,6 +51,7 @@ export default function DocForm({ type, docs, business, existing, onSave, onCanc
       dueDate,
       status,
       notes: terms,
+      customFields: customFields.filter(x => String(x.label || "").trim() || String(x.value || "").trim()),
       items: cleanItems,
       ...calcTotals(cleanItems, discount),
     };
@@ -171,6 +176,18 @@ export default function DocForm({ type, docs, business, existing, onSave, onCanc
           <Plus size={14} />
           Add Item
         </button>
+
+        <div className="bb-field" style={{ marginTop: 18 }}>
+          <label>Additional Custom Fields</label>
+          {customFields.map((field, i) => (
+            <div key={i} style={{display:"grid",gridTemplateColumns:"1fr 1.6fr auto",gap:7,marginBottom:7}}>
+              <input className="bb-input" placeholder="Field name (e.g. PO No.)" value={field.label} onChange={e=>updateCustomField(i,{label:e.target.value})}/>
+              <input className="bb-input" placeholder="Value" value={field.value} onChange={e=>updateCustomField(i,{value:e.target.value})}/>
+              <button className="bb-icon-btn" onClick={()=>removeCustomField(i)}><X size={15}/></button>
+            </div>
+          ))}
+          <button type="button" className="bb-btn bb-btn-ghost" onClick={addCustomField}><Plus size={14}/> Add Custom Field</button>
+        </div>
 
         <div className="bb-field" style={{ marginTop: 18 }}>
           <label>Terms &amp; Conditions</label>

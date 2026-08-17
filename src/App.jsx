@@ -16,6 +16,9 @@ import PaymentForm from "./components/PaymentForm";
 import PaymentPreview from "./components/PaymentPreview";
 import SettingsPage from "./components/SettingsPage";
 import ThemePicker from "./components/ThemePicker";
+import Landing from "./components/Landing";
+import ExportCenter from "./components/ExportCenter";
+import DocumentDesigner from "./components/DocumentDesigner";
 
 export default function App() {
   const [authChecked, setAuthChecked] = useState(false);
@@ -197,7 +200,7 @@ export default function App() {
   }
 
   if (!user) {
-    return <Login onAuthed={setUser} />;
+    return <Landing onAuthed={setUser} />;
   }
 
   if (!loaded) {
@@ -217,7 +220,7 @@ export default function App() {
       <div className="bb-shell no-print">
         <Sidebar page={page} listType={listType} goto={goto} sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} user={user} onLogout={logout} />
         <div className="bb-main">
-          <TopBar business={business} goto={goto} setSidebarOpen={setSidebarOpen} onExportAll={() => exportAllData(docs, payments)} />
+          <TopBar business={business} goto={goto} setSidebarOpen={setSidebarOpen} onExportAll={() => goto("export")} />
           <div className="bb-content">
             {page === "dashboard" && <Dashboard stats={stats} chartData={chartData} docs={docs} payments={payments} goto={goto} />}
 
@@ -258,6 +261,8 @@ export default function App() {
             )}
 
             {page === "theme" && <ThemePicker theme={business.theme} onSaveTheme={saveTheme} />}
+            {page === "export" && <ExportCenter docs={docs} payments={payments} goto={goto} />}
+            {page === "designer" && <DocumentDesigner business={business} onSave={async (documentStyle) => saveBusiness({ ...business, documentStyle })} onBack={() => goto("dashboard")} />}
           </div>
         </div>
       </div>

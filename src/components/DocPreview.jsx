@@ -84,6 +84,14 @@ export default function DocPreview({ doc, business, payments = [], onBack, onEdi
           </div>
         </div>
 
+        {doc.customFields?.length > 0 && (
+          <div className="inv-two-col" style={{gridTemplateColumns:"repeat(2,1fr)"}}>
+            {doc.customFields.map((field,i)=>(
+              <div className="inv-box" key={i}><div className="inv-box-head">{field.label || "Additional"}</div><div className="inv-box-body">{field.value || "—"}</div></div>
+            ))}
+          </div>
+        )}
+
         {/* Items table */}
         <table className="inv-items">
           <thead>

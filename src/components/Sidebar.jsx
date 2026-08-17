@@ -1,4 +1,4 @@
-import { LayoutDashboard, FileText, FilePlus2, Wallet, Settings as SettingsIcon, Palette, LogOut } from "lucide-react";
+import { LayoutDashboard, FileText, FilePlus2, Wallet, Settings as SettingsIcon, Palette, LogOut, FileSpreadsheet, Paintbrush } from "lucide-react";
 
 export default function Sidebar({ page, listType, goto, sidebarOpen, setSidebarOpen, user, onLogout }) {
   const isActive = (p, lt) => page === p && (!lt || listType === lt);
@@ -33,6 +33,12 @@ export default function Sidebar({ page, listType, goto, sidebarOpen, setSidebarO
         <div className="bb-nav-foot">
           <button className={`bb-nav-item ${isActive("theme") ? "active" : ""}`} onClick={() => goto("theme")}>
             <Palette size={16} /> Appearance
+          </button>
+          <button className={`bb-nav-item ${isActive("designer") ? "active" : ""}`} onClick={() => goto("designer")}>
+            <Paintbrush size={16} /> Document Designs
+          </button>
+          <button className={`bb-nav-item ${isActive("export") ? "active" : ""}`} onClick={() => goto("export")}>
+            <FileSpreadsheet size={16} /> Excel Reports
           </button>
           <button className={`bb-nav-item ${isActive("settings") ? "active" : ""}`} onClick={() => goto("settings")}>
             <SettingsIcon size={16} /> Business Settings
