@@ -1,12 +1,14 @@
-import { ArrowLeft, Pencil, Printer } from "lucide-react";
+import { ArrowLeft, Pencil, Printer, Copy } from "lucide-react";
 import { fmt, fmtDate, amountInWords } from "../utils/helpers";
 import { documentStyleVars, resolveDocumentDesign } from "../utils/documentDesigns";
 
-export default function PaymentPreview({ payment, business, docs, onBack, onEdit }) {
+export default function PaymentPreview({ payment, business, docs, onBack, onEdit, onDuplicate }) {
   if (!payment) return null;
   const docDesign = resolveDocumentDesign(business.documentStyle);
   const linkedDoc = docs.find((d) => d.type === "invoice" && d.number === payment.againstInvoice);
   const hasBank = business.bankName || business.accountNo || business.ifsc;
+  const design = business.documentStyle || {};
+  const show = (key, fallback=true) => design[key] === undefined ? fallback : design[key];
 
   return (
     <div className="bb-paper-wrap" style={{ padding: "20px 16px" }}>
@@ -16,10 +18,8 @@ export default function PaymentPreview({ payment, business, docs, onBack, onEdit
           Back
         </button>
         <div style={{ display: "flex", gap: 8 }}>
-          <button className="bb-btn bb-btn-ghost" onClick={onEdit}>
-            <Pencil size={14} />
-            Edit
-          </button>
+          <button className="bb-btn bb-btn-ghost" onClick={onEdit}><Pencil size={14} /> Edit</button>
+          {onDuplicate && <button className="bb-btn bb-btn-ghost" onClick={onDuplicate}><Copy size={14} /> Duplicate</button>}
           <button className="bb-btn bb-btn-primary" onClick={() => window.print()}>
             <Printer size={14} />
             Download / Print PDF
@@ -28,17 +28,17 @@ export default function PaymentPreview({ payment, business, docs, onBack, onEdit
       </div>
 
       <div className="inv-title">Payment Receipt</div>
-      <div className={`inv-doc doc-design-${docDesign.header}`} style={documentStyleVars(docDesign)}>
+      <div className={`inv-doc doc-design-${docDesign.header} doc-table-${docDesign.table || "grid"}`} style={documentStyleVars(docDesign)}><style>{`:root{--doc-font:${docDesign.font === "Georgia" ? "Georgia, serif" : "Inter, Arial, sans-serif"}}`}</style>
         {/* Header: logo + business + contact grid */}
         <div className="inv-block inv-header">
-          <div className="inv-header-top">
-            {business.logoDataUrl ? (
+          <div className="inv-header-top" style={{justifyContent: docDesign.logoPosition === "center" ? "center" : docDesign.logoPosition === "right" ? "flex-end" : "flex-start"}}>
+            {show("showLogo") && business.logoDataUrl ? (
               <img src={business.logoDataUrl} alt="logo" className="inv-logo" />
             ) : (
               <div className="inv-logo inv-logo-fallback">{(business.name || "B")[0]}</div>
             )}
             <div className="inv-biz-name">
-              <div className="inv-biz-title">{business.name || "My Business"}</div>
+              <div className="inv-biz-title">{business.name || "My Business"}</div>{docDesign.headerSubtitle && <div className="inv-biz-addr">{docDesign.headerSubtitle}</div>}
               <div className="inv-biz-addr">{business.address}</div>
               {business.proprietor && <div className="inv-biz-addr">Pro - {business.proprietor}</div>}
             </div>
@@ -106,7 +106,7 @@ export default function PaymentPreview({ payment, business, docs, onBack, onEdit
         )}
 
         <div className="inv-two-col">
-          <div className="inv-box">
+          <div className="inv-box" style={{display: show("showBank") ? undefined : "none"}}>
             <div className="inv-box-head">Bank Details:</div>
             <div className="inv-box-body" style={{ fontWeight: 400, lineHeight: 1.7 }}>
               {hasBank ? (
@@ -119,11 +119,12 @@ export default function PaymentPreview({ payment, business, docs, onBack, onEdit
               ) : "—"}
             </div>
           </div>
-          <div className="inv-box" style={{ display: "flex", flexDirection: "column", justifyContent: "space-between" }}>
+          <div className="inv-box" style={{ display: show("showSignature") ? "flex" : "none", flexDirection: "column", justifyContent: "space-between" }}>
             <div className="inv-box-head">For {business.name || "My Business"}:</div>
             <div style={{ textAlign: "center", fontSize: 12, color: "var(--muted)", marginTop: 30, paddingBottom: 10 }}>Authorized Signatory</div>
           </div>
         </div>
+        {design.footerText && <div className="inv-custom-footer">{design.footerText}</div>}
       </div>
     </div>
   );

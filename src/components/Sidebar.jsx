@@ -49,6 +49,7 @@ export default function Sidebar({ page, listType, goto, sidebarOpen, setSidebarO
               <div style={{ color: "#edeff4", fontWeight: 600, fontSize: 12.5, marginBottom: 6 }}>{user.name || user.email}</div>
             </div>
           )}
+          <div className="bb-sidebar-branding">BillBook · by <b>Nexsa Technologies</b></div>
           <button className="bb-nav-item" onClick={onLogout}>
             <LogOut size={16} /> Log Out
           </button>

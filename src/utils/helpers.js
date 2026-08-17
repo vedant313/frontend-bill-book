@@ -79,9 +79,11 @@ export function amountInWords(num) {
 }
 
 export function nextNumber(docs, type) {
-  return String(docs.filter((d) => d.type === type).length + 1);
+  const nums = docs.filter(d => d.type === type).map(d => Number(String(d.number || "").replace(/\D/g, ""))).filter(Number.isFinite);
+  return String((nums.length ? Math.max(...nums) : 0) + 1);
 }
 
 export function nextPaymentNumber(payments) {
-  return String((payments?.length || 0) + 1);
+  const nums = (payments || []).map(p => Number(String(p.number || "").replace(/\D/g, ""))).filter(Number.isFinite);
+  return String((nums.length ? Math.max(...nums) : 0) + 1);
 }

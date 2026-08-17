@@ -1,11 +1,11 @@
 import { useMemo, useState } from "react";
-import { Plus, Printer, Pencil, Trash2, FileText, Download } from "lucide-react";
+import { Plus, Printer, Pencil, Trash2, FileText, Download, Copy } from "lucide-react";
 import { fmt, fmtDate, DOC_META } from "../utils/helpers";
 import { exportInvoices, exportEstimates } from "../utils/exportExcel";
 import StatusBadge from "./StatusBadge";
 import { FilterBar, defaultFilters, filterRows } from "./DataFilters";
 
-export default function DocList({ type, docs, goto, deleteDoc }) {
+export default function DocList({ type, docs, goto, deleteDoc, duplicateDoc }) {
   const [filters, setFilters] = useState(defaultFilters());
   const meta = DOC_META[type];
   const filtered = useMemo(() => filterRows(docs, filters, "total").sort((a,b)=>new Date(b.date)-new Date(a.date)), [docs,filters]);
@@ -29,6 +29,7 @@ export default function DocList({ type, docs, goto, deleteDoc }) {
           <tbody>{filtered.map(d=><tr key={d.id}><td className="bb-mono">{d.number}</td><td>{d.partyName||"—"}</td><td>{fmtDate(d.date)}</td><td><StatusBadge status={d.status}/></td><td className="amt" style={{textAlign:"right"}}>{fmt(d.total)}</td><td><div style={{display:"flex",gap:2,justifyContent:"flex-end"}}>
             <button className="bb-icon-btn" title="View / Print" onClick={()=>goto("preview",{previewId:d.id,previewKind:"doc",listType:type})}><Printer size={15}/></button>
             <button className="bb-icon-btn" title="Edit" onClick={()=>goto("form",{listType:type,editingId:d.id})}><Pencil size={15}/></button>
+            <button className="bb-icon-btn" title="Duplicate" onClick={async()=>{const saved=await duplicateDoc(d.id); if(saved) goto("preview",{previewId:saved.id,previewKind:"doc",listType:type})}}><Copy size={15}/></button>
             <button className="bb-icon-btn" title="Delete" onClick={()=>{if(confirm(`Delete ${d.number}?`))deleteDoc(d.id)}}><Trash2 size={15}/></button>
           </div></td></tr>)}</tbody></table>
         </div>

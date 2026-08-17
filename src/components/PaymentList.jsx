@@ -1,10 +1,10 @@
 import { useMemo, useState } from "react";
-import { Plus, Pencil, Trash2, Wallet, Printer, Download } from "lucide-react";
+import { Plus, Pencil, Trash2, Wallet, Printer, Download, Copy } from "lucide-react";
 import { fmt, fmtDate } from "../utils/helpers";
 import { exportPayments } from "../utils/exportExcel";
 import { FilterBar, defaultFilters, filterRows } from "./DataFilters";
 
-export default function PaymentList({ payments, goto, deletePayment }) {
+export default function PaymentList({ payments, goto, deletePayment, duplicatePayment }) {
   const [filters,setFilters]=useState(defaultFilters());
   const filtered=useMemo(()=>filterRows(payments,filters,"amount").sort((a,b)=>new Date(b.date)-new Date(a.date)),[payments,filters]);
   const modes=[...new Set(payments.map(p=>p.mode).filter(Boolean))];
@@ -19,6 +19,7 @@ export default function PaymentList({ payments, goto, deletePayment }) {
       {filtered.map(p=><tr key={p.id}><td className="bb-mono">{p.number||"—"}</td><td>{p.partyName}</td><td>{fmtDate(p.date)}</td><td>{p.mode}{p.bankName&&<div style={{fontSize:11,color:"var(--muted)"}}>{p.bankName}</div>}</td><td className="bb-mono">{p.againstInvoice||"—"}</td><td className="amt" style={{textAlign:"right"}}>{fmt(p.amount)}</td><td><div style={{display:"flex",gap:2,justifyContent:"flex-end"}}>
         <button className="bb-icon-btn" title="View / Print" onClick={()=>goto("preview",{previewId:p.id,previewKind:"payment",listType:"payment"})}><Printer size={15}/></button>
         <button className="bb-icon-btn" title="Edit" onClick={()=>goto("form",{listType:"payment",editingId:p.id})}><Pencil size={15}/></button>
+        <button className="bb-icon-btn" title="Duplicate" onClick={async()=>{const saved=await duplicatePayment(p.id); if(saved) goto("preview",{previewId:saved.id,previewKind:"payment",listType:"payment"})}}><Copy size={15}/></button>
         <button className="bb-icon-btn" title="Delete" onClick={()=>{if(confirm("Delete this payment?"))deletePayment(p.id)}}><Trash2 size={15}/></button>
       </div></td></tr>)}
     </tbody></table></div>}

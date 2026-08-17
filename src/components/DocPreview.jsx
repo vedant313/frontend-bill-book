@@ -1,7 +1,7 @@
-import { ArrowLeft, Pencil, Printer } from "lucide-react";
+import { ArrowLeft, Pencil, Printer, Copy } from "lucide-react";
 import { fmt, fmtDate, DOC_META, taxSummary, amountInWords } from "../utils/helpers";
 
-export default function DocPreview({ doc, business, payments = [], onBack, onEdit }) {
+export default function DocPreview({ doc, business, payments = [], onBack, onEdit, onDuplicate }) {
   if (!doc) return null;
   const meta = DOC_META[doc.type];
   const summary = taxSummary(doc.items);
@@ -11,6 +11,8 @@ export default function DocPreview({ doc, business, payments = [], onBack, onEdi
   const totalSgst = summary.reduce((s, g) => s + g.sgstAmt, 0);
   const totalTax = summary.reduce((s, g) => s + g.totalTax, 0);
   const hasBank = business.bankName || business.accountNo || business.ifsc;
+  const design = business.documentStyle || {};
+  const show = (key, fallback=true) => design[key] === undefined ? fallback : design[key];
 
   const linkedPayments = doc.type === "invoice" ? payments.filter((p) => p.againstInvoice === doc.number) : [];
   const received = linkedPayments.reduce((s, p) => s + (Number(p.amount) || 0), 0);
@@ -25,10 +27,8 @@ export default function DocPreview({ doc, business, payments = [], onBack, onEdi
           Back
         </button>
         <div style={{ display: "flex", gap: 8 }}>
-          <button className="bb-btn bb-btn-ghost" onClick={onEdit}>
-            <Pencil size={14} />
-            Edit
-          </button>
+          <button className="bb-btn bb-btn-ghost" onClick={onEdit}><Pencil size={14} /> Edit</button>
+          {onDuplicate && <button className="bb-btn bb-btn-ghost" onClick={onDuplicate}><Copy size={14} /> Duplicate</button>}
           <button className="bb-btn bb-btn-primary" onClick={() => window.print()}>
             <Printer size={14} />
             Download / Print PDF
@@ -37,17 +37,18 @@ export default function DocPreview({ doc, business, payments = [], onBack, onEdi
       </div>
 
       <div className="inv-title">{meta.label}</div>
-      <div className="inv-doc">
+      <div className={`inv-doc doc-design-${design.header || "classic"} doc-table-${design.table || "grid"}`} style={{"--doc-accent":design.accent || "#16233f","--doc-radius":`${design.radius ?? 0}px`,"--doc-font":design.font === "Georgia" ? "Georgia, serif" : "Inter, Arial, sans-serif","--doc-paper":design.paperBg || "#fff","--doc-line":design.lineColor || "#d8dde5"}}>
         {/* Header: logo + business + contact grid */}
         <div className="inv-block inv-header">
-          <div className="inv-header-top">
-            {business.logoDataUrl ? (
+          <div className="inv-header-top" style={{justifyContent: design.logoPosition === "center" ? "center" : design.logoPosition === "right" ? "flex-end" : "flex-start"}}>
+            {show("showLogo") && business.logoDataUrl ? (
               <img src={business.logoDataUrl} alt="logo" className="inv-logo" />
-            ) : (
+            ) : show("showLogo") ? (
               <div className="inv-logo inv-logo-fallback">{(business.name || "B")[0]}</div>
-            )}
+            ) : null}
             <div className="inv-biz-name">
               <div className="inv-biz-title">{business.name || "My Business"}</div>
+              {design.headerSubtitle && <div className="inv-biz-addr">{design.headerSubtitle}</div>}
               <div className="inv-biz-addr">{business.address}</div>
               {business.proprietor && <div className="inv-biz-addr">Pro - {business.proprietor}</div>}
             </div>
@@ -133,7 +134,7 @@ export default function DocPreview({ doc, business, payments = [], onBack, onEdi
 
         {/* Tax summary + totals */}
         <div className="inv-two-col" style={{ alignItems: "stretch" }}>
-          <div className="inv-box" style={{ padding: 0 }}>
+          <div className="inv-box" style={{ padding: 0, display: show("showTaxSummary") ? undefined : "none" }}>
             <div className="inv-box-head">Tax Summary:</div>
             <table className="inv-tax-table">
               <thead>
@@ -185,7 +186,7 @@ export default function DocPreview({ doc, business, payments = [], onBack, onEdi
               {doc.discountAmt > 0 && <div className="inv-totals-row"><span>Discount</span><span>-{fmt(doc.discountAmt)}</span></div>}
               <div className="inv-totals-row grand"><span>Total</span><span>{fmt(doc.total)}</span></div>
             </div>
-            <div className="inv-box" style={{ marginBottom: 10 }}>
+            <div className="inv-box" style={{ marginBottom: 10, display: show("showAmountWords") ? undefined : "none" }}>
               <div className="inv-box-head" style={{ marginBottom: 4 }}>{meta.short} Amount in Words:</div>
               <div style={{ fontSize: 12.5, padding: "0 10px 10px" }}>{amountInWords(doc.total)}</div>
             </div>
@@ -195,20 +196,20 @@ export default function DocPreview({ doc, business, payments = [], onBack, onEdi
                 <div className="inv-totals-row grand" style={{ color: balance > 0 ? "var(--red)" : "var(--green)" }}>
                   <span>Balance</span><span>{fmt(balance)}</span>
                 </div>
-              </div>
+              </div>}
             )}
           </div>
         </div>
 
-        {doc.notes && (
+        {show("showTerms") && doc.notes && (
           <div className="inv-box" style={{ marginBottom: 12 }}>
             <div className="inv-box-head">Terms &amp; Conditions:</div>
             <div className="inv-box-body" style={{ fontWeight: 400 }}>{doc.notes}</div>
           </div>
         )}
 
-        <div className="inv-two-col">
-          <div className="inv-box">
+        <div className="inv-two-col" style={{display: show("showBank") || show("showSignature") ? undefined : "none"}}>
+          <div className="inv-box" style={{display: show("showBank") ? undefined : "none"}}>
             <div className="inv-box-head">Bank Details:</div>
             <div className="inv-box-body" style={{ fontWeight: 400, lineHeight: 1.7 }}>
               {hasBank ? (
@@ -221,11 +222,12 @@ export default function DocPreview({ doc, business, payments = [], onBack, onEdi
               ) : "—"}
             </div>
           </div>
-          <div className="inv-box" style={{ display: "flex", flexDirection: "column", justifyContent: "space-between" }}>
+          <div className="inv-box" style={{ display: show("showSignature") ? "flex" : "none", flexDirection: "column", justifyContent: "space-between" }}>
             <div className="inv-box-head">For {business.name || "My Business"}:</div>
             <div style={{ textAlign: "center", fontSize: 12, color: "var(--muted)", marginTop: 30, paddingBottom: 10 }}>Authorized Signatory</div>
           </div>
         </div>
+        {design.footerText && <div className="inv-custom-footer">{design.footerText}</div>}
       </div>
     </div>
   );

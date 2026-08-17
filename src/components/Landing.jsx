@@ -2,8 +2,9 @@ import { useState } from "react";
 import { ArrowRight, BarChart3, FileText, Palette, Search, ShieldCheck, Sparkles, X, Zap } from "lucide-react";
 import Login from "./Login";
 
-export default function Landing({ onAuthed }) {
+export default function Landing({ onAuthed, onLegal, legalPage }) {
   const [auth, setAuth] = useState(null);
+  if (legalPage) return <div className="bb-landing"><div style={{maxWidth:980,margin:"auto",padding:"30px 24px"}}><button className="bb-back" onClick={()=>onLegal(null)}>Back to BillBook</button></div><LegalContent type={legalPage} onBack={()=>onLegal(null)}/></div>;
   if (auth) {
     return (
       <div className="bb-auth-overlay">
@@ -63,10 +64,11 @@ export default function Landing({ onAuthed }) {
           <button className="bb-btn bb-btn-primary bb-btn-lg" onClick={() => setAuth("signup")}>Create your BillBook <ArrowRight size={17}/></button>
         </section>
       </main>
-      <footer className="bb-landing-footer">© {new Date().getFullYear()} BillBook · Simple billing for modern businesses</footer>
+      <footer className="bb-landing-footer"><div className="bb-footer-brand">BillBook · A product of <b>Nexsa Technologies</b></div><div className="bb-footer-links"><button onClick={()=>onLegal("privacy")}>Privacy Policy</button><button onClick={()=>onLegal("terms")}>Terms of Use</button></div><div>© {new Date().getFullYear()} Nexsa Technologies · Professional billing for modern businesses</div></footer>
     </div>
   );
 }
+function LegalContent({type,onBack}) { const terms=type==="terms"; return <div className="bb-legal-page"><div className="bb-legal-card"><div className="bb-section-kicker">BillBook by Nexsa Technologies</div><h1>{terms?"Terms of Use":"Privacy Policy"}</h1><p className="bb-legal-updated">Last updated: August 17, 2026</p><h3>About BillBook</h3><p>BillBook helps businesses create invoices, estimates and payment receipts, manage records, customize document designs and export business data.</p><h3>{terms?"Responsible use":"Information we store"}</h3><p>{terms?"You are responsible for the accuracy of documents and tax information you create. Do not use BillBook for unlawful, fraudulent or abusive activity.":"We store account, business, document, payment, settings and design information needed to provide your workspace. Records are associated with your signed-in account."}</p><h3>{terms?"Documents and service":"Your control"}</h3><p>{terms?"Review documents before sending them to customers or authorities. Service availability may be affected by maintenance, hosting or network issues.":"You control the business records and exports created in your workspace. Keep your credentials secure and maintain backups of important records."}</p><h3>Contact</h3><p>BillBook is a product of <b>Nexsa Technologies</b>. Use the support details available in your BillBook workspace for questions.</p><button className="bb-btn bb-btn-primary" onClick={onBack}>Back to BillBook</button></div></div> }
 function Feature({icon,title,text}) {
   return <div className="bb-feature-card"><div className="bb-feature-icon">{icon}</div><h3>{title}</h3><p>{text}</p></div>;
 }

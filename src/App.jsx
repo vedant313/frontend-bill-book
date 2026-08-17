@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo } from "react";
 import * as api from "./api";
-import { monthLabel } from "./utils/helpers";
+import { monthLabel, nextNumber, nextPaymentNumber } from "./utils/helpers";
 import { resolveThemeVars, applyThemeVars } from "./utils/themes";
 import { exportAllData } from "./utils/exportExcel";
 
@@ -37,6 +37,7 @@ export default function App() {
   const [previewId, setPreviewId] = useState(null);
   const [previewKind, setPreviewKind] = useState("doc");
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [legalPage, setLegalPage] = useState(null);
 
   // ---- Auth bootstrap: check for a stored token on first load ----
   useEffect(() => {
@@ -142,6 +143,15 @@ export default function App() {
     await api.deleteDocument(id);
     setDocs((prev) => prev.filter((d) => d.id !== id));
   };
+  const duplicateDoc = async (id) => {
+    const source = docs.find((d) => d.id === id);
+    if (!source) return;
+    const copy = { ...source, id: undefined, number: nextNumber([...docs, { ...source, type: source.type }], source.type), status: source.type === "invoice" ? "Unpaid" : "Draft", date: new Date().toISOString().slice(0,10), items: (source.items || []).map(it => ({...it, id: Math.random().toString(36).slice(2,10)})), customFields: (source.customFields || []).map(x => ({...x})) };
+    delete copy.id;
+    const saved = await api.createDocument(copy);
+    setDocs(prev => [...prev, saved]);
+    return saved;
+  };
 
   // ---- Payments ----
   const upsertPayment = async (p) => {
@@ -157,6 +167,15 @@ export default function App() {
   const deletePayment = async (id) => {
     await api.deletePayment(id);
     setPayments((prev) => prev.filter((p) => p.id !== id));
+  };
+  const duplicatePayment = async (id) => {
+    const source = payments.find(p => p.id === id);
+    if (!source) return;
+    const copy = { ...source, id: undefined, number: nextPaymentNumber([...payments, source]), date: new Date().toISOString().slice(0,10) };
+    delete copy.id;
+    const saved = await api.createPayment(copy);
+    setPayments(prev => [...prev, saved]);
+    return saved;
   };
 
   // ---- Business ----
@@ -200,7 +219,7 @@ export default function App() {
   }
 
   if (!user) {
-    return <Landing onAuthed={setUser} />;
+    return <Landing onAuthed={setUser} onLegal={setLegalPage} legalPage={legalPage} />;
   }
 
   if (!loaded) {
@@ -225,9 +244,9 @@ export default function App() {
             {page === "dashboard" && <Dashboard stats={stats} chartData={chartData} docs={docs} payments={payments} goto={goto} />}
 
             {page === "list" && listType !== "payment" && (
-              <DocList type={listType} docs={docs.filter((d) => d.type === listType)} goto={goto} deleteDoc={deleteDoc} />
+              <DocList type={listType} docs={docs.filter((d) => d.type === listType)} goto={goto} deleteDoc={deleteDoc} duplicateDoc={duplicateDoc} />
             )}
-            {page === "list" && listType === "payment" && <PaymentList payments={payments} goto={goto} deletePayment={deletePayment} />}
+            {page === "list" && listType === "payment" && <PaymentList payments={payments} goto={goto} deletePayment={deletePayment} duplicatePayment={duplicatePayment} />}
 
             {page === "form" && listType !== "payment" && (
               <DocForm
@@ -262,7 +281,7 @@ export default function App() {
 
             {page === "theme" && <ThemePicker theme={business.theme} onSaveTheme={saveTheme} />}
             {page === "export" && <ExportCenter docs={docs} payments={payments} goto={goto} />}
-            {page === "designer" && <DocumentDesigner business={business} onSave={async (documentStyle) => saveBusiness({ ...business, documentStyle })} onBack={() => goto("dashboard")} />}
+            {page === "designer" && <DocumentDesigner business={business} onSave={async (documentStyle, documentTemplates) => saveBusiness({ ...business, documentStyle, documentTemplates: documentTemplates ?? business.documentTemplates ?? [] })} onBack={() => goto("dashboard")} />}
           </div>
         </div>
       </div>
@@ -274,6 +293,7 @@ export default function App() {
           payments={payments}
           onBack={() => goto("list", { listType })}
           onEdit={() => goto("form", { listType, editingId: previewId })}
+          onDuplicate={async () => { const saved = await duplicateDoc(previewId); if (saved) goto("preview", { previewId: saved.id, previewKind: "doc", listType: saved.type }); }}
         />
       )}
 
@@ -284,6 +304,7 @@ export default function App() {
           docs={docs}
           onBack={() => goto("list", { listType: "payment" })}
           onEdit={() => goto("form", { listType: "payment", editingId: previewId })}
+          onDuplicate={async () => { const saved = await duplicatePayment(previewId); if (saved) goto("preview", { previewId: saved.id, previewKind: "payment", listType: "payment" }); }}
         />
       )}
     </div>
