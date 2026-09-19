@@ -28,7 +28,7 @@ export default function PaymentPreview({ payment, business, docs, onBack, onEdit
       </div>
 
       <div className="inv-title">{docDesign.documentTitle || "Payment Receipt"}</div>
-      <div className={`inv-doc doc-design-${docDesign.header} doc-table-${docDesign.table || "grid"}`} style={documentStyleVars(docDesign)}><CustomCanvas elements={design.canvasElements} payment={payment} business={business}/><style>{`:root{--doc-font:${docDesign.font === "Georgia" ? "Georgia, serif" : "Inter, Arial, sans-serif"}}`}</style>
+      <div className={`inv-doc doc-design-${docDesign.header} doc-table-${docDesign.table || "grid"} doc-layout-${docDesign.layout || "standard"}`} style={documentStyleVars(docDesign)}><CustomCanvas elements={design.canvasElements} payment={payment} business={business}/><style>{`:root{--doc-font:${docDesign.font === "Georgia" ? "Georgia, serif" : "Inter, Arial, sans-serif"}}`}</style>
         {/* Header: logo + business + contact grid */}
         <div className="inv-block inv-header">
           <div className="inv-header-top" style={{justifyContent: docDesign.logoPosition === "center" ? "center" : docDesign.logoPosition === "right" ? "flex-end" : "flex-start"}}>
