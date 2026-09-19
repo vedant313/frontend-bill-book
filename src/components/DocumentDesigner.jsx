@@ -77,7 +77,7 @@ export default function DocumentDesigner({ business, onSave, onBack }) {
  const update=(id,patch)=>setStyle({canvasElements:elements.map(e=>e.id===id?{...e,...patch}:e)});
  const add=type=>{const e=makeElement(type,elements.length);setStyle({canvasElements:[...elements,e]});setSelected(e.id);setShowCustomizer(true)};
  const remove=()=>{if(!selected)return;setStyle({canvasElements:elements.filter(e=>e.id!==selected)});setSelected(null)};
- const choose=d=>{setStyle({...d,canvasElements:elements});setSelected(null)};
+ const choose=d=>{setStyle({...d,printSettings:ps,colors,canvasElements:elements});setSelected(null)};
  const applyAndSave=async()=>onSave(styles, savedTemplates);
  const saveTemplate=async()=>{
    const name=templateName.trim();
