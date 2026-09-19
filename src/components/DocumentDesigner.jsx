@@ -58,7 +58,13 @@ export default function DocumentDesigner({ business, onSave, onBack }) {
  const [templateName,setTemplateName]=useState("");
  const [selected,setSelected]=useState(null);
  const [zoom,setZoom]=useState(1);
- const [showCustomizer,setShowCustomizer]=useState(false);\n const [printerTab,setPrinterTab]=useState("regular");\n const [settingsOpen,setSettingsOpen]=useState(true);\n const ps=style.printSettings||blank.printSettings;\n const colors=style.colors||blank.colors;\n const setPrint=(patch)=>setStyle({printSettings:{...ps,...patch},preset:"custom"});\n const setColors=(patch)=>setStyle({colors:{...colors,...patch},accent:patch.accent||colors.accent,preset:"custom"});
+ const [showCustomizer,setShowCustomizer]=useState(false);
+ const [printerTab,setPrinterTab]=useState("regular");
+ const [settingsOpen,setSettingsOpen]=useState(true);
+ const ps=style.printSettings||blank.printSettings;
+ const colors=style.colors||blank.colors;
+ const setPrint=(patch)=>setStyle({printSettings:{...ps,...patch},preset:"custom"});
+ const setColors=(patch)=>setStyle({colors:{...colors,...patch},accent:patch.accent||colors.accent,preset:"custom"});
  const [savedTemplates]=useState(business.documentTemplates||[]);
 
  const style=styles[activeType];
