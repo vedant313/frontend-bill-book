@@ -11,13 +11,24 @@ export const clearToken = () => localStorage.removeItem(TOKEN_KEY);
 
 async function request(path, options = {}) {
   const token = getToken();
-  const res = await fetch(`${BASE}${path}`, {
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), 25000);
+  let res;
+  try {
+    res = await fetch(`${BASE}${path}`, {
     headers: {
       "Content-Type": "application/json",
       ...(token ? { Authorization: `Bearer ${token}` } : {}),
     },
     ...options,
+    signal: controller.signal,
   });
+  } catch (err) {
+    clearTimeout(timeout);
+    if (err?.name === "AbortError") throw new Error("Server took too long to respond. Please try again.");
+    throw err;
+  }
+  clearTimeout(timeout);
   if (!res.ok) {
     let message = `Request failed (${res.status})`;
     try {
