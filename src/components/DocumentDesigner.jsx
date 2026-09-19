@@ -61,14 +61,13 @@ export default function DocumentDesigner({ business, onSave, onBack }) {
  const [showCustomizer,setShowCustomizer]=useState(false);
  const [printerTab,setPrinterTab]=useState("regular");
  const [settingsOpen,setSettingsOpen]=useState(true);
+ const style=styles[activeType];
+ const setStyle=patch=>setStyles(prev=>({...prev,[activeType]:{...prev[activeType],...patch}}));
  const ps=style.printSettings||blank.printSettings;
  const colors=style.colors||blank.colors;
  const setPrint=(patch)=>setStyle({printSettings:{...ps,...patch},preset:"custom"});
  const setColors=(patch)=>setStyle({colors:{...colors,...patch},accent:patch.accent||colors.accent,preset:"custom"});
  const [savedTemplates]=useState(business.documentTemplates||[]);
-
- const style=styles[activeType];
- const setStyle=patch=>setStyles(prev=>({...prev,[activeType]:{...prev[activeType],...patch}}));
  const categories=useMemo(()=>["All",...new Set(DOCUMENT_DESIGNS.map(d=>d.category))],[/* static */]);
  const designs=useMemo(()=>{
    const q=search.trim().toLowerCase();
