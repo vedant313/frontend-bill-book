@@ -61,6 +61,7 @@ export default function DocumentDesigner({ business, onSave, onBack }) {
  const [showCustomizer,setShowCustomizer]=useState(false);
  const [printerTab,setPrinterTab]=useState("regular");
  const [settingsOpen,setSettingsOpen]=useState(true);
+ const [editorTab,setEditorTab]=useState("layout");
  const style=styles[activeType];
  const setStyle=patch=>setStyles(prev=>({...prev,[activeType]:{...prev[activeType],...patch}}));
  const ps=style.printSettings||blank.printSettings;
@@ -137,8 +138,10 @@ export default function DocumentDesigner({ business, onSave, onBack }) {
      </div>
      {printerTab==="regular" ? <div className="printer-settings-layout">
        <div className="printer-settings-panel">
-         <div className="settings-subtabs"><button className="active">CHANGE LAYOUT</button><button>CHANGE COLORS</button></div>
-         <div className="mini-layouts">{designs.slice(0,6).map(d=><button key={d.id} className={style.preset===d.id?"active":""} onClick={()=>choose(d)}><div className="mini-layout-thumb" style={{"--accent":d.accent}}><i/><i/><i/><i/></div><span>{d.name}</span></button>)}</div>
+         <div className="settings-subtabs"><button className={editorTab==="layout"?"active":""} onClick={()=>setEditorTab("layout")}>CHANGE LAYOUT</button><button className={editorTab==="colors"?"active":""} onClick={()=>setEditorTab("colors")}>CHANGE COLORS</button><button className={editorTab==="customize"?"active":""} onClick={()=>setEditorTab("customize")}>CUSTOMIZE</button></div>
+         <div className="mini-layouts mini-layouts-expanded">{designs.slice(0,18).map(d=><button key={d.id} className={style.preset===d.id?"active":""} onClick={()=>choose(d)}><div className={`mini-layout-thumb mini-${d.layout}`} style={{"--accent":d.accent}}><i/><i/><i/><i/></div><span>{d.name}</span></button>)}</div>
+         {editorTab==="colors" && <section className="settings-section inline-editor-section"><h3>Document Colors</h3><div className="color-editor-grid">{[["accent","Accent / Header"],["table","Table"],["text","Text"],["header","Header"]].map(([k,l])=><label key={k}>{l}<div className="color-control"><input type="color" value={colors[k]||"#16233f"} onChange={e=>setColors({[k]:e.target.value})}/><input className="bb-input" value={colors[k]||""} onChange={e=>setColors({[k]:e.target.value})}/></div></label>)}</div></section>}
+         {editorTab==="customize" && <section className="settings-section inline-editor-section"><h3>Customize {TYPE_META[activeType].label}</h3><div className="setting-fields"><label>Document Title<input className="bb-input" value={style.documentTitle||""} onChange={e=>setStyle({documentTitle:e.target.value,preset:"custom"})}/></label><label>Font<select value={style.font} onChange={e=>setStyle({font:e.target.value,preset:"custom"})}><option>Inter</option><option>Georgia</option></select></label><label>Logo Position<select value={style.logoPosition} onChange={e=>setStyle({logoPosition:e.target.value,preset:"custom"})}><option value="left">Left</option><option value="center">Center</option><option value="right">Right</option></select></label><label>Header Style<select value={style.header} onChange={e=>setStyle({header:e.target.value,preset:"custom"})}><option value="classic">Classic</option><option value="minimal">Minimal</option><option value="modern">Modern</option><option value="band">Color Band</option></select></label></div><div className="customizer-checks inline-checks">{[["showLogo","Logo"],["showTaxSummary","Tax summary"],["showAmountWords","Amount in words"],["showBank","Bank details"],["showSignature","Signature"],["showTerms","Terms"],["showHsn","HSN/SAC"],["showQty","Quantity"],["showRate","Price"],["showGst","GST"]].map(([k,l])=><label key={k}><input type="checkbox" checked={style[k]!==false} onChange={e=>setStyle({[k]:e.target.checked,preset:"custom"})}/>{l}</label>)}</div><div className="save-inline"><input className="bb-input" placeholder="Save this design as template" value={templateName} onChange={e=>setTemplateName(e.target.value)}/><button className="bb-btn bb-btn-ghost" onClick={saveTemplate}><Save size={13}/> Save Template</button></div></section>}
          <section className="settings-section"><h3>Print Company Info / Header</h3>{[
            ["companyName","Company Name"],["companyLogo","Company Logo"],["address","Address"],["email","Email"],["phone","Phone Number"],["gstin","GSTIN on Sale"]
          ].map(([k,l])=><label className="setting-row" key={k}><input type="checkbox" checked={ps[k]!==false} onChange={e=>setPrint({[k]:e.target.checked})}/><span>{l}</span></label>)}
@@ -195,38 +198,5 @@ export default function DocumentDesigner({ business, onSave, onBack }) {
      </button>)}
    </div>
 
-   <div className="design-workspace bb-card">
-     <div className="design-workspace-head"><div><h2>Live preview & custom layout</h2><p>Make small changes after selecting a template.</p></div><button className="bb-btn bb-btn-ghost" onClick={()=>setShowCustomizer(v=>!v)}><Palette size={14}/> {showCustomizer?"Hide":"Show"} customization</button></div>
-     <div className="design-workspace-grid">
-       <aside className="design-blocks">
-         <b>Add blocks</b><span>Drag or click</span>
-         {palette.map(p=>{const I=p.icon;return <button key={p.type} draggable onDragStart={e=>onDragStart(e,p.type)} onClick={()=>add(p.type)}><I size={14}/>{p.label}<Plus size={12}/></button>})}
-         <b className="block-heading">Quick fields</b>
-         <div className="designer-field-pills">{fields.map(f=><button key={f} onClick={()=>{const e=makeElement("field",elements.length);e.text=f;setStyle({canvasElements:[...elements,e]});setSelected(e.id)}}>{f}</button>)}</div>
-       </aside>
-
-       <section className="design-canvas-area">
-         <div className="design-canvas-toolbar"><span><Move size={13}/> A4 preview</span><label>Zoom <input type="range" min=".65" max="1.35" step=".05" value={zoom} onChange={e=>setZoom(Number(e.target.value))}/></label></div>
-         <div className="design-canvas-scroll"><div className="design-canvas" style={{transform:`scale(${zoom})`,transformOrigin:"top center"}} onDragOver={e=>e.preventDefault()} onDrop={drop}>
-           <div className={`design-page-base doc-preview-layout-${style.layout||"standard"}`} style={{"--accent":style.accent}}><div className="page-band"/><div className="page-title">{style.documentTitle || TYPE_META[activeType].label.toUpperCase()}</div><div className="page-brand">{business.name||"YOUR BUSINESS"}</div><div className="page-party"/><div className="page-table">{[1,2,3,4,5].map(i=><i key={i}/>)}</div><div className="page-total">₹ 48,500</div></div>
-           {elements.map(e=><div key={e.id} onMouseDown={ev=>move(ev,e)} onClick={ev=>{ev.stopPropagation();setSelected(e.id);setShowCustomizer(true)}} className={`designer-element ${selected===e.id?"active":""}`} style={{left:`${e.x}%`,top:`${e.y}%`,width:`${e.w}%`,height:`${e.h}%`,fontSize:e.fontSize,color:e.color,background:e.fill,borderColor:e.borderColor,textAlign:e.align,fontWeight:e.bold?700:400}}>{e.type==="logo"?<div className="designer-logo">LOGO</div>:e.type==="image"?<div className="designer-image">IMAGE</div>:e.type==="line"?<div className="designer-line"/>:e.type==="box"?<div className="designer-box"/>:e.type==="items"?<div className="designer-table"><i/><i/><i/><i/></div>:e.type==="total"?<b>₹ 48,500</b>:e.type==="qr"?<div className="designer-qr">▦</div>:e.text||"Text"}</div>)}
-         </div></div>
-       </section>
-
-       {showCustomizer&&<aside className="design-customizer">
-         <div className="customizer-title">Customize {TYPE_META[activeType].label}</div>
-         <label>Accent color<div className="color-control"><input type="color" value={style.accent} onChange={e=>setStyle({accent:e.target.value,preset:"custom"})}/><input className="bb-input" value={style.accent} onChange={e=>setStyle({accent:e.target.value,preset:"custom"})}/></div></label>
-         <label>Font<select className="bb-select" value={style.font} onChange={e=>setStyle({font:e.target.value,preset:"custom"})}><option>Inter</option><option>Georgia</option></select></label>
-         <label>Logo position<select className="bb-select" value={style.logoPosition} onChange={e=>setStyle({logoPosition:e.target.value,preset:"custom"})}><option value="left">Left</option><option value="center">Center</option><option value="right">Right</option></select></label>
-         <div className="customizer-checks">{[["showLogo","Logo"],["showTaxSummary","Tax summary"],["showAmountWords","Amount in words"],["showBank","Bank details"],["showSignature","Signature"],["showTerms","Terms"],["showHsn","HSN/SAC"],["showQty","Quantity"],["showRate","Price"],["showGst","GST"]].map(([k,l])=><label key={k}><input type="checkbox" checked={style[k]!==false} onChange={e=>setStyle({[k]:e.target.checked,preset:"custom"})}/>{l}</label>)}</div>
-         {selected&&<div className="selected-block"><b>Selected block</b>{(()=>{const e=elements.find(x=>x.id===selected);if(!e)return null;return <><label>Text<input className="bb-input" value={e.text||""} onChange={x=>update(e.id,{text:x.target.value})}/></label><div className="two-controls"><label>Size<input className="bb-input" type="number" min="7" max="60" value={e.fontSize||10} onChange={x=>update(e.id,{fontSize:Number(x.target.value)})}/></label><label>Width<input className="bb-input" type="number" min="2" max="100" value={e.w} onChange={x=>update(e.id,{w:Number(x.target.value)})}/></label></div><button className="bb-btn bb-btn-danger" onClick={remove}><Trash2 size={13}/> Delete block</button></>})()}</div>}
-       </aside>}
-     </div>
-   </div>
-
-   <div className="design-bottom-grid">
-     <div className="bb-card design-format-card"><div className="design-section-title"><Printer size={15}/> Print & document options</div><div className="format-pills"><span className="active">A4</span><span>A5</span><span>Thermal 80mm</span><span>Landscape</span></div><p>These options prepare the selected design for common billing print formats.</p></div>
-     <div className="bb-card design-save-card"><div className="design-section-title"><Save size={15}/> My templates</div><div className="save-template-row"><input className="bb-input" placeholder={`Save ${TYPE_META[activeType].label} as template`} value={templateName} onChange={e=>setTemplateName(e.target.value)}/><button className="bb-btn bb-btn-ghost" onClick={saveTemplate}><Save size={14}/> Save</button><button className="bb-btn bb-btn-primary" onClick={applyAndSave}><Check size={14}/> Apply to BillBook</button></div>{savedTemplates.length>0&&<div className="my-template-list">{savedTemplates.map(t=><div key={t.id}><span>{t.name}</span><button className="bb-icon-btn" title="Delete" onClick={()=>deleteTemplate(t.id)}><Trash2 size={13}/></button></div>)}</div>}</div>
-   </div>
  </div>
 }
