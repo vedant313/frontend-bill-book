@@ -1,0 +1,8 @@
+import { useState } from "react";
+import { ArrowRight, Check } from "lucide-react";
+
+export default function Onboarding({business,onSave,onSkip}){
+ const [b,setB]=useState({...business});
+ const save=async()=>{await onSave(b);};
+ return <div className="bb-onboarding"><div className="bb-onboarding-card"><div className="bb-section-kicker">Welcome to BillBook</div><h1>Set up your business in 2 minutes.</h1><p>These details will appear on your invoices, estimates and payment receipts.</p><div className="bb-form-grid"><label>Business Name<input className="bb-input" value={b.name||""} onChange={e=>setB({...b,name:e.target.value})} placeholder="Your business name"/></label><label>Phone<input className="bb-input" value={b.phone||""} onChange={e=>setB({...b,phone:e.target.value})}/></label><label>Email<input className="bb-input" value={b.email||""} onChange={e=>setB({...b,email:e.target.value})}/></label><label>GSTIN<input className="bb-input" value={b.gstin||""} onChange={e=>setB({...b,gstin:e.target.value.toUpperCase()})}/></label><label style={{gridColumn:"1/-1"}}>Address<textarea className="bb-input" value={b.address||""} onChange={e=>setB({...b,address:e.target.value})}/></label><label>State<input className="bb-input" value={b.state||""} onChange={e=>setB({...b,state:e.target.value})}/></label></div><div className="bb-head-actions" style={{justifyContent:"space-between",marginTop:18}}><button className="bb-btn bb-btn-ghost" onClick={onSkip}>I'll do this later</button><button className="bb-btn bb-btn-primary" onClick={save}><Check size={15}/> Finish Setup <ArrowRight size={15}/></button></div></div></div>
+}
