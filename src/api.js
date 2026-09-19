@@ -66,3 +66,14 @@ export const submitSubscriptionPayment = (plan, utr) =>
     body: JSON.stringify({ plan, utr }),
   });
 export const getSubscriptionPaymentRequests = () => request("/subscription/payment-requests");
+
+// ---- Product catalog ----
+export const getProducts = () => request("/products");
+export const createProduct = (product) => request("/products", { method: "POST", body: JSON.stringify(product) });
+export const updateProduct = (id, product) => request("/products/" + id, { method: "PUT", body: JSON.stringify(product) });
+export const deleteProduct = (id) => request("/products/" + id, { method: "DELETE" });
+// ---- Customers ----
+export const getCustomers = () => request("/customers");
+export const createCustomer = (customer) => request("/customers", { method: "POST", body: JSON.stringify(customer) });
+export const updateCustomer = (id, customer) => request("/customers/" + id, { method: "PUT", body: JSON.stringify(customer) });
+export const deleteCustomer = (id) => request("/customers/" + id, { method: "DELETE" });
