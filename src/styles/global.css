@@ -249,3 +249,14 @@ h1, h2, h3, .display { font-family: "Manrope", sans-serif; }
 @media(max-width:760px){.bb-support-contact-grid,.bb-support-grid{grid-template-columns:1fr}.bb-support-head{flex-direction:column}.bb-support-head h1{font-size:24px}}
 
 .bb-landing-support{max-width:980px;margin:42px auto 0;padding:28px 0;display:flex;align-items:center;justify-content:space-between;gap:28px}.bb-landing-support h2{margin:7px 0 8px;font-size:28px;letter-spacing:-.6px}.bb-landing-support p{margin:0;color:var(--muted);font-size:12.5px;line-height:1.7;max-width:650px}.bb-landing-support-contact{display:flex;align-items:center;gap:16px;flex-wrap:wrap;justify-content:flex-end}.bb-landing-support-contact b{font-size:12px;white-space:nowrap}.bb-landing-support-contact .bb-btn{white-space:nowrap}@media(max-width:760px){.bb-landing-support{margin-top:28px;padding:24px;flex-direction:column;align-items:flex-start}.bb-landing-support-contact{justify-content:flex-start}}
+
+.bb-landing-support{width:100%;max-width:980px;margin:44px auto 0;padding:0 24px;box-sizing:border-box}
+.bb-landing-support-card{width:100%;box-sizing:border-box;border:1px solid var(--border);background:var(--card);border-radius:18px;padding:26px 28px;display:flex;align-items:center;justify-content:space-between;gap:28px;box-shadow:0 8px 28px rgba(15,23,42,.05)}
+.bb-landing-support-copy{min-width:0}
+.bb-landing-support-copy h2{margin:7px 0 8px;font-size:27px;letter-spacing:-.6px}
+.bb-landing-support-copy p{margin:0;color:var(--muted);font-size:12.5px;line-height:1.7}
+.bb-landing-support-actions{display:flex;align-items:center;justify-content:flex-end;gap:18px;flex-wrap:wrap;flex:none}
+.bb-landing-support-details{display:flex;flex-direction:column;gap:7px;font-size:12px;white-space:nowrap}
+.bb-landing-support-details span{color:var(--ink)}
+.bb-landing-support-actions .bb-btn{white-space:nowrap}
+@media(max-width:760px){.bb-landing-support{margin-top:28px;padding:0 16px}.bb-landing-support-card{padding:22px;flex-direction:column;align-items:flex-start}.bb-landing-support-actions{justify-content:flex-start;width:100%}.bb-landing-support-details{white-space:normal}}
