@@ -56,3 +56,13 @@ export const getPayments = () => request("/payments");
 export const createPayment = (p) => request("/payments", { method: "POST", body: JSON.stringify(p) });
 export const updatePayment = (id, p) => request(`/payments/${id}`, { method: "PUT", body: JSON.stringify(p) });
 export const deletePayment = (id) => request(`/payments/${id}`, { method: "DELETE" });
+
+// ---- Subscription ----
+export const getSubscriptionPlans = () => request("/subscription/plans");
+export const getSubscriptionStatus = () => request("/subscription/status");
+export const submitSubscriptionPayment = (plan, utr) =>
+  request("/subscription/payment-request", {
+    method: "POST",
+    body: JSON.stringify({ plan, utr }),
+  });
+export const getSubscriptionPaymentRequests = () => request("/subscription/payment-requests");
