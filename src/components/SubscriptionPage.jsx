@@ -5,7 +5,7 @@ import { Check, Copy, ExternalLink, QrCode, ShieldCheck, Sparkles, X } from "luc
 const UPI_ID = "shamkantgopal@ybl";
 
 const PLANS = [
-  { id: "free", name: "Free", price: 0, subtitle: "For starting small", features: ["Basic invoices & estimates", "Payment tracking", "Basic business settings", "Excel export"] },
+  { id: "free", name: "Free", price: 0, subtitle: "After your 14-day trial", features: ["Up to 5 invoices", "Up to 3 estimates", "Up to 5 payment entries", "Basic business settings"] },
   { id: "pro", name: "Pro", price: 199, subtitle: "For growing businesses", popular: true, features: ["Everything in Free", "Unlimited invoices", "Advanced document designs", "Advanced reports", "Priority feature access"] },
   { id: "advanced", name: "Advanced", price: 399, subtitle: "For serious business workflows", features: ["Everything in Pro", "Premium document studio", "Advanced business controls", "Priority support", "Early access to new features"] },
 ];
