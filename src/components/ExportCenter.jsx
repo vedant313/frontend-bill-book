@@ -17,7 +17,7 @@ export default function ExportCenter({ docs, payments, expenses=[], business, go
   const fd=useMemo(()=>docs.filter(inRange),[docs,from,to]);
   const fp=useMemo(()=>payments.filter(inRange),[payments,from,to]);
   const total=fd.length+fp.length;
-  const downloadBackup=()=>{const payload={version:1,exportedAt:new Date().toISOString(),business,documents:docs,payments,expenses};const blob=new Blob([JSON.stringify(payload,null,2)],{type:"application/json"});const url=URL.createObjectURL(blob);const a=document.createElement("a");a.href=url;a.download="billbook-backup-"+new Date().toISOString().slice(0,10)+".json";a.click();URL.revokeObjectURL(url)};
+  const downloadBackup=()=>{const payload={version:1,exportedAt:new Date().toISOString(),business,documents:docs,payments,expenses};const blob=new Blob([JSON.stringify(payload,null,2)],{type:"application/json"});const url=URL.createObjectURL(blob);const a=document.createElement("a");a.href=url;a.download="nexsa-bill-backup-"+new Date().toISOString().slice(0,10)+".json";a.click();URL.revokeObjectURL(url)};
   return <div>
     <button className="bb-back" onClick={()=>goto("dashboard")}><ArrowLeft size={15}/> Back to Dashboard</button>
     <div className="bb-card export-hero"><div className="bb-feature-icon"><FileSpreadsheet/></div><div><h2 style={{margin:"0 0 5px"}}>Excel Data Export</h2><p>Choose a date range and download invoices, estimates and payment-in data together.</p></div></div>
