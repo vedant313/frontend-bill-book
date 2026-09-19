@@ -7,7 +7,7 @@ export default function PaymentPreview({ payment, business, docs, onBack, onEdit
   const docDesign = resolveDocumentDesign(payment.documentStyle || business.documentStyle);
   const linkedDoc = docs.find((d) => d.type === "invoice" && d.number === payment.againstInvoice);
   const hasBank = business.bankName || business.accountNo || business.ifsc;
-  const design = payment.documentStyle || business.documentStyle || {};
+  const design = payment.documentStyle || business.documentStyles?.payment || business.documentStyle || {};
   const show = (key, fallback=true) => design[key] === undefined ? fallback : design[key];
 
   return (
