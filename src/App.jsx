@@ -19,6 +19,7 @@ import ThemePicker from "./components/ThemePicker";
 import Landing from "./components/Landing";
 import ExportCenter from "./components/ExportCenter";
 import DocumentDesigner from "./components/DocumentDesigner";
+import SubscriptionPage from "./components/SubscriptionPage";
 
 export default function App() {
   const [authChecked, setAuthChecked] = useState(false);
@@ -31,7 +32,7 @@ export default function App() {
   const [docs, setDocs] = useState([]); // invoices + estimates
   const [payments, setPayments] = useState([]);
 
-  const [page, setPage] = useState("dashboard"); // dashboard | list | form | preview | settings | theme
+  const [page, setPage] = useState("dashboard"); // dashboard | list | form | preview | settings | theme | subscription
   const [listType, setListType] = useState("invoice"); // invoice | estimate | payment
   const [editingId, setEditingId] = useState(null);
   const [previewId, setPreviewId] = useState(null);
@@ -274,6 +275,8 @@ export default function App() {
                 onCancel={() => goto("list", { listType: "payment" })}
               />
             )}
+
+            {page === "subscription" && <SubscriptionPage />}
 
             {page === "settings" && (
               <SettingsPage business={business} onSave={async (b) => { await saveBusiness({ ...business, ...b }); goto("dashboard"); }} onCancel={() => goto("dashboard")} />
