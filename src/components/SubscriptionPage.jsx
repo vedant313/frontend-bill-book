@@ -1,4 +1,5 @@
 import { useMemo, useState } from "react";
+import * as api from "../api";
 import { Check, Copy, ExternalLink, QrCode, ShieldCheck, Sparkles, X } from "lucide-react";
 
 const UPI_ID = "shamkantgopal@ybl";
@@ -19,6 +20,8 @@ export default function SubscriptionPage() {
   const [utr, setUtr] = useState("");
   const [copied, setCopied] = useState(false);
   const [submitted, setSubmitted] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState("");
   const plan = useMemo(() => PLANS.find((p) => p.id === selected) || null, [selected]);
 
   const copyUpi = async () => {
@@ -27,6 +30,20 @@ export default function SubscriptionPage() {
       setCopied(true);
       setTimeout(() => setCopied(false), 1500);
     } catch {}
+  };
+
+  const submitPayment = async () => {
+    if (!plan || !utr.trim() || submitting) return;
+    setSubmitting(true);
+    setSubmitError("");
+    try {
+      await api.submitSubscriptionPayment(plan.id, utr.trim());
+      setSubmitted(true);
+    } catch (err) {
+      setSubmitError(err.message || "Could not submit payment details");
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   if (plan) {
@@ -57,7 +74,7 @@ export default function SubscriptionPage() {
               <div style={{ display: "grid", gap: 10 }}>
                 <label className="bb-label">UTR / Transaction reference</label>
                 <input className="bb-input" value={utr} onChange={(e) => setUtr(e.target.value)} placeholder="Enter your UTR number" />
-                <button className="bb-btn bb-btn-primary" disabled={!utr.trim()} onClick={() => setSubmitted(true)}>Submit Payment Details</button>
+                <button className="bb-btn bb-btn-primary" disabled={!utr.trim() || submitting} onClick={submitPayment}>{submitting ? "Submitting…" : "Submit Payment Details"}</button>{submitError && <div className="bb-note" style={{ color: "#B94A3F" }}>{submitError}</div>}
               </div>
             )}
             <div className="bb-note"><b>UPI ID:</b> {UPI_ID}<br/><b>Plan:</b> {plan.name}<br/><b>Amount:</b> ₹{plan.price}</div>
