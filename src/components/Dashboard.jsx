@@ -24,9 +24,16 @@ export default function Dashboard({ stats, chartData, docs, payments, goto }) {
           <div className="bb-stat-label">Pending Amount</div>
           <div className="bb-stat-value">{fmt(stats.pending)}</div>
         </div>
+        <div className="bb-stat-card" style={{ "--accent": "var(--red)" }}>
+          <div className="bb-stat-label">Expenses</div>
+          <div className="bb-stat-value">{fmt(stats.totalExpenses)}</div>
+        </div>
         <div className="bb-stat-card" style={{ "--accent": "var(--teal)" }}>
           <div className="bb-stat-label">Open Estimates</div>
           <div className="bb-stat-value">{stats.estimates.length}</div>
+        </div>
+        <div className="bb-stat-card" style={{ "--accent": "var(--green)" }}><div className="bb-stat-label">Net Cash Flow</div><div className="bb-stat-value">{fmt(stats.profit)}</div></div>
+        <div className="bb-stat-card" style={{ "--accent": "var(--amber)" }}><div className="bb-stat-label">Overdue Invoices</div><div className="bb-stat-value">{stats.overdue}</div>
         </div>
       </div>
 
