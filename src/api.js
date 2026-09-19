@@ -97,3 +97,8 @@ export const deleteExpense = (id) => request("/expenses/" + id, { method: "DELET
 
 export const getStockMovements = (id) => request("/products/" + id + "/movements");
 export const moveStock = (id, movement) => request("/products/" + id + "/stock", { method: "POST", body: JSON.stringify(movement) });
+
+export const getRecurring = () => request("/recurring");
+export const createRecurring = (item) => request("/recurring",{method:"POST",body:JSON.stringify(item)});
+export const updateRecurring = (id,item) => request("/recurring/"+id,{method:"PUT",body:JSON.stringify(item)});
+export const deleteRecurring = (id) => request("/recurring/"+id,{method:"DELETE"});
