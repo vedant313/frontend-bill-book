@@ -20,6 +20,8 @@ import Landing from "./components/Landing";
 import ExportCenter from "./components/ExportCenter";
 import DocumentDesigner from "./components/DocumentDesigner";
 import SubscriptionPage from "./components/SubscriptionPage";
+import ProductsPage from "./components/ProductsPage";
+import CustomersPage from "./components/CustomersPage";
 
 export default function App() {
   const [authChecked, setAuthChecked] = useState(false);
@@ -277,6 +279,8 @@ export default function App() {
             )}
 
             {page === "subscription" && <SubscriptionPage />}
+            {page === "products" && <ProductsPage />}
+            {page === "customers" && <CustomersPage />}
 
             {page === "settings" && (
               <SettingsPage business={business} onSave={async (b) => { await saveBusiness({ ...business, ...b }); goto("dashboard"); }} onCancel={() => goto("dashboard")} />
