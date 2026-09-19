@@ -292,7 +292,7 @@ export default function App() {
 
             {page === "subscription" && <SubscriptionPage />}
             {page === "products" && <ProductsPage />}
-            {page === "customers" && <CustomersPage />}
+            {page === "customers" && <CustomersPage docs={docs} payments={payments} />}
             {page === "expenses" && <ExpensesPage expenses={expenses} setExpenses={setExpenses} />}
 
             {page === "settings" && (
