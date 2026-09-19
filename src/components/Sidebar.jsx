@@ -28,6 +28,9 @@ export default function Sidebar({ page, listType, goto, sidebarOpen, setSidebarO
           <button className={`bb-nav-item ${isActive("list", "payment") ? "active" : ""}`} onClick={() => goto("list", { listType: "payment" })}>
             <Wallet size={16} /> Payment In
           </button>
+          <button className={`bb-nav-item ${isActive("subscription") ? "active" : ""}`} onClick={() => goto("subscription")}>
+            <Crown size={16} /> Subscription
+          </button>
         </div>
         <div className="bb-nav-spacer" />
         <div className="bb-nav-foot">
