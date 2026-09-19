@@ -1,4 +1,4 @@
-import { ArrowLeft, Pencil, Printer, Copy } from "lucide-react";
+import { ArrowLeft, Pencil, Printer, Copy, MessageCircle } from "lucide-react";
 import { fmt, fmtDate, DOC_META, taxSummary, amountInWords } from "../utils/helpers";
 
 export default function DocPreview({ doc, business, payments = [], onBack, onEdit, onDuplicate }) {
@@ -29,6 +29,7 @@ export default function DocPreview({ doc, business, payments = [], onBack, onEdi
         <div style={{ display: "flex", gap: 8 }}>
           <button className="bb-btn bb-btn-ghost" onClick={onEdit}><Pencil size={14} /> Edit</button>
           {onDuplicate && <button className="bb-btn bb-btn-ghost" onClick={onDuplicate}><Copy size={14} /> Duplicate</button>}
+          <button className="bb-btn bb-btn-ghost" onClick={() => { const msg = `${meta.label} ${doc.number} from ${business.name || "BillBook"} for ${fmt(doc.total)}. Please review the attached document.`; window.open("https://wa.me/" + (doc.partyPhone || "") + "?text=" + encodeURIComponent(msg), "_blank"); }}><MessageCircle size={14}/> WhatsApp</button>
           <button className="bb-btn bb-btn-primary" onClick={() => window.print()}>
             <Printer size={14} />
             Download / Print PDF
