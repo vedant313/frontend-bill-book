@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import * as api from "../api";
 import { Check, Copy, ExternalLink, QrCode, ShieldCheck, Sparkles, X } from "lucide-react";
 
-const UPI_ID = "shamkantgopal@ybl";
+const UPI_ID = "nexsatechnologies@okaxis";
 
 const PLANS = [
   { id: "free", name: "Free", price: 0, subtitle: "After your 14-day trial", features: ["Up to 5 invoices", "Up to 3 estimates", "Up to 5 payment entries", "Basic business settings"] },
@@ -67,7 +67,7 @@ export default function SubscriptionPage() {
             <p>Scan with PhonePe, Google Pay, Paytm or any UPI app.</p>
             <div className="bb-qr-wrap"><img src={qrUrl} alt="BillBook UPI payment QR code" /></div>
             <a className="bb-btn bb-btn-primary" href={upiUrl}><ExternalLink size={14}/> Open UPI App</a>
-            <div className="bb-upi-row"><code>{UPI_ID}</code><button className="bb-btn bb-btn-ghost" onClick={copyUpi}><Copy size={13}/> {copied ? "Copied" : "Copy UPI ID"}</button></div>
+            <div className="bb-upi-row"><button className="bb-btn bb-btn-ghost" onClick={copyUpi}><Copy size={13}/> {copied ? "UPI ID Copied" : "Copy Payment ID"}</button></div>
           </div>
           <div className="bb-card">
             <div className="bb-payment-kicker"><ShieldCheck size={16}/> Payment confirmation</div>
@@ -82,7 +82,7 @@ export default function SubscriptionPage() {
                 <button className="bb-btn bb-btn-primary" disabled={!utr.trim() || submitting} onClick={submitPayment}>{submitting ? "Submitting…" : "Submit Payment Details"}</button>{submitError && <div className="bb-note" style={{ color: "#B94A3F" }}>{submitError}</div>}
               </div>
             )}
-            <div className="bb-note"><b>UPI ID:</b> {UPI_ID}<br/><b>Plan:</b> {plan.name}<br/><b>Amount:</b> ₹{plan.price}</div>
+            <div className="bb-note"><b>Plan:</b> {plan.name}<br/><b>Amount:</b> ₹{plan.price}<br/>After payment, submit your transaction reference for verification.</div>
           </div>
         </div>
       </div>
@@ -106,7 +106,7 @@ export default function SubscriptionPage() {
           </div>
         ))}
       </div>
-      <div className="bb-card bb-upi-banner"><div><b>Pay securely via UPI</b><div>PhonePe · Google Pay · Paytm · Any UPI app</div></div><code>{UPI_ID}</code></div>
+      <div className="bb-card bb-upi-banner"><div><b>Pay securely via UPI</b><div>PhonePe · Google Pay · Paytm · Any UPI app</div></div></div>
     </div>
   );
 }
