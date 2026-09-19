@@ -1,4 +1,4 @@
-import { LayoutDashboard, FileText, FilePlus2, Wallet, Settings as SettingsIcon, Palette, LogOut, FileSpreadsheet, Paintbrush } from "lucide-react";
+import { LayoutDashboard, FileText, FilePlus2, Wallet, Settings as SettingsIcon, Palette, LogOut, FileSpreadsheet, Paintbrush, Crown } from "lucide-react";
 
 export default function Sidebar({ page, listType, goto, sidebarOpen, setSidebarOpen, user, onLogout }) {
   const isActive = (p, lt) => page === p && (!lt || listType === lt);
