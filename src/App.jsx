@@ -295,7 +295,7 @@ export default function App() {
             {page === "products" && <ProductsPage />}
             {page === "customers" && <CustomersPage docs={docs} payments={payments} />}
             {page === "expenses" && <ExpensesPage expenses={expenses} setExpenses={setExpenses} />}
-            {page === "recurring" && <RecurringPage docs={docs} />}
+            {page === "recurring" && <RecurringPage docs={docs} onGenerate={async (doc) => { const saved = await upsertDoc(doc); setPreviewId(saved.id); setPreviewKind("doc"); setListType("invoice"); setPage("preview"); return saved; }} />}
 
             {page === "settings" && (
               <SettingsPage business={business} onSave={async (b) => { await saveBusiness({ ...business, ...b }); goto("dashboard"); }} onCancel={() => goto("dashboard")} />
