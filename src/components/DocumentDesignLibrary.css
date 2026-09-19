@@ -98,3 +98,33 @@
 .doc-preview-layout-executive{font-family:Georgia,serif}
 .doc-preview-layout-executive .paper-head{border-bottom:3px double var(--accent)}
 .doc-preview-layout-executive .grand{border:2px solid var(--accent)}
+
+/* Classic Theme — structured estimate layout from supplied reference */
+.doc-preview-layout-classic-estimate{font-family:Inter,Arial,sans-serif;color:#374151;border:1px solid #374151!important;border-radius:0!important;padding:0!important;background:#fff}
+.doc-preview-layout-classic-estimate .paper-head{margin:0!important;border:0!important;border-bottom:1px solid #374151!important;border-radius:0!important;padding:16px 18px 12px!important;display:grid!important;grid-template-columns:112px 1fr auto!important;align-items:center!important;background:#fff!important;color:#374151!important}
+.doc-preview-layout-classic-estimate .paper-logo{width:92px;height:72px;border:0!important;background:#fff!important;display:flex;align-items:center;justify-content:center}
+.doc-preview-layout-classic-estimate .paper-logo img{max-width:82px;max-height:62px}
+.doc-preview-layout-classic-estimate .paper-logo span{font-size:20px;font-weight:800;color:var(--accent)}
+.doc-preview-layout-classic-estimate .paper-head b{font-size:21px!important;letter-spacing:.4px;color:#374151!important}
+.doc-preview-layout-classic-estimate .paper-head small{font-size:7px!important;line-height:1.55;color:#4b5563!important}
+.doc-preview-layout-classic-estimate .paper-head strong{font-size:17px!important;color:#374151!important;align-self:start}
+.doc-preview-layout-classic-estimate .paper-info-grid{margin:0!important;border-bottom:1px solid #374151!important;border-radius:0!important;grid-template-columns:1fr 1fr!important;gap:0!important}
+.doc-preview-layout-classic-estimate .paper-info-grid>div{padding:8px 10px!important;border-right:1px solid #374151!important;border-radius:0!important}
+.doc-preview-layout-classic-estimate .paper-info-grid>div:last-child{border-right:0}
+.doc-preview-layout-classic-estimate .paper-info-grid b{font-size:7px!important}
+.doc-preview-layout-classic-estimate .paper-info-grid span{font-size:8px!important;font-weight:800}
+.doc-preview-layout-classic-estimate .paper-info-grid small{font-size:6.5px!important}
+.doc-preview-layout-classic-estimate .paper-items{margin:0!important;border:0!important;border-bottom:1px solid #374151!important;border-radius:0!important}
+.doc-preview-layout-classic-estimate .paper-item-head{background:#f3f4f6!important;border-bottom:1px solid #374151!important;color:#374151!important;border-radius:0!important;font-weight:800}
+.doc-preview-layout-classic-estimate .paper-item-row{border-bottom:1px solid #374151!important;border-radius:0!important;min-height:42px!important}
+.doc-preview-layout-classic-estimate .paper-item-head span,.doc-preview-layout-classic-estimate .paper-item-row>span{border-right:1px solid #374151;padding-right:5px}
+.doc-preview-layout-classic-estimate .paper-item-head span:last-child,.doc-preview-layout-classic-estimate .paper-item-row>span:last-child{border-right:0}
+.doc-preview-layout-classic-estimate .paper-summary{margin:0!important;border:0!important;border-bottom:1px solid #374151!important;border-radius:0!important;grid-template-columns:1fr 1fr!important}
+.doc-preview-layout-classic-estimate .paper-summary>div:first-child{border-right:1px solid #374151;padding:9px}
+.doc-preview-layout-classic-estimate .paper-summary .grand{border:0!important;padding:9px!important}
+.doc-preview-layout-classic-estimate .paper-summary .grand strong{font-size:15px!important}
+.doc-preview-layout-classic-estimate .paper-footer{margin:0!important;border:0!important;border-radius:0!important;grid-template-columns:1fr 1fr 1fr!important}
+.doc-preview-layout-classic-estimate .paper-footer>div{border-right:1px solid #374151;padding:8px}
+.doc-preview-layout-classic-estimate .paper-footer>div:last-child{border-right:0}
+.doc-preview-layout-classic-estimate .paper-footer b{font-size:7px!important}
+.doc-preview-layout-classic-estimate .paper-footer span{font-size:6px!important;line-height:1.5}
