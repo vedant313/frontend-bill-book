@@ -37,7 +37,7 @@ export default function DocPreview({ doc, business, payments = [], onBack, onEdi
       </div>
 
       <div className="inv-title">{design.documentTitle || meta.label}</div>
-      <div className={`inv-doc doc-design-${design.header || "classic"} doc-table-${design.table || "grid"}`} style={{"--doc-accent":design.accent || "#16233f","--doc-radius":`${design.radius ?? 0}px`,"--doc-font":design.font === "Georgia" ? "Georgia, serif" : "Inter, Arial, sans-serif","--doc-paper":design.paperBg || "#fff","--doc-line":design.lineColor || "#d8dde5"}}>
+      <div className={`inv-doc doc-design-${design.header || "classic"} doc-table-${design.table || "grid"} doc-layout-${design.layout || "standard"}`} style={{"--doc-accent":design.accent || "#16233f","--doc-radius":`${design.radius ?? 0}px`,"--doc-font":design.font === "Georgia" ? "Georgia, serif" : "Inter, Arial, sans-serif","--doc-paper":design.paperBg || "#fff","--doc-line":design.lineColor || "#d8dde5"}}>
         <CustomCanvas elements={design.canvasElements} doc={doc} business={business} />
         <div className="inv-block inv-header">
           <div className="inv-header-top" style={{justifyContent: design.logoPosition === "center" ? "center" : design.logoPosition === "right" ? "flex-end" : "flex-start"}}>
