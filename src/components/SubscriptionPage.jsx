@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import * as api from "../api";
 import { Check, Copy, ExternalLink, QrCode, ShieldCheck, Sparkles, X } from "lucide-react";
 
@@ -22,7 +22,12 @@ export default function SubscriptionPage() {
   const [submitted, setSubmitted] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState("");
+  const [subscription, setSubscription] = useState(null);
   const plan = useMemo(() => PLANS.find((p) => p.id === selected) || null, [selected]);
+
+  useEffect(() => {
+    api.getSubscriptionStatus().then(setSubscription).catch(() => {});
+  }, [submitted]);
 
   const copyUpi = async () => {
     try {
@@ -87,7 +92,7 @@ export default function SubscriptionPage() {
   return (
     <div>
       <div className="bb-subscription-hero">
-        <div><div className="bb-subscription-kicker"><Sparkles size={14}/> BillBook Plans</div><h2>Choose the plan that fits your business</h2><p>Start free and upgrade when your billing workflow grows.</p></div>
+        <div><div className="bb-subscription-kicker"><Sparkles size={14}/> BillBook Plans</div><h2>Choose the plan that fits your business</h2><p>Start with a 14-day full-access trial, then continue on the limited Free plan or upgrade.</p></div>
         <div className="bb-subscription-badge"><ShieldCheck size={15}/> UPI payments supported</div>
       </div>
       <div className="bb-plan-grid">
@@ -97,7 +102,7 @@ export default function SubscriptionPage() {
             <div className="bb-plan-icon"><QrCode size={17}/></div><h3>{p.name}</h3><p className="bb-plan-subtitle">{p.subtitle}</p>
             <div className="bb-plan-price"><strong>{p.price === 0 ? "Free" : `₹${p.price}`}</strong>{p.price > 0 && <span>/month</span>}</div>
             <div className="bb-plan-features">{p.features.map((f) => <div key={f}><Check size={14}/> {f}</div>)}</div>
-            <button className={`bb-btn ${p.popular ? "bb-btn-primary" : "bb-btn-ghost"}`} onClick={() => p.id === "free" ? setSelected(null) : setSelected(p.id)}>{p.id === "free" ? "Current Free Plan" : `Choose ${p.name}`}</button>
+            <button className={`bb-btn ${p.popular ? "bb-btn-primary" : "bb-btn-ghost"}`} onClick={() => p.id === "free" ? setSelected(null) : setSelected(p.id)}>{p.id === "free" ? (subscription?.mode === "trial" ? "14-Day Trial" : "Free Plan") : `Choose ${p.name}`}</button>
           </div>
         ))}
       </div>
