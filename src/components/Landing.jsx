@@ -26,14 +26,14 @@ export default function Landing({ onAuthed, onLegal, legalPage }) {
       <main>
         <section className="bb-hero">
           <div className="bb-hero-copy">
-            <div className="bb-eyebrow"><Sparkles size={14}/> Simple billing. Powerful business.</div>
+            <div className="bb-eyebrow"><Sparkles size={14}/> Simple billing. Powerful business.</div><div className="bb-trial-badge">✨ 14-day free trial · Full access</div>
             <h1>Invoices, estimates & payments — <span>beautifully managed.</span></h1>
             <p>Create professional documents, track payments, search every transaction and export your business data to Excel. Built for small, mid-size and growing businesses.</p>
             <div className="bb-hero-actions">
-              <button className="bb-btn bb-btn-primary bb-btn-lg" onClick={() => setAuth("signup")}>Start Free <ArrowRight size={17}/></button>
+              <button className="bb-btn bb-btn-primary bb-btn-lg" onClick={() => setAuth("signup")}>Start 14-Day Free Trial <ArrowRight size={17}/></button>
               <button className="bb-btn bb-btn-ghost bb-btn-lg" onClick={() => setAuth("login")}>I already have an account</button>
             </div>
-            <div className="bb-trust"><ShieldCheck size={15}/> Your business data stays separated by account.</div>
+            <div className="bb-trust"><ShieldCheck size={15}/> 14 days free · Explore BillBook before choosing a paid plan.</div>
           </div>
           <div className="bb-hero-dashboard">
             <div className="bb-window-bar"><i/><i/><i/><span>BillBook Dashboard</span></div>
@@ -47,7 +47,7 @@ export default function Landing({ onAuthed, onLegal, legalPage }) {
         </section>
 
         <section className="bb-feature-section">
-          <div className="bb-section-kicker">Everything you asked for</div>
+          <div className="bb-section-kicker">Everything you asked for</div><div className="bb-trial-line">Start with a 14-day full-access free trial.</div>
           <h2>One place for your whole billing workflow.</h2>
           <div className="bb-feature-grid">
             <Feature icon={<FileText/>} title="Professional documents" text="Create invoices, estimates and payment receipts with ready-made layouts."/>
@@ -61,7 +61,7 @@ export default function Landing({ onAuthed, onLegal, legalPage }) {
 
         <section className="bb-landing-cta">
           <div><div className="bb-section-kicker">Ready to start?</div><h2>Make billing look as professional as your business.</h2></div>
-          <button className="bb-btn bb-btn-primary bb-btn-lg" onClick={() => setAuth("signup")}>Create your BillBook <ArrowRight size={17}/></button>
+          <button className="bb-btn bb-btn-primary bb-btn-lg" onClick={() => setAuth("signup")}>Start Your 14-Day Free Trial <ArrowRight size={17}/></button>
         </section>
       </main>
       <footer className="bb-landing-footer"><div className="bb-footer-brand">BillBook · A product of <b>Nexsa Technologies</b></div><div className="bb-footer-links"><button onClick={()=>onLegal("privacy")}>Privacy Policy</button><button onClick={()=>onLegal("terms")}>Terms of Use</button></div><div>© {new Date().getFullYear()} Nexsa Technologies · Professional billing for modern businesses</div></footer>
