@@ -288,7 +288,7 @@ export default function App() {
 
             {page === "theme" && <ThemePicker theme={business.theme} onSaveTheme={saveTheme} />}
             {page === "export" && <ExportCenter docs={docs} payments={payments} goto={goto} />}
-            {page === "designer" && <DocumentDesigner business={business} onSave={async (documentStyle, documentTemplates) => saveBusiness({ ...business, documentStyle, documentTemplates: documentTemplates ?? business.documentTemplates ?? [] })} onBack={() => goto("dashboard")} />}
+            {page === "designer" && <DocumentDesigner business={business} onSave={async (documentStyle, documentTemplates) => saveBusiness({ ...business, documentStyle: documentStyle?.invoice || business.documentStyle, documentStyles: documentStyle, documentTemplates: documentTemplates ?? business.documentTemplates ?? [] })} onBack={() => goto("dashboard")} />}
           </div>
         </div>
       </div>
