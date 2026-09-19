@@ -125,29 +125,6 @@ export default function DocumentDesigner({ business, onSave, onBack }) {
      {Object.entries(TYPE_META).map(([key,m])=>{const I=m.icon;return <button key={key} className={activeType===key?"active":""} onClick={()=>{setActiveType(key);setSelected(null)}}><I size={17}/><span><b>{m.label}</b><small>{m.sub}</small></span>{styles[key].preset&&<em>✓</em>}</button>})}
    </div>
 
-   <div className="design-library-head bb-card">
-     <div><h2>Template library</h2><p>Every card below is a real selectable document theme.</p></div>
-     <label className="design-search"><Search size={15}/><input value={search} onChange={e=>setSearch(e.target.value)} placeholder="Search templates..." /></label>
-   </div>
-
-   <div className="design-filter-row">
-     {categories.map(c=><button key={c} className={filter===c?"active":""} onClick={()=>setFilter(c)}>{c}</button>)}
-   </div>
-
-   <div className="design-template-grid">
-     {designs.map(d=><button key={d.id} className={`design-template-card ${style.preset===d.id?"selected":""}`} onClick={()=>choose(d)}>
-       <div className={`design-thumb thumb-${d.layout}`} style={{"--accent":d.accent}}>
-         <div className="thumb-top"><div className="thumb-logo">B</div><div><b>{business.name||"YOUR BUSINESS"}</b><small>{activeType==="invoice"?"TAX INVOICE":activeType==="estimate"?"ESTIMATE":"PAYMENT RECEIPT"}</small></div><strong>₹48,500</strong></div>
-         <div className="thumb-meta"><i/><i/><i/></div>
-         <div className="thumb-table">{Array.from({length:previewRows(d)},(_,i)=><span key={i}><i/><i/><i/><i/></span>)}</div>
-         <div className="thumb-total"><span>TOTAL</span><b>₹48,500</b></div>
-         {d.layout==="thermal"&&<div className="thumb-qr">▦</div>}
-       </div>
-       <div className="design-template-info"><span>{d.name}</span>{style.preset===d.id&&<Check size={15}/>}</div>
-       <small>{d.category} · {d.layout}</small>
-     </button>)}
-   </div>
-
    <div className="print-settings-card bb-card">
      <div className="printer-tabs">
        <button className={printerTab==="regular"?"active":""} onClick={()=>setPrinterTab("regular")}><Printer size={15}/> REGULAR PRINTER</button>
@@ -170,6 +147,31 @@ export default function DocumentDesigner({ business, onSave, onBack }) {
        <div className="printer-settings-panel"><div className="settings-subtabs"><button className="active">CHANGE LAYOUT</button></div><div className="mini-layouts">{DOCUMENT_DESIGNS.filter(d=>d.layout==="thermal").concat(DOCUMENT_DESIGNS.filter(d=>d.category==="Quick Billing"&&d.layout!=="thermal")).map(d=><button key={d.id} className={style.preset===d.id?"active":""} onClick={()=>choose(d)}><div className="mini-layout-thumb thermal-mini" style={{"--accent":d.accent}}><i/><i/><i/><i/><i/></div><span>{d.name}</span></button>)}</div><section className="settings-section"><h3>Thermal Printer</h3><div className="thermal-widths">{["58mm","80mm","Custom"].map(w=><button key={w} className={ps.thermalWidth===w?"active":""} onClick={()=>setPrint({thermalWidth:w})}>{w}</button>)}</div><label>Printing Type<select value={ps.printingType||"Text Printing"} onChange={e=>setPrint({printingType:e.target.value})}><option>Text Printing</option><option>Graphic Printing</option></select></label>{[["thermalTextStyling","Use Text Styling (Bold)"],["autoCut","Auto Cut Paper After Printing"],["cashDrawer","Open Cash Drawer After Printing"]].map(([k,l])=><label className="setting-row" key={k}><input type="checkbox" checked={!!ps[k]} onChange={e=>setPrint({[k]:e.target.checked})}/><span>{l}</span></label>)}<div className="setting-fields"><label>Extra lines <input type="number" value={ps.extraLines} onChange={e=>setPrint({extraLines:Number(e.target.value)})}/></label><label>Number of copies <input type="number" min="1" value={ps.copies} onChange={e=>setPrint({copies:Number(e.target.value)})}/></label></div></section></div><div className="printer-live-preview"><div className="preview-toolbar"><span>Thermal Preview</span><span>{ps.thermalWidth}</span></div><div className="thermal-paper"><b>{business.name||"My Company"}</b><small>{business.phone||""}</small><hr/><strong>{style.documentTitle||TYPE_META[activeType].label}</strong><hr/>{[1,2,3,4,5].map(i=><div key={i} className="thermal-row"><span>Item {i}</span><span>₹ 100.00</span></div>)}<hr/><div className="thermal-grand">Total <b>₹ 500.00</b></div><hr/><small>Thank you for your business.</small></div></div>
      </div>}
      <div className="color-strip"><b>Change Colors</b>{["#16233f","#2563eb","#0f766e","#dc2626","#7c3aed","#ea580c","#059669","#111827","#a16207","#db2777","#0891b2","#16a34a"].map(color=><button key={color} style={{background:color}} className={colors.accent===color?"selected":""} onClick={()=>setColors({accent:color})}/>)}</div>
+   </div>
+
+
+
+   <div className="design-library-head bb-card">
+     <div><h2>Template library</h2><p>Every card below is a real selectable document theme.</p></div>
+     <label className="design-search"><Search size={15}/><input value={search} onChange={e=>setSearch(e.target.value)} placeholder="Search templates..." /></label>
+   </div>
+
+   <div className="design-filter-row">
+     {categories.map(c=><button key={c} className={filter===c?"active":""} onClick={()=>setFilter(c)}>{c}</button>)}
+   </div>
+
+   <div className="design-template-grid">
+     {designs.map(d=><button key={d.id} className={`design-template-card ${style.preset===d.id?"selected":""}`} onClick={()=>choose(d)}>
+       <div className={`design-thumb thumb-${d.layout}`} style={{"--accent":d.accent}}>
+         <div className="thumb-top"><div className="thumb-logo">B</div><div><b>{business.name||"YOUR BUSINESS"}</b><small>{activeType==="invoice"?"TAX INVOICE":activeType==="estimate"?"ESTIMATE":"PAYMENT RECEIPT"}</small></div><strong>₹48,500</strong></div>
+         <div className="thumb-meta"><i/><i/><i/></div>
+         <div className="thumb-table">{Array.from({length:previewRows(d)},(_,i)=><span key={i}><i/><i/><i/><i/></span>)}</div>
+         <div className="thumb-total"><span>TOTAL</span><b>₹48,500</b></div>
+         {d.layout==="thermal"&&<div className="thumb-qr">▦</div>}
+       </div>
+       <div className="design-template-info"><span>{d.name}</span>{style.preset===d.id&&<Check size={15}/>}</div>
+       <small>{d.category} · {d.layout}</small>
+     </button>)}
    </div>
 
    <div className="design-workspace bb-card">
