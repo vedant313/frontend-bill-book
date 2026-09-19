@@ -24,6 +24,7 @@ import ProductsPage from "./components/ProductsPage";
 import CustomersPage from "./components/CustomersPage";
 import ExpensesPage from "./components/ExpensesPage";
 import Onboarding from "./components/Onboarding";
+import RecurringPage from "./components/RecurringPage";
 
 export default function App() {
   const [authChecked, setAuthChecked] = useState(false);
@@ -294,6 +295,7 @@ export default function App() {
             {page === "products" && <ProductsPage />}
             {page === "customers" && <CustomersPage docs={docs} payments={payments} />}
             {page === "expenses" && <ExpensesPage expenses={expenses} setExpenses={setExpenses} />}
+            {page === "recurring" && <RecurringPage docs={docs} />}
 
             {page === "settings" && (
               <SettingsPage business={business} onSave={async (b) => { await saveBusiness({ ...business, ...b }); goto("dashboard"); }} onCancel={() => goto("dashboard")} />
