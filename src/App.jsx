@@ -22,6 +22,7 @@ import DocumentDesigner from "./components/DocumentDesigner";
 import SubscriptionPage from "./components/SubscriptionPage";
 import ProductsPage from "./components/ProductsPage";
 import CustomersPage from "./components/CustomersPage";
+import ExpensesPage from "./components/ExpensesPage";
 
 export default function App() {
   const [authChecked, setAuthChecked] = useState(false);
@@ -33,6 +34,7 @@ export default function App() {
   const [business, setBusiness] = useState({ name: "My Business" });
   const [docs, setDocs] = useState([]); // invoices + estimates
   const [payments, setPayments] = useState([]);
+  const [expenses, setExpenses] = useState([]);
 
   const [page, setPage] = useState("dashboard"); // dashboard | list | form | preview | settings | theme | subscription
   const [listType, setListType] = useState("invoice"); // invoice | estimate | payment
@@ -79,11 +81,12 @@ export default function App() {
       const maxAttempts = 6;
       for (let attempt = 1; attempt <= maxAttempts; attempt++) {
         try {
-          const [b, d, p] = await Promise.all([api.getBusiness(), api.getDocuments(), api.getPayments()]);
+          const [b, d, p, e] = await Promise.all([api.getBusiness(), api.getDocuments(), api.getPayments(), api.getExpenses()]);
           if (cancelled) return;
           setBusiness(b);
           setDocs(d);
           setPayments(p);
+          setExpenses(e);
           setError("");
           setWaking(false);
           setLoaded(true);
@@ -128,6 +131,7 @@ export default function App() {
     setBusiness({ name: "My Business" });
     setDocs([]);
     setPayments([]);
+    setExpenses([]);
     setPage("dashboard");
   };
 
@@ -195,8 +199,11 @@ export default function App() {
     const totalInvoiced = invoices.reduce((s, d) => s + d.total, 0);
     const totalReceived = payments.reduce((s, p) => s + (Number(p.amount) || 0), 0);
     const pending = Math.max(totalInvoiced - totalReceived, 0);
-    return { invoices, estimates, totalInvoiced, totalReceived, pending };
-  }, [docs, payments]);
+    const totalExpenses = expenses.reduce((s, e) => s + (Number(e.amount) || 0), 0);
+    const profit = totalReceived - totalExpenses;
+    const overdue = invoices.filter(d => d.dueDate && new Date(d.dueDate) < new Date() && d.total > 0).length;
+    return { invoices, estimates, totalInvoiced, totalReceived, pending, totalExpenses, profit, overdue };
+  }, [docs, payments, expenses]);
 
   const chartData = useMemo(() => {
     const map = {};
@@ -244,7 +251,7 @@ export default function App() {
         <div className="bb-main">
           <TopBar business={business} goto={goto} setSidebarOpen={setSidebarOpen} onExportAll={() => goto("export")} />
           <div className="bb-content">
-            {page === "dashboard" && <Dashboard stats={stats} chartData={chartData} docs={docs} payments={payments} goto={goto} />}
+            {page === "dashboard" && <Dashboard stats={stats} chartData={chartData} docs={docs} payments={payments} expenses={expenses} goto={goto} />}
 
             {page === "list" && listType !== "payment" && (
               <DocList type={listType} docs={docs.filter((d) => d.type === listType)} goto={goto} deleteDoc={deleteDoc} duplicateDoc={duplicateDoc} />
@@ -281,6 +288,7 @@ export default function App() {
             {page === "subscription" && <SubscriptionPage />}
             {page === "products" && <ProductsPage />}
             {page === "customers" && <CustomersPage />}
+            {page === "expenses" && <ExpensesPage expenses={expenses} setExpenses={setExpenses} />}
 
             {page === "settings" && (
               <SettingsPage business={business} onSave={async (b) => { await saveBusiness({ ...business, ...b }); goto("dashboard"); }} onCancel={() => goto("dashboard")} />
