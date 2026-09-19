@@ -23,6 +23,7 @@ import SubscriptionPage from "./components/SubscriptionPage";
 import ProductsPage from "./components/ProductsPage";
 import CustomersPage from "./components/CustomersPage";
 import ExpensesPage from "./components/ExpensesPage";
+import Onboarding from "./components/Onboarding";
 
 export default function App() {
   const [authChecked, setAuthChecked] = useState(false);
@@ -43,6 +44,7 @@ export default function App() {
   const [previewKind, setPreviewKind] = useState("doc");
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [legalPage, setLegalPage] = useState(null);
+  const [onboarding, setOnboarding] = useState(false);
 
   // ---- Auth bootstrap: check for a stored token on first load ----
   useEffect(() => {
@@ -84,6 +86,7 @@ export default function App() {
           const [b, d, p, e] = await Promise.all([api.getBusiness(), api.getDocuments(), api.getPayments(), api.getExpenses()]);
           if (cancelled) return;
           setBusiness(b);
+          setOnboarding(!b?.name || b.name === "My Business");
           setDocs(d);
           setPayments(p);
           setExpenses(e);
@@ -231,6 +234,8 @@ export default function App() {
   if (!user) {
     return <Landing onAuthed={setUser} onLegal={setLegalPage} legalPage={legalPage} />;
   }
+
+  if (onboarding) return <Onboarding business={business} onSave={async b=>{const saved=await saveBusiness(b);setBusiness(saved);setOnboarding(false)}} onSkip={()=>setOnboarding(false)} />;
 
   if (!loaded) {
     return (
