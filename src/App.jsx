@@ -87,7 +87,7 @@ export default function App() {
           const [b, d, p, e] = await Promise.all([api.getBusiness(), api.getDocuments(), api.getPayments(), api.getExpenses()]);
           if (cancelled) return;
           setBusiness(b);
-          setOnboarding(!b?.name || b.name === "My Business");
+          setOnboarding(!b?.onboardingCompleted && (!b?.name || b.name === "My Business"));
           setDocs(d);
           setPayments(p);
           setExpenses(e);
@@ -236,7 +236,7 @@ export default function App() {
     return <Landing onAuthed={setUser} onLegal={setLegalPage} legalPage={legalPage} />;
   }
 
-  if (onboarding) return <Onboarding business={business} onSave={async b=>{const saved=await saveBusiness(b);setBusiness(saved);setOnboarding(false)}} onSkip={()=>setOnboarding(false)} />;
+  if (onboarding) return <Onboarding business={business} onSave={async b=>{const saved=await saveBusiness({...b,onboardingCompleted:true});setBusiness(saved);setOnboarding(false)}} onSkip={async ()=>{const saved=await saveBusiness({...business,onboardingCompleted:true});setBusiness(saved);setOnboarding(false)}} />;
 
   if (!loaded) {
     return (
