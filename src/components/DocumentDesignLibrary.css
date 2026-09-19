@@ -41,3 +41,32 @@
 .color-strip{padding:10px 20px!important}
 @media(max-width:1150px){.printer-settings-layout{grid-template-columns:minmax(430px,1fr) minmax(390px,.9fr)!important}}
 @media(max-width:900px){.printer-settings-layout{grid-template-columns:1fr!important}.printer-settings-panel{max-height:none!important}.printer-live-preview{border-top:1px solid var(--border)}}
+
+/* Expanded template gallery + inline customization */
+.mini-layouts-expanded{grid-template-columns:repeat(6,minmax(74px,1fr))!important;max-height:310px;overflow:auto;padding-right:5px}
+.mini-layout-thumb{position:relative;overflow:hidden}
+.mini-layout-thumb:before{content:"";position:absolute;inset:0 0 auto;height:8px;background:var(--accent);opacity:.9}
+.mini-sidebar:after{content:"";position:absolute;left:0;top:8px;bottom:0;width:18%;background:color-mix(in srgb,var(--accent) 18%,white)}
+.mini-centered i:first-child{width:58%!important;margin-left:21%!important}
+.mini-centered i:nth-child(2){width:42%!important;margin-left:29%!important}
+.mini-topband:before{height:18px}
+.mini-split-right:after{content:"";position:absolute;right:0;top:8px;bottom:0;width:24%;background:color-mix(in srgb,var(--accent) 16%,white)}
+.mini-diagonal:before{height:30px;clip-path:polygon(0 0,100% 0,78% 100%,0 70%)}
+.mini-stacked i{height:8px!important;margin:3px 5px!important}
+.mini-modern-box{border-radius:8px!important;box-shadow:inset 0 0 0 2px color-mix(in srgb,var(--accent) 25%,white)}
+.mini-narrow{width:42px!important;margin-left:3px}
+.mini-magazine:before{height:24px}
+.mini-mono:before{height:3px}
+.mini-stripe:before{height:10px}
+.mini-executive{box-shadow:inset 0 0 0 1px var(--accent)}
+.template-count-note{font-size:9px;color:#7a8492;padding:2px 0 10px}
+.inline-editor-section{background:#fafbfc;border:1px solid #edf0f3;border-radius:8px;padding:12px!important;margin-bottom:12px}
+.color-editor-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.color-editor-grid label{font-size:10px;color:#5d6673}
+.color-control{display:flex;gap:6px;align-items:center;margin-top:5px}
+.color-control input[type=color]{width:32px;height:31px;padding:2px;border:1px solid #d7dce3;border-radius:6px}
+.color-control .bb-input{flex:1}
+.inline-checks{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px 12px!important;margin:10px 0!important}
+.inline-checks label{font-size:10px!important}
+.save-inline{display:flex;gap:7px;margin-top:10px}
+.save-inline .bb-input{flex:1}
