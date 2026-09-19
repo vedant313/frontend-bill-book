@@ -300,7 +300,7 @@ export default function App() {
             )}
 
             {page === "theme" && <ThemePicker theme={business.theme} onSaveTheme={saveTheme} />}
-            {page === "export" && <ExportCenter docs={docs} payments={payments} goto={goto} />}
+            {page === "export" && <ExportCenter docs={docs} payments={payments} expenses={expenses} business={business} goto={goto} />}
             {page === "designer" && <DocumentDesigner business={business} onSave={async (documentStyle, documentTemplates) => saveBusiness({ ...business, documentStyle: documentStyle?.invoice || business.documentStyle, documentStyles: documentStyle, documentTemplates: documentTemplates ?? business.documentTemplates ?? [] })} onBack={() => goto("dashboard")} />}
           </div>
         </div>
