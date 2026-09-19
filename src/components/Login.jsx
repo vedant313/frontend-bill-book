@@ -2,7 +2,7 @@ import { useState } from "react";
 import { FileText } from "lucide-react";
 import * as api from "../api";
 
-export default function Login({ onAuthed, mode: initialMode = "login", onClose }) {
+export default function Login({ onAuthed, mode: initialMode = "login", onClose, onSupport }) {
   const [mode, setMode] = useState(initialMode); // login | signup
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -99,7 +99,11 @@ export default function Login({ onAuthed, mode: initialMode = "login", onClose }
           </button>
         </form>
 
-        <div style={{ textAlign: "center", marginTop: 16, fontSize: 12.5, color: "var(--muted)" }}>
+        <div style={{ textAlign: "center", marginTop: 14, fontSize: 12.5, color: "var(--muted)" }}>
+          {onSupport && <button type="button" onClick={onSupport} style={{ background: "none", border: "none", color: "var(--teal)", fontWeight: 700, cursor: "pointer", padding: 0, fontSize: 12.5 }}>Forgot password or need help?</button>}
+        </div>
+
+        <div style={{ textAlign: "center", marginTop: 10, fontSize: 12.5, color: "var(--muted)" }}>
           {mode === "signup" ? "Already have an account?" : "New to Nexsa Bill?"}{" "}
           <button
             type="button"
