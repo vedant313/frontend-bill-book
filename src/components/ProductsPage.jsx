@@ -4,7 +4,7 @@ import * as api from "../api";
 export default function ProductsPage(){
  const [items,setItems]=useState([]),[q,setQ]=useState(""),[form,setForm]=useState({name:"",hsn:"",unit:"pcs",rate:"",gstPct:"",stock:""});
  const load=()=>api.getProducts().then(setItems);
- useEffect(load,[]);
+ useEffect(()=>{ load().catch(()=>{}); },[]);
  const save=async()=>{if(!form.name.trim())return;const x=await api.createProduct(form);setItems(v=>[...v,x]);setForm({name:"",hsn:"",unit:"pcs",rate:"",gstPct:"",stock:""});};
  const del=async id=>{await api.deleteProduct(id);setItems(v=>v.filter(x=>x.id!==id));};
  return <div><div className="bb-page-head"><div><h2>Product Master</h2><span>Save items once and reuse them instantly in invoices.</span></div></div>
