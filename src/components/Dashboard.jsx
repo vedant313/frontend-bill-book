@@ -11,6 +11,7 @@ export default function Dashboard({ stats, chartData, docs, payments, goto }) {
 
   return (
     <div>
+      <div className="bb-card" style={{marginBottom:14}}><div className="bb-section-title">Quick Create</div><div className="bb-head-actions"><button className="bb-btn bb-btn-primary" onClick={()=>goto("form",{listType:"invoice"})}>+ Invoice</button><button className="bb-btn bb-btn-ghost" onClick={()=>goto("form",{listType:"estimate"})}>+ Estimate</button><button className="bb-btn bb-btn-ghost" onClick={()=>goto("form",{listType:"payment"})}>+ Payment</button><button className="bb-btn bb-btn-ghost" onClick={()=>goto("customers")}>+ Customer</button><button className="bb-btn bb-btn-ghost" onClick={()=>goto("products")}>+ Product</button><button className="bb-btn bb-btn-ghost" onClick={()=>goto("expenses")}>+ Expense</button></div></div>
       <div className="bb-stat-grid">
         <div className="bb-stat-card" style={{ "--accent": "var(--navy)" }}>
           <div className="bb-stat-label">Total Invoiced</div>
