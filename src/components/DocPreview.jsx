@@ -11,7 +11,7 @@ export default function DocPreview({ doc, business, payments = [], onBack, onEdi
   const totalSgst = summary.reduce((s, g) => s + g.sgstAmt, 0);
   const totalTax = summary.reduce((s, g) => s + g.totalTax, 0);
   const hasBank = business.bankName || business.accountNo || business.ifsc;
-  const design = doc.documentStyle || business.documentStyle || {};
+  const design = doc.documentStyle || business.documentStyles?.[doc.type] || business.documentStyle || {};
   const show = (key, fallback=true) => design[key] === undefined ? fallback : design[key];
 
   const linkedPayments = doc.type === "invoice" ? payments.filter((p) => p.againstInvoice === doc.number) : [];
