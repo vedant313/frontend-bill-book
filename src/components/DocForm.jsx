@@ -1,7 +1,8 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { ArrowLeft, Plus, X } from "lucide-react";
 import { uid, fmt, todayISO, DOC_META, calcTotals, nextNumber } from "../utils/helpers";
 import { DOCUMENT_DESIGNS, resolveDocumentDesign } from "../utils/documentDesigns";
+import { getProducts, getCustomers } from "../api";
 
 export default function DocForm({ type, docs, business, existing, onSave, onCancel }) {
   const meta = DOC_META[type];
@@ -21,6 +22,32 @@ export default function DocForm({ type, docs, business, existing, onSave, onCanc
   const [items, setItems] = useState(existing?.items || [{ id: uid(), name: "", hsn: "", qty: 1, rate: 0, gstPct: 18 }]);
   const [saving, setSaving] = useState(false);
   const [documentStyle, setDocumentStyle] = useState(existing?.documentStyle || business.documentStyle || {});
+  const [products, setProducts] = useState([]);
+  const [customers, setCustomers] = useState([]);
+  const [masterSearch, setMasterSearch] = useState("");
+
+  useEffect(() => {
+    let alive = true;
+    Promise.all([getProducts(), getCustomers()]).then(([p, c]) => {
+      if (alive) { setProducts(p?.products || p || []); setCustomers(c?.customers || c || []); }
+    }).catch(() => {});
+    return () => { alive = false; };
+  }, []);
+
+  const applyCustomer = (customer) => {
+    if (!customer) return;
+    setPartyName(customer.name || "");
+    setPartyPhone(customer.phone || "");
+    setPartyAddress(customer.address || "");
+    setPartyState(customer.state || "");
+    setMasterSearch("");
+  };
+
+  const applyProduct = (id, value) => {
+    const product = products.find(p => String(p._id || p.id) === String(value));
+    if (!product) return;
+    updateItem(id, { productId: product._id || product.id, name: product.name || "", hsn: product.hsn || "", rate: product.rate ?? 0, gstPct: product.gstPct ?? 18, unit: product.unit || "" });
+  };
 
   const totals = calcTotals(items, discount);
 
@@ -60,7 +87,7 @@ export default function DocForm({ type, docs, business, existing, onSave, onCanc
       documentStyle,
       customFields: customFields.filter(x => String(x.label || "").trim() || String(x.value || "").trim()),
       customSections: customSections.filter(x => String(x.title||"").trim() || String(x.body||"").trim()),
-      items: cleanItems,
+      items: cleanItems.map(it => ({ ...it, productId: it.productId || undefined })),
       ...calcTotals(cleanItems, discount),
     };
     setSaving(true);
@@ -88,7 +115,13 @@ export default function DocForm({ type, docs, business, existing, onSave, onCanc
         <div className="bb-row3">
           <div className="bb-field">
             <label>Party / Customer Name *</label>
-            <input className="bb-input" value={partyName} onChange={(e) => setPartyName(e.target.value)} placeholder="e.g. Nayan Bhaskar Khainar" />
+            <div style={{display:"flex",gap:7}}>
+              <input className="bb-input" value={partyName} onChange={(e) => setPartyName(e.target.value)} placeholder="e.g. Nayan Bhaskar Khainar" />
+              {customers.length > 0 && <select className="bb-select" style={{maxWidth:180}} value="" onChange={(e)=>applyCustomer(customers.find(c=>String(c._id||c.id)===e.target.value))}>
+                <option value="">Saved customer…</option>
+                {customers.map(c=><option key={c._id||c.id} value={c._id||c.id}>{c.name}</option>)}
+              </select>}
+            </div>
           </div>
           <div className="bb-field">
             <label>Phone</label>
@@ -173,7 +206,14 @@ export default function DocForm({ type, docs, business, existing, onSave, onCanc
               {items.map((it) => (
                 <tr key={it.id}>
                   <td>
-                    <input className="bb-input" value={it.name} onChange={(e) => updateItem(it.id, { name: e.target.value })} placeholder="Item / service name" />
+                    <div style={{display:"grid",gap:5}}>
+                      <input className="bb-input" list={`products-${it.id}`} value={it.name} onChange={(e) => updateItem(it.id, { name: e.target.value })} placeholder="Item / service name" />
+                      <select className="bb-select" value="" onChange={(e)=>applyProduct(it.id,e.target.value)}>
+                        <option value="">Choose saved item…</option>
+                        {products.map(p=><option key={p._id||p.id} value={p._id||p.id}>{p.name} — ₹{p.rate ?? 0}</option>)}
+                      </select>
+                      <datalist id={`products-${it.id}`}>{products.map(p=><option key={p._id||p.id} value={p.name}/>)}</datalist>
+                    </div>
                   </td>
                   <td>
                     <input className="bb-input" style={{ width: 90 }} value={it.hsn} onChange={(e) => updateItem(it.id, { hsn: e.target.value })} placeholder="8541" />
