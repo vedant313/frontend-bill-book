@@ -42,7 +42,7 @@ export default function Login({ onAuthed, mode: initialMode = "login", onClose }
           <div className="bb-brand-mark" style={{ background: "var(--teal)" }}>
             <FileText size={16} color="#fff" />
           </div>
-          <div style={{ fontFamily: "Manrope, sans-serif", fontWeight: 800, fontSize: 20, color: "var(--ink)" }}>BillBook</div>
+          <div style={{ fontFamily: "Manrope, sans-serif", fontWeight: 800, fontSize: 20, color: "var(--ink)" }}>Nexsa Bill</div>
         </div>
 
         <div style={{ display: "flex", borderRadius: 8, border: "1px solid var(--border)", overflow: "hidden", marginBottom: 20 }}>
@@ -100,7 +100,7 @@ export default function Login({ onAuthed, mode: initialMode = "login", onClose }
         </form>
 
         <div style={{ textAlign: "center", marginTop: 16, fontSize: 12.5, color: "var(--muted)" }}>
-          {mode === "signup" ? "Already have an account?" : "New to BillBook?"}{" "}
+          {mode === "signup" ? "Already have an account?" : "New to Nexsa Bill?"}{" "}
           <button
             type="button"
             onClick={() => setMode(mode === "signup" ? "login" : "signup")}
