@@ -31,6 +31,7 @@ export default function Sidebar({ page, listType, goto, sidebarOpen, setSidebarO
           <button className={`bb-nav-item ${isActive("products") ? "active" : ""}`} onClick={() => goto("products")}><Package size={16} /> Products</button>
           <button className={`bb-nav-item ${isActive("customers") ? "active" : ""}`} onClick={() => goto("customers")}><Users size={16} /> Customers</button>
           <button className={`bb-nav-item ${isActive("expenses") ? "active" : ""}`} onClick={() => goto("expenses")}><ReceiptText size={16} /> Expenses</button>
+          <button className={`bb-nav-item ${isActive("recurring") ? "active" : ""}`} onClick={() => goto("recurring")}><ReceiptText size={16} /> Recurring Invoices</button>
           <button className={`bb-nav-item ${isActive("subscription") ? "active" : ""}`} onClick={() => goto("subscription")}>
             <Crown size={16} /> Subscription
           </button>
