@@ -1,15 +1,17 @@
 import { useState } from "react";
 import { ArrowRight, BarChart3, FileText, Palette, Search, ShieldCheck, Sparkles, X, Zap } from "lucide-react";
 import Login from "./Login";
+import SupportPage from "./SupportPage";
 
 export default function Landing({ onAuthed, onLegal, legalPage }) {
   const [auth, setAuth] = useState(null);
+  if (legalPage === "support") return <div className="bb-landing"><div style={{maxWidth:980,margin:"auto",padding:"30px 24px"}}><button className="bb-back" onClick={()=>onLegal(null)}>Back to Nexsa Bill</button></div><SupportPage onBack={()=>onLegal(null)}/></div>;
   if (legalPage) return <div className="bb-landing"><div style={{maxWidth:980,margin:"auto",padding:"30px 24px"}}><button className="bb-back" onClick={()=>onLegal(null)}>Back to Nexsa Bill</button></div><LegalContent type={legalPage} onBack={()=>onLegal(null)}/></div>;
   if (auth) {
     return (
       <div className="bb-auth-overlay">
         <button className="bb-auth-close" onClick={() => setAuth(null)}><X size={20}/></button>
-        <Login mode={auth} onAuthed={onAuthed} onClose={() => setAuth(null)} />
+        <Login mode={auth} onAuthed={onAuthed} onClose={() => setAuth(null)} onSupport={() => { setAuth(null); onLegal("support"); }} />
       </div>
     );
   }
@@ -64,7 +66,7 @@ export default function Landing({ onAuthed, onLegal, legalPage }) {
           <button className="bb-btn bb-btn-primary bb-btn-lg" onClick={() => setAuth("signup")}>Start Your 14-Day Free Trial <ArrowRight size={17}/></button>
         </section>
       </main>
-      <footer className="bb-landing-footer"><div className="bb-footer-brand">Nexsa Bill · A product of <b>Nexsa Technologies</b></div><div className="bb-footer-links"><button onClick={()=>onLegal("privacy")}>Privacy Policy</button><button onClick={()=>onLegal("terms")}>Terms of Use</button></div><div>© {new Date().getFullYear()} Nexsa Technologies · Professional billing for modern businesses</div></footer>
+      <footer className="bb-landing-footer"><div className="bb-footer-brand">Nexsa Bill · A product of <b>Nexsa Technologies</b></div><div className="bb-footer-links"><button onClick={()=>onLegal("support")}>Support</button><button onClick={()=>onLegal("privacy")}>Privacy Policy</button><button onClick={()=>onLegal("terms")}>Terms of Use</button></div><div>© {new Date().getFullYear()} Nexsa Technologies · Professional billing for modern businesses</div></footer>
     </div>
   );
 }
