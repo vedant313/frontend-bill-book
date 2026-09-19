@@ -94,3 +94,6 @@ export const getExpenses = () => request("/expenses");
 export const createExpense = (expense) => request("/expenses", { method: "POST", body: JSON.stringify(expense) });
 export const updateExpense = (id, expense) => request("/expenses/" + id, { method: "PUT", body: JSON.stringify(expense) });
 export const deleteExpense = (id) => request("/expenses/" + id, { method: "DELETE" });
+
+export const getStockMovements = (id) => request("/products/" + id + "/movements");
+export const moveStock = (id, movement) => request("/products/" + id + "/stock", { method: "POST", body: JSON.stringify(movement) });
