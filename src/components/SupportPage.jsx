@@ -27,7 +27,7 @@ export default function SupportPage({ onBack }) {
       <div className="bb-support-contact-grid">
         <button className="bb-support-contact" onClick={() => openWhatsApp("general support")}>
           <span className="bb-support-icon"><MessageCircle size={20}/></span>
-          <span><b>WhatsApp Support</b><small>Chat with Nexsa Technologies support</small></span>
+          <span><b>WhatsApp Support</b><small>+91 8208581567 · Chat with Nexsa Technologies</small></span>
         </button>
         <button className="bb-support-contact" onClick={() => emailSupport("Nexsa Bill Support Request")}>
           <span className="bb-support-icon"><Mail size={20}/></span>
@@ -58,7 +58,7 @@ export default function SupportPage({ onBack }) {
         </section>
       </div>
 
-      <div className="bb-support-note">
+      <div className="bb-support-note"><b>Direct support:</b> +91 8208581567 &nbsp; · &nbsp; nexsatechnologies@gmail.com<br />
         <b>For payment issues:</b> UTR/reference number helps us match a manual payment request. Nexsa Bill support will never ask for your UPI PIN, OTP or account password.
       </div>
     </div>
