@@ -4,7 +4,7 @@ import Login from "./Login";
 
 export default function Landing({ onAuthed, onLegal, legalPage }) {
   const [auth, setAuth] = useState(null);
-  if (legalPage) return <div className="bb-landing"><div style={{maxWidth:980,margin:"auto",padding:"30px 24px"}}><button className="bb-back" onClick={()=>onLegal(null)}>Back to BillBook</button></div><LegalContent type={legalPage} onBack={()=>onLegal(null)}/></div>;
+  if (legalPage) return <div className="bb-landing"><div style={{maxWidth:980,margin:"auto",padding:"30px 24px"}}><button className="bb-back" onClick={()=>onLegal(null)}>Back to Nexsa Bill</button></div><LegalContent type={legalPage} onBack={()=>onLegal(null)}/></div>;
   if (auth) {
     return (
       <div className="bb-auth-overlay">
@@ -16,7 +16,7 @@ export default function Landing({ onAuthed, onLegal, legalPage }) {
   return (
     <div className="bb-landing">
       <header className="bb-landing-nav">
-        <div className="bb-landing-brand"><span className="bb-brand-mark"><FileText size={17}/></span><b>BillBook</b></div>
+        <div className="bb-landing-brand"><span className="bb-brand-mark"><FileText size={17}/></span><b>Nexsa Bill</b></div>
         <div className="bb-landing-nav-actions">
           <button className="bb-btn bb-btn-ghost" onClick={() => setAuth("login")}>Log In</button>
           <button className="bb-btn bb-btn-primary" onClick={() => setAuth("signup")}>Get Started <ArrowRight size={15}/></button>
@@ -33,10 +33,10 @@ export default function Landing({ onAuthed, onLegal, legalPage }) {
               <button className="bb-btn bb-btn-primary bb-btn-lg" onClick={() => setAuth("signup")}>Start 14-Day Free Trial <ArrowRight size={17}/></button>
               <button className="bb-btn bb-btn-ghost bb-btn-lg" onClick={() => setAuth("login")}>I already have an account</button>
             </div>
-            <div className="bb-trust"><ShieldCheck size={15}/> 14 days free · Explore BillBook before choosing a paid plan.</div>
+            <div className="bb-trust"><ShieldCheck size={15}/> 14 days free · Explore Nexsa Bill before choosing a paid plan.</div>
           </div>
           <div className="bb-hero-dashboard">
-            <div className="bb-window-bar"><i/><i/><i/><span>BillBook Dashboard</span></div>
+            <div className="bb-window-bar"><i/><i/><i/><span>Nexsa Bill Dashboard</span></div>
             <div className="bb-mini-stats">
               <div><small>Total Invoiced</small><strong>₹4,86,500</strong><em>+18.4%</em></div>
               <div><small>Received</small><strong>₹3,72,000</strong><em>₹1,14,500 pending</em></div>
@@ -64,11 +64,11 @@ export default function Landing({ onAuthed, onLegal, legalPage }) {
           <button className="bb-btn bb-btn-primary bb-btn-lg" onClick={() => setAuth("signup")}>Start Your 14-Day Free Trial <ArrowRight size={17}/></button>
         </section>
       </main>
-      <footer className="bb-landing-footer"><div className="bb-footer-brand">BillBook · A product of <b>Nexsa Technologies</b></div><div className="bb-footer-links"><button onClick={()=>onLegal("privacy")}>Privacy Policy</button><button onClick={()=>onLegal("terms")}>Terms of Use</button></div><div>© {new Date().getFullYear()} Nexsa Technologies · Professional billing for modern businesses</div></footer>
+      <footer className="bb-landing-footer"><div className="bb-footer-brand">Nexsa Bill · A product of <b>Nexsa Technologies</b></div><div className="bb-footer-links"><button onClick={()=>onLegal("privacy")}>Privacy Policy</button><button onClick={()=>onLegal("terms")}>Terms of Use</button></div><div>© {new Date().getFullYear()} Nexsa Technologies · Professional billing for modern businesses</div></footer>
     </div>
   );
 }
-function LegalContent({type,onBack}) { const terms=type==="terms"; return <div className="bb-legal-page"><div className="bb-legal-card"><div className="bb-section-kicker">BillBook by Nexsa Technologies</div><h1>{terms?"Terms of Use":"Privacy Policy"}</h1><p className="bb-legal-updated">Last updated: August 17, 2026</p><h3>About BillBook</h3><p>BillBook helps businesses create invoices, estimates and payment receipts, manage records, customize document designs and export business data.</p><h3>{terms?"Responsible use":"Information we store"}</h3><p>{terms?"You are responsible for the accuracy of documents and tax information you create. Do not use BillBook for unlawful, fraudulent or abusive activity.":"We store account, business, document, payment, settings and design information needed to provide your workspace. Records are associated with your signed-in account."}</p><h3>{terms?"Documents and service":"Your control"}</h3><p>{terms?"Review documents before sending them to customers or authorities. Service availability may be affected by maintenance, hosting or network issues.":"You control the business records and exports created in your workspace. Keep your credentials secure and maintain backups of important records."}</p><h3>Contact</h3><p>BillBook is a product of <b>Nexsa Technologies</b>. Use the support details available in your BillBook workspace for questions.</p><button className="bb-btn bb-btn-primary" onClick={onBack}>Back to BillBook</button></div></div> }
+function LegalContent({type,onBack}) { const terms=type==="terms"; return <div className="bb-legal-page"><div className="bb-legal-card"><div className="bb-section-kicker">Nexsa Bill by Nexsa Technologies</div><h1>{terms?"Terms of Use":"Privacy Policy"}</h1><p className="bb-legal-updated">Last updated: August 17, 2026</p><h3>About Nexsa Bill</h3><p>Nexsa Bill helps businesses create invoices, estimates and payment receipts, manage records, customize document designs and export business data.</p><h3>{terms?"Responsible use":"Information we store"}</h3><p>{terms?"You are responsible for the accuracy of documents and tax information you create. Do not use Nexsa Bill for unlawful, fraudulent or abusive activity.":"We store account, business, document, payment, settings and design information needed to provide your workspace. Records are associated with your signed-in account."}</p><h3>{terms?"Documents and service":"Your control"}</h3><p>{terms?"Review documents before sending them to customers or authorities. Service availability may be affected by maintenance, hosting or network issues.":"You control the business records and exports created in your workspace. Keep your credentials secure and maintain backups of important records."}</p><h3>Contact</h3><p>Nexsa Bill is a product of <b>Nexsa Technologies</b>. Use the support details available in your Nexsa Bill workspace for questions.</p><button className="bb-btn bb-btn-primary" onClick={onBack}>Back to Nexsa Bill</button></div></div> }
 function Feature({icon,title,text}) {
   return <div className="bb-feature-card"><div className="bb-feature-icon">{icon}</div><h3>{title}</h3><p>{text}</p></div>;
 }
