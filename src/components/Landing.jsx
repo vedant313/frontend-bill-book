@@ -63,7 +63,7 @@ export default function Landing({ onAuthed, onLegal, legalPage }) {
 
         <section className="bb-landing-support">
           <div><div className="bb-section-kicker">Need help?</div><h2>Support is always one message away.</h2><p>Forgot your password, paid but your subscription is not active, or facing a billing issue?</p></div>
-          <div className="bb-support-contact"><b>📱 +91 8208581567</b><b>📧 nexsatechnologies@gmail.com</b><button className="bb-btn bb-btn-primary" onClick={()=>onLegal("support")}>Open Support Center <ArrowRight size={15}/></button></div>
+          <div className="bb-landing-support-contact"><b>📱 +91 8208581567</b><b>📧 nexsatechnologies@gmail.com</b><button className="bb-btn bb-btn-primary" onClick={()=>onLegal("support")}>Open Support Center <ArrowRight size={15}/></button></div>
         </section>
 
         <section className="bb-landing-cta">
