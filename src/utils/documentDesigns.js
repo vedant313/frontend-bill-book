@@ -1,4 +1,5 @@
 export const DOCUMENT_DESIGNS = [
+ {id:"classic-estimate",name:"Classic Theme",category:"GST & Tax",accent:"#374151",header:"classic",layout:"classic-estimate",radius:0,density:"normal",font:"Inter",table:"grid"},
  {id:"classic",name:"Classic GST",category:"GST & Tax",accent:"#16233f",header:"classic",layout:"standard",radius:0,density:"normal",font:"Inter",table:"grid"},
  {id:"gst-boxed",name:"GST Boxed",category:"GST & Tax",accent:"#1e3a5f",header:"classic",layout:"boxed",radius:2,density:"normal",font:"Inter",table:"grid"},
  {id:"gst-clean",name:"GST Clean",category:"GST & Tax",accent:"#0f766e",header:"minimal",layout:"clean",radius:0,density:"normal",font:"Inter",table:"line"},
