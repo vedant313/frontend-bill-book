@@ -103,9 +103,9 @@ export default function SubscriptionPage() {
         </div>
       </div>
 
-      {!isOwner && (
+      (
         <form onSubmit={submit} style={{ ...cardStyle, display: "grid", gap: 12 }}>
-          <div><h3 style={{ margin: "0 0 5px" }}>Upgrade or renew</h3><p style={{ ...muted, margin: 0 }}>UPI payment ke baad UTR submit karo. Verification ke baad hi paid plan activate hoga.</p></div>
+          <div><h3 style={{ margin: "0 0 5px" }}>{isOwner ? "Payment flow preview" : "Upgrade or renew"}</h3><p style={{ ...muted, margin: 0 }}>{isOwner ? "Owner access lifetime free rahega. Yahan se payment flow test kar sakte ho; owner benefits par koi asar nahi padega." : "UPI payment ke baad UTR submit karo. Verification ke baad hi paid plan activate hoga."}</p></div>
           <div style={{ borderRadius: 10, background: "var(--surface-secondary, #f5f5f5)", padding: 13 }}>
             <div style={muted}>Selected plan</div><strong>{selectedPlan?.name || "Pro"} — ₹{selectedPlan?.price || 199} / 30 days</strong>
             <div style={{ marginTop: 5, fontSize: 13 }}><span style={muted}>UPI ID: </span><strong>{upiId || "Loading…"}</strong></div>
