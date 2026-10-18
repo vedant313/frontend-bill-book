@@ -2,7 +2,7 @@
 // In dev, Vite proxies /api to http://localhost:4000 (see vite.config.js).
 // In production, set VITE_API_BASE to your deployed backend URL.
 
-const BASE = import.meta.env.VITE_API_BASE || "/api";
+const BASE = import.meta.env.VITE_API_BASE || "https://backend1-tx8q.onrender.com/api";
 const TOKEN_KEY = "billbook_token";
 
 export const getToken = () => localStorage.getItem(TOKEN_KEY) || "";
