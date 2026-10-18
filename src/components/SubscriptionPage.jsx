@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import * as api from "../api";
-import { Check, Sparkles, ShieldCheck, Clock, AlertTriangle, Crown, Zap } from "lucide-react";
+import { Check, Sparkles, ShieldCheck, Clock, AlertTriangle, Crown, Zap, QrCode, Copy, Smartphone, CreditCard, LockKeyhole } from "lucide-react";
 
 const cardStyle = { border: "1px solid var(--border, #dedede)", borderRadius: 16, padding: 20, background: "var(--card, #fff)" };
 const muted = { color: "var(--muted, #6b7280)", fontSize: 13, lineHeight: 1.55 };
@@ -12,7 +12,7 @@ export default function SubscriptionPage() {
   const [selected, setSelected] = useState("pro");
   const [utr, setUtr] = useState("");
   const [message, setMessage] = useState("");
-  const [busy, setBusy] = useState(false);
+  const [busy, setBusy] = useState(false);\n  const [copied, setCopied] = useState(false);
 
   const refresh = () => api.getSubscriptionStatus().then(setSubscription).catch(() => {});
   useEffect(() => {
@@ -40,6 +40,14 @@ export default function SubscriptionPage() {
   const trial = subscription?.mode === "trial";
   const free = subscription?.mode === "free";
   const selectedPlan = plans.find(p => p.id === selected);
+  const amount = selectedPlan?.price || (selected === "advanced" ? 399 : 199);
+  const paymentNote = "Nexsa Bills " + (selectedPlan?.name || "Pro") + " subscription";
+  const upiLink = upiId
+    ? "upi://pay?pa=" + encodeURIComponent(upiId) + "&pn=" + encodeURIComponent("Nexsa Technologies") + "&am=" + amount + "&cu=INR&tn=" + encodeURIComponent(paymentNote)
+    : "";
+  const qrImageUrl = upiLink
+    ? "https://api.qrserver.com/v1/create-qr-code/?size=280x280&margin=12&data=" + encodeURIComponent(upiLink)
+    : "";
 
   return (
     <div style={{ display: "grid", gap: 18 }}>
@@ -106,13 +114,36 @@ export default function SubscriptionPage() {
       (
         <form onSubmit={submit} style={{ ...cardStyle, display: "grid", gap: 12 }}>
           <div><h3 style={{ margin: "0 0 5px" }}>{isOwner ? "Payment flow preview" : "Upgrade or renew"}</h3><p style={{ ...muted, margin: 0 }}>{isOwner ? "Owner access lifetime free rahega. Yahan se payment flow test kar sakte ho; owner benefits par koi asar nahi padega." : "UPI payment ke baad UTR submit karo. Verification ke baad hi paid plan activate hoga."}</p></div>
-          <div style={{ borderRadius: 10, background: "var(--surface-secondary, #f5f5f5)", padding: 13 }}>
-            <div style={muted}>Selected plan</div><strong>{selectedPlan?.name || "Pro"} — ₹{selectedPlan?.price || 199} / 30 days</strong>
-            <div style={{ marginTop: 5, fontSize: 13 }}><span style={muted}>UPI ID: </span><strong>{upiId || "Loading…"}</strong></div>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(250px, 1fr))", gap: 16, alignItems: "stretch" }}>
+            <div style={{ border: "1px solid var(--border, #dedede)", borderRadius: 14, padding: 16, display: "grid", justifyItems: "center", alignContent: "start", gap: 10, textAlign: "center" }}>
+              <div style={{ width: 42, height: 42, borderRadius: 12, background: "#111827", color: "#fff", display: "grid", placeItems: "center" }}><QrCode size={22}/></div>
+              <strong>Scan & pay with any UPI app</strong>
+              <div style={{ fontSize: 30, fontWeight: 750 }}>₹{amount}</div>
+              <div style={muted}>{selectedPlan?.name || "Pro"} plan · 30 days</div>
+              {qrImageUrl ? <img src={qrImageUrl} alt="UPI payment QR code" width="220" height="220" style={{ width: 220, height: 220, objectFit: "contain", borderRadius: 12, border: "1px solid #e5e7eb", background: "#fff" }} /> : <div style={{ width: 220, height: 220, display: "grid", placeItems: "center", background: "#f3f4f6", borderRadius: 12 }}>Loading QR…</div>}
+              <div style={{ ...muted, maxWidth: 240 }}>Open PhonePe, Google Pay, Paytm or your bank app and scan this QR.</div>
+              <a href={upiLink || undefined} style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", gap: 8, width: "100%", boxSizing: "border-box", padding: "11px 14px", borderRadius: 9, background: "#111827", color: "#fff", textDecoration: "none", fontSize: 13, fontWeight: 650 }}><Smartphone size={16}/> Pay with UPI app</a>
+            </div>
+            <div style={{ border: "1px solid var(--border, #dedede)", borderRadius: 14, padding: 16, display: "grid", alignContent: "start", gap: 13 }}>
+              <div style={{ display: "flex", alignItems: "center", gap: 9 }}><LockKeyhole size={19}/><strong>Payment details</strong></div>
+              <div style={{ borderRadius: 10, background: "var(--surface-secondary, #f5f5f5)", padding: 13 }}>
+                <div style={muted}>Paying for</div><strong>{selectedPlan?.name || "Pro"} subscription</strong>
+                <div style={{ marginTop: 9, ...muted }}>UPI ID</div>
+                <div style={{ display: "flex", gap: 8, alignItems: "center", flexWrap: "wrap" }}>
+                  <strong style={{ overflowWrap: "anywhere" }}>{upiId || "Loading…"}</strong>
+                  <button type="button" onClick={() => { if (upiId && navigator.clipboard?.writeText) navigator.clipboard.writeText(upiId).then(() => { setCopied(true); setTimeout(() => setCopied(false), 1800); }).catch(() => {}); }} style={{ border: "1px solid var(--border, #ccc)", background: "transparent", borderRadius: 7, padding: 6, display: "inline-flex", alignItems: "center", gap: 5, cursor: "pointer", color: "inherit" }}><Copy size={14}/>{copied ? "Copied" : "Copy"}</button>
+                </div>
+              </div>
+              <div style={{ display: "flex", alignItems: "flex-start", gap: 9, padding: 12, border: "1px solid var(--border, #dedede)", borderRadius: 10 }}>
+                <CreditCard size={19}/>
+                <div><strong style={{ fontSize: 13 }}>Card / Net Banking</strong><div style={muted}>Online card payments need a verified payment-gateway account. Card checkout is not enabled yet; no card details are collected here.</div></div>
+              </div>
+              <div style={muted}>After successful payment, enter the UTR below. Your subscription activates only after payment verification.</div>
+            </div>
           </div>
-          <label htmlFor="subscription-utr" style={{ fontSize: 13, fontWeight: 600 }}>Payment UTR / transaction reference</label>
-          <input id="subscription-utr" value={utr} onChange={e => setUtr(e.target.value)} minLength={6} maxLength={80} required placeholder="Payment karne ke baad UTR daalo" style={{ width: "100%", boxSizing: "border-box", padding: 12, borderRadius: 9, border: "1px solid var(--border, #ccc)", background: "var(--background, #fff)", color: "inherit" }} />
-          <button className="bb-btn bb-btn-primary" type="submit" disabled={busy || !selectedPlan}>{busy ? "Submitting…" : "Submit payment reference"}</button>
+          <label htmlFor="subscription-utr" style={{ fontSize: 13, fontWeight: 650 }}>UPI transaction reference / UTR</label>
+          <input id="subscription-utr" value={utr} onChange={e => setUtr(e.target.value)} minLength={6} maxLength={80} required placeholder="Enter UTR after payment" style={{ width: "100%", boxSizing: "border-box", padding: 12, borderRadius: 9, border: "1px solid var(--border, #ccc)", background: "var(--background, #fff)", color: "inherit" }} />
+          <button className="bb-btn bb-btn-primary" type="submit" disabled={busy || !selectedPlan}>{busy ? "Submitting…" : "Submit payment for verification"}</button>
           {message && <p role="status" style={{ margin: 0, fontSize: 13 }}>{message}</p>}
         </form>
       )}
