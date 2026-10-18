@@ -16,13 +16,13 @@ async function request(path, options = {}) {
   let res;
   try {
     res = await fetch(`${BASE}${path}`, {
-    headers: {
-      "Content-Type": "application/json",
-      ...(token ? { Authorization: `Bearer ${token}` } : {}),
-    },
-    ...options,
-    signal: controller.signal,
-  });
+      headers: {
+        "Content-Type": "application/json",
+        ...(token ? { Authorization: `Bearer ${token}` } : {}),
+      },
+      ...options,
+      signal: controller.signal,
+    });
   } catch (err) {
     clearTimeout(timeout);
     if (err?.name === "AbortError") throw new Error("Server took too long to respond. Please try again.");
@@ -71,11 +71,12 @@ export const deletePayment = (id) => request(`/payments/${id}`, { method: "DELET
 // ---- Subscription ----
 export const getSubscriptionPlans = () => request("/subscription/plans");
 export const getSubscriptionStatus = () => request("/subscription/status");
+export const createCashfreeOrder = (plan, phone) =>
+  request("/subscription/cashfree/create-order", { method: "POST", body: JSON.stringify({ plan, phone }) });
+export const verifyCashfreeOrder = (orderId) =>
+  request("/subscription/cashfree/verify-order", { method: "POST", body: JSON.stringify({ orderId }) });
 export const submitSubscriptionPayment = (plan, utr) =>
-  request("/subscription/payment-request", {
-    method: "POST",
-    body: JSON.stringify({ plan, utr }),
-  });
+  request("/subscription/payment-request", { method: "POST", body: JSON.stringify({ plan, utr }) });
 export const getSubscriptionPaymentRequests = () => request("/subscription/payment-requests");
 
 // ---- Product catalog ----
@@ -89,16 +90,10 @@ export const createCustomer = (customer) => request("/customers", { method: "POS
 export const updateCustomer = (id, customer) => request("/customers/" + id, { method: "PUT", body: JSON.stringify(customer) });
 export const deleteCustomer = (id) => request("/customers/" + id, { method: "DELETE" });
 
-// ---- Expenses ----
-export const getExpenses = () => request("/expenses");
-export const createExpense = (expense) => request("/expenses", { method: "POST", body: JSON.stringify(expense) });
-export const updateExpense = (id, expense) => request("/expenses/" + id, { method: "PUT", body: JSON.stringify(expense) });
-export const deleteExpense = (id) => request("/expenses/" + id, { method: "DELETE" });
-
 export const getStockMovements = (id) => request("/products/" + id + "/movements");
 export const moveStock = (id, movement) => request("/products/" + id + "/stock", { method: "POST", body: JSON.stringify(movement) });
 
 export const getRecurring = () => request("/recurring");
-export const createRecurring = (item) => request("/recurring",{method:"POST",body:JSON.stringify(item)});
-export const updateRecurring = (id,item) => request("/recurring/"+id,{method:"PUT",body:JSON.stringify(item)});
-export const deleteRecurring = (id) => request("/recurring/"+id,{method:"DELETE"});
+export const createRecurring = (item) => request("/recurring", { method: "POST", body: JSON.stringify(item) });
+export const updateRecurring = (id, item) => request("/recurring/" + id, { method: "PUT", body: JSON.stringify(item) });
+export const deleteRecurring = (id) => request("/recurring/" + id, { method: "DELETE" });
