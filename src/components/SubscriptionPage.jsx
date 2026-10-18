@@ -149,7 +149,7 @@ export default function SubscriptionPage() {
         </div>
       </div>
 
-      <form onSubmit={startCheckout} style={{ ...cardStyle, display: "grid", gap: 14 }}>
+      {!isOwner ? <form onSubmit={startCheckout} style={{ ...cardStyle, display: "grid", gap: 14 }}>
         <div><h3 style={{ margin: "0 0 5px" }}>Secure checkout</h3><p style={{ ...muted, margin: 0 }}>Pay securely through Cashfree. Your plan activates only after the backend verifies a successful payment.</p></div>
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(230px, 1fr))", gap: 16 }}>
           <div style={{ border: "1px solid var(--border, #dedede)", borderRadius: 14, padding: 16, display: "grid", alignContent: "start", gap: 10 }}>
@@ -169,7 +169,7 @@ export default function SubscriptionPage() {
         <button className="bb-btn bb-btn-primary" type="submit" disabled={busy || !selectedPlan || isOwner}>{busy ? "Opening secure checkout…" : "Continue to Cashfree · ₹" + amount}</button>
         {pendingOrderId && <button type="button" className="bb-btn" onClick={checkPayment} disabled={busy} style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", gap: 8 }}><RefreshCw size={15}/> Check payment status</button>}
         {message && <p role="status" style={{ margin: 0, fontSize: 13 }}>{message}</p>}
-      </form>
+      </form> : <div role="status" style={{ ...cardStyle, display: "flex", alignItems: "center", gap: 12 }}><Crown size={22}/><div><strong>Owner account par payment ki zaroorat nahi hai.</strong><div style={muted}>Paid checkout ko test karne ke liye customer account se sign in karein.</div></div></div>}
     </div>
   );
 }
