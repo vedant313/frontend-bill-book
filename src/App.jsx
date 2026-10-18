@@ -262,10 +262,20 @@ export default function App() {
     <div>
       {subscriptionStatus && subscriptionStatus.mode !== "owner" && subscriptionStatus.status === "expired" && (
         <div role="alert" style={{ background: "#fff1f0", color: "#a52822", padding: "12px 16px", fontSize: 13, textAlign: "center" }}>
-          Your {subscriptionStatus.expiredPlan || "paid"} subscription has expired. You are on the Free plan now. <button onClick={() => goto("subscription")} style={{ marginLeft: 8, fontWeight: 700, textDecoration: "underline" }}>Renew now</button>
+          Your {subscriptionStatus.expiredPlan || "paid"} subscription has expired. Your saved data is still available; Free plan limits now apply. <button onClick={() => goto("subscription")} style={{ marginLeft: 8, fontWeight: 700, textDecoration: "underline" }}>View plans</button>
         </div>
       )}
-      {subscriptionStatus && subscriptionStatus.mode !== "owner" && subscriptionStatus.status === "active" && subscriptionStatus.expiresAt && subscriptionStatus.daysRemaining !== null && subscriptionStatus.daysRemaining <= 7 && (
+      {subscriptionStatus && subscriptionStatus.mode === "trial" && subscriptionStatus.trialDaysRemaining !== null && subscriptionStatus.trialDaysRemaining <= 3 && (
+        <div role="status" style={{ background: "#fff7e6", color: "#8a4b08", padding: "12px 16px", fontSize: 13, textAlign: "center" }}>
+          {subscriptionStatus.trialDaysRemaining === 0 ? "Your 14-day full-access trial ends today." : "Your full-access trial ends in " + subscriptionStatus.trialDaysRemaining + " day(s)."} After that, Free plan limits apply. <button onClick={() => goto("subscription")} style={{ marginLeft: 8, fontWeight: 700, textDecoration: "underline" }}>View plans</button>
+        </div>
+      )}
+      {subscriptionStatus && subscriptionStatus.mode === "free" && subscriptionStatus.trialExpired && subscriptionStatus.status !== "expired" && (
+        <div role="status" style={{ background: "#f3f4f6", color: "#333", padding: "12px 16px", fontSize: 13, textAlign: "center" }}>
+          Your 14-day trial has ended. You are now on the Free plan (5 invoices, 3 estimates, 5 payment entries). <button onClick={() => goto("subscription")} style={{ marginLeft: 8, fontWeight: 700, textDecoration: "underline" }}>View plans</button>
+        </div>
+      )}
+      {subscriptionStatus && subscriptionStatus.mode !== "owner" && subscriptionStatus.status === "active" && subscriptionStatus.mode === "paid" && subscriptionStatus.expiresAt && subscriptionStatus.daysRemaining !== null && subscriptionStatus.daysRemaining <= 7 && (
         <div role="status" style={{ background: "#fff7e6", color: "#8a4b08", padding: "12px 16px", fontSize: 13, textAlign: "center" }}>
           Your {subscriptionStatus.planName} subscription {subscriptionStatus.daysRemaining <= 0 ? "expires today" : "expires in " + subscriptionStatus.daysRemaining + " day(s)"} ({new Date(subscriptionStatus.expiresAt).toLocaleDateString()}). <button onClick={() => goto("subscription")} style={{ marginLeft: 8, fontWeight: 700, textDecoration: "underline" }}>Renew</button>
         </div>
