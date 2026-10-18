@@ -12,7 +12,8 @@ export default function SubscriptionPage() {
   const [selected, setSelected] = useState("pro");
   const [utr, setUtr] = useState("");
   const [message, setMessage] = useState("");
-  const [busy, setBusy] = useState(false);\n  const [copied, setCopied] = useState(false);
+  const [busy, setBusy] = useState(false);
+  const [copied, setCopied] = useState(false);
 
   const refresh = () => api.getSubscriptionStatus().then(setSubscription).catch(() => {});
   useEffect(() => {
