@@ -111,8 +111,7 @@ export default function SubscriptionPage() {
         </div>
       </div>
 
-      (
-        <form onSubmit={submit} style={{ ...cardStyle, display: "grid", gap: 12 }}>
+      <form onSubmit={submit} style={{ ...cardStyle, display: "grid", gap: 12 }}>
           <div><h3 style={{ margin: "0 0 5px" }}>{isOwner ? "Payment flow preview" : "Upgrade or renew"}</h3><p style={{ ...muted, margin: 0 }}>{isOwner ? "Owner access lifetime free rahega. Yahan se payment flow test kar sakte ho; owner benefits par koi asar nahi padega." : "UPI payment ke baad UTR submit karo. Verification ke baad hi paid plan activate hoga."}</p></div>
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(250px, 1fr))", gap: 16, alignItems: "stretch" }}>
             <div style={{ border: "1px solid var(--border, #dedede)", borderRadius: 14, padding: 16, display: "grid", justifyItems: "center", alignContent: "start", gap: 10, textAlign: "center" }}>
@@ -145,8 +144,7 @@ export default function SubscriptionPage() {
           <input id="subscription-utr" value={utr} onChange={e => setUtr(e.target.value)} minLength={6} maxLength={80} required placeholder="Enter UTR after payment" style={{ width: "100%", boxSizing: "border-box", padding: 12, borderRadius: 9, border: "1px solid var(--border, #ccc)", background: "var(--background, #fff)", color: "inherit" }} />
           <button className="bb-btn bb-btn-primary" type="submit" disabled={busy || !selectedPlan}>{busy ? "Submitting…" : "Submit payment for verification"}</button>
           {message && <p role="status" style={{ margin: 0, fontSize: 13 }}>{message}</p>}
-        </form>
-      )}
+      </form>
     </div>
   );
 }
