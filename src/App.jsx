@@ -30,6 +30,16 @@ import SupportPage from "./components/SupportPage";
 export default function App() {
   const [authChecked, setAuthChecked] = useState(false);
   const [user, setUser] = useState(null);
+  const [subscriptionStatus, setSubscriptionStatus] = useState(null);
+
+  useEffect(() => {
+    if (!user) { setSubscriptionStatus(null); return; }
+    let cancelled = false;
+    const loadSubscription = () => api.getSubscriptionStatus().then((s) => { if (!cancelled) setSubscriptionStatus(s); }).catch(() => {});
+    loadSubscription();
+    const interval = setInterval(loadSubscription, 5 * 60 * 1000);
+    return () => { cancelled = true; clearInterval(interval); };
+  }, [user]);
 
   const [loaded, setLoaded] = useState(false);
   const [error, setError] = useState("");
@@ -250,6 +260,16 @@ export default function App() {
 
   return (
     <div>
+      {subscriptionStatus && subscriptionStatus.mode !== "owner" && subscriptionStatus.status === "expired" && (
+        <div role="alert" style={{ background: "#fff1f0", color: "#a52822", padding: "12px 16px", fontSize: 13, textAlign: "center" }}>
+          Your {subscriptionStatus.expiredPlan || "paid"} subscription has expired. You are on the Free plan now. <button onClick={() => goto("subscription")} style={{ marginLeft: 8, fontWeight: 700, textDecoration: "underline" }}>Renew now</button>
+        </div>
+      )}
+      {subscriptionStatus && subscriptionStatus.mode !== "owner" && subscriptionStatus.status === "active" && subscriptionStatus.expiresAt && subscriptionStatus.daysRemaining !== null && subscriptionStatus.daysRemaining <= 7 && (
+        <div role="status" style={{ background: "#fff7e6", color: "#8a4b08", padding: "12px 16px", fontSize: 13, textAlign: "center" }}>
+          Your {subscriptionStatus.planName} subscription {subscriptionStatus.daysRemaining <= 0 ? "expires today" : "expires in " + subscriptionStatus.daysRemaining + " day(s)"} ({new Date(subscriptionStatus.expiresAt).toLocaleDateString()}). <button onClick={() => goto("subscription")} style={{ marginLeft: 8, fontWeight: 700, textDecoration: "underline" }}>Renew</button>
+        </div>
+      )}
       {error && (
         <div style={{ background: "#FBEBE8", color: "#B94A3F", padding: "10px 16px", fontSize: 13, textAlign: "center" }}>{error}</div>
       )}
