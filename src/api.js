@@ -1,10 +1,6 @@
 // Thin wrapper around the backend REST API.
-// In dev, Vite proxies /api to http://localhost:4000 (see vite.config.js).
-// In production, set VITE_API_BASE to your deployed backend URL.
-
 const BASE = import.meta.env.VITE_API_BASE || "https://backend1-tx8q.onrender.com/api";
 const TOKEN_KEY = "billbook_token";
-
 export const getToken = () => localStorage.getItem(TOKEN_KEY) || "";
 export const setToken = (token) => localStorage.setItem(TOKEN_KEY, token);
 export const clearToken = () => localStorage.removeItem(TOKEN_KEY);
@@ -16,12 +12,8 @@ async function request(path, options = {}) {
   let res;
   try {
     res = await fetch(`${BASE}${path}`, {
-      headers: {
-        "Content-Type": "application/json",
-        ...(token ? { Authorization: `Bearer ${token}` } : {}),
-      },
-      ...options,
-      signal: controller.signal,
+      headers: { "Content-Type": "application/json", ...(token ? { Authorization: `Bearer ${token}` } : {}) },
+      ...options, signal: controller.signal,
     });
   } catch (err) {
     clearTimeout(timeout);
@@ -31,74 +23,48 @@ async function request(path, options = {}) {
   clearTimeout(timeout);
   if (!res.ok) {
     let message = `Request failed (${res.status})`;
-    try {
-      const data = await res.json();
-      if (data?.error) message = data.error;
-    } catch {
-      /* ignore non-JSON error bodies */
-    }
-    const err = new Error(message);
-    err.status = res.status;
-    throw err;
+    try { const data = await res.json(); if (data?.error) message = data.error; } catch {}
+    const err = new Error(message); err.status = res.status; throw err;
   }
   if (res.status === 204) return null;
   return res.json();
 }
-
-// ---- Auth ----
-export const signup = (name, email, password) =>
-  request("/auth/signup", { method: "POST", body: JSON.stringify({ name, email, password }) });
-export const login = (email, password) =>
-  request("/auth/login", { method: "POST", body: JSON.stringify({ email, password }) });
+export const signup = (name, email, password) => request("/auth/signup", { method: "POST", body: JSON.stringify({ name, email, password }) });
+export const login = (email, password) => request("/auth/login", { method: "POST", body: JSON.stringify({ email, password }) });
+export const sendPhoneOtp = (phone) => request("/auth/phone-otp/send", { method: "POST", body: JSON.stringify({ phone }) });
+export const verifyPhoneOtp = (phone, otp, profile = {}) => request("/auth/phone-otp/verify", { method: "POST", body: JSON.stringify({ phone, otp, ...profile }) });
 export const me = () => request("/auth/me");
 
-// ---- Business profile ----
 export const getBusiness = () => request("/business");
 export const saveBusiness = (business) => request("/business", { method: "PUT", body: JSON.stringify(business) });
-
-// ---- Documents (invoices & estimates) ----
 export const getDocuments = (type) => request(`/documents${type ? `?type=${type}` : ""}`);
 export const createDocument = (doc) => request("/documents", { method: "POST", body: JSON.stringify(doc) });
 export const updateDocument = (id, doc) => request(`/documents/${id}`, { method: "PUT", body: JSON.stringify(doc) });
 export const deleteDocument = (id) => request(`/documents/${id}`, { method: "DELETE" });
-
-// ---- Payments ----
 export const getPayments = () => request("/payments");
 export const createPayment = (p) => request("/payments", { method: "POST", body: JSON.stringify(p) });
 export const updatePayment = (id, p) => request(`/payments/${id}`, { method: "PUT", body: JSON.stringify(p) });
 export const deletePayment = (id) => request(`/payments/${id}`, { method: "DELETE" });
-
-// ---- Subscription ----
 export const getSubscriptionPlans = () => request("/subscription/plans");
 export const getSubscriptionStatus = () => request("/subscription/status");
-export const createCashfreeOrder = (plan, phone) =>
-  request("/subscription/cashfree/create-order", { method: "POST", body: JSON.stringify({ plan, phone }) });
-export const verifyCashfreeOrder = (orderId) =>
-  request("/subscription/cashfree/verify-order", { method: "POST", body: JSON.stringify({ orderId }) });
-export const submitSubscriptionPayment = (plan, utr) =>
-  request("/subscription/payment-request", { method: "POST", body: JSON.stringify({ plan, utr }) });
+export const createCashfreeOrder = (plan, phone) => request("/subscription/cashfree/create-order", { method: "POST", body: JSON.stringify({ plan, phone }) });
+export const verifyCashfreeOrder = (orderId) => request("/subscription/cashfree/verify-order", { method: "POST", body: JSON.stringify({ orderId }) });
+export const submitSubscriptionPayment = (plan, utr) => request("/subscription/payment-request", { method: "POST", body: JSON.stringify({ plan, utr }) });
 export const getSubscriptionPaymentRequests = () => request("/subscription/payment-requests");
-
-// ---- Product catalog ----
 export const getProducts = () => request("/products");
 export const createProduct = (product) => request("/products", { method: "POST", body: JSON.stringify(product) });
 export const updateProduct = (id, product) => request("/products/" + id, { method: "PUT", body: JSON.stringify(product) });
 export const deleteProduct = (id) => request("/products/" + id, { method: "DELETE" });
-// ---- Customers ----
 export const getCustomers = () => request("/customers");
 export const createCustomer = (customer) => request("/customers", { method: "POST", body: JSON.stringify(customer) });
 export const updateCustomer = (id, customer) => request("/customers/" + id, { method: "PUT", body: JSON.stringify(customer) });
 export const deleteCustomer = (id) => request("/customers/" + id, { method: "DELETE" });
-
 export const getStockMovements = (id) => request("/products/" + id + "/movements");
 export const moveStock = (id, movement) => request("/products/" + id + "/stock", { method: "POST", body: JSON.stringify(movement) });
-
 export const getRecurring = () => request("/recurring");
 export const createRecurring = (item) => request("/recurring", { method: "POST", body: JSON.stringify(item) });
 export const updateRecurring = (id, item) => request("/recurring/" + id, { method: "PUT", body: JSON.stringify(item) });
 export const deleteRecurring = (id) => request("/recurring/" + id, { method: "DELETE" });
-
-// ---- Expenses ----
 export const getExpenses = () => request("/expenses");
 export const createExpense = (expense) => request("/expenses", { method: "POST", body: JSON.stringify(expense) });
 export const updateExpense = (id, expense) => request("/expenses/" + id, { method: "PUT", body: JSON.stringify(expense) });
