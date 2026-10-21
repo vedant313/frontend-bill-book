@@ -1,6 +1,9 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { FileText } from "lucide-react";
+import { RecaptchaVerifier, signInWithPhoneNumber } from "firebase/auth";
+import { firebaseAuth } from "../firebase";
 import * as api from "../api";
+import { firebasePhoneLogin } from "../firebaseApi";
 
 export default function Login({ onAuthed, mode: initialMode = "login", onClose, onSupport }) {
   const [mode, setMode] = useState(initialMode);
@@ -9,31 +12,57 @@ export default function Login({ onAuthed, mode: initialMode = "login", onClose, 
   const [password, setPassword] = useState("");
   const [phone, setPhone] = useState("");
   const [otp, setOtp] = useState("");
-  const [otpSent, setOtpSent] = useState(false);
+  const [confirmation, setConfirmation] = useState(null);
   const [error, setError] = useState("");
   const [notice, setNotice] = useState("");
   const [busy, setBusy] = useState(false);
+  const recaptchaRef = useRef(null);
+  const verifierRef = useRef(null);
 
+  const resetRecaptcha = () => {
+    if (verifierRef.current) { try { verifierRef.current.clear(); } catch {} verifierRef.current = null; }
+    if (recaptchaRef.current) recaptchaRef.current.innerHTML = "";
+  };
   const switchMode = (nextMode) => {
-    setMode(nextMode); setError(""); setNotice(""); setOtpSent(false); setOtp("");
+    resetRecaptcha(); setMode(nextMode); setError(""); setNotice(""); setConfirmation(null); setOtp("");
+  };
+  const getE164Phone = (value) => {
+    const cleaned = String(value || "").trim().replace(/[\s()-]/g, "");
+    if (/^\+91\d{10}$/.test(cleaned)) return cleaned;
+    if (/^91\d{10}$/.test(cleaned)) return `+${cleaned}`;
+    if (/^\d{10}$/.test(cleaned)) return `+91${cleaned}`;
+    throw new Error("Enter a valid 10-digit Indian mobile number.");
   };
   const submit = async (e) => {
     e.preventDefault(); setError(""); setNotice(""); setBusy(true);
     try {
       if (mode === "phone") {
-        if (!otpSent) {
-          await api.sendPhoneOtp(phone);
-          setOtpSent(true);
-          setNotice("OTP sent if the number is eligible. It expires in 5 minutes.");
+        if (!confirmation) {
+          const e164 = getE164Phone(phone);
+          resetRecaptcha();
+          verifierRef.current = new RecaptchaVerifier(firebaseAuth, recaptchaRef.current, { size: "normal" });
+          await verifierRef.current.render();
+          const result = await signInWithPhoneNumber(firebaseAuth, e164, verifierRef.current);
+          setConfirmation(result);
+          setNotice("Firebase OTP sent. Enter the 6-digit code from your SMS.");
           return;
         }
-        const result = await api.verifyPhoneOtp(phone, otp, { name, email });
+        if (!/^\d{6}$/.test(otp)) throw new Error("Enter the 6-digit OTP.");
+        const credential = await confirmation.confirm(otp);
+        const idToken = await credential.user.getIdToken();
+        const result = await firebasePhoneLogin(idToken, { name, email });
         api.setToken(result.token); onAuthed(result.user); return;
       }
       const result = mode === "signup" ? await api.signup(name, email, password) : await api.login(email, password);
       api.setToken(result.token); onAuthed(result.user);
-    } catch (err) { setError(err.message || "Something went wrong. Please try again."); }
-    finally { setBusy(false); }
+    } catch (err) {
+      const code = String(err?.code || "");
+      if (code.includes("auth/invalid-phone-number")) setError("Enter a valid phone number with India country code.");
+      else if (code.includes("auth/too-many-requests")) setError("Too many OTP attempts. Please wait and try again later.");
+      else if (code.includes("auth/invalid-verification-code")) setError("Incorrect OTP. Check the code and try again.");
+      else setError(err.message || "Something went wrong. Please try again.");
+      if (mode === "phone" && !confirmation) resetRecaptcha();
+    } finally { setBusy(false); }
   };
 
   return (
@@ -46,51 +75,31 @@ export default function Login({ onAuthed, mode: initialMode = "login", onClose, 
         </div>
         <div style={{ display: "flex", borderRadius: 8, border: "1px solid var(--border)", overflow: "hidden", marginBottom: 20 }}>
           {[{ value: "login", label: "Email Login" }, { value: "signup", label: "Sign Up" }, { value: "phone", label: "Phone OTP" }].map((item) => (
-            <button key={item.value} type="button" onClick={() => switchMode(item.value)} className="bb-btn"
-              style={{ flex: 1, borderRadius: 0, border: "none", padding: "9px 4px", fontSize: 12, background: mode === item.value ? "var(--navy)" : "transparent", color: mode === item.value ? "#fff" : "var(--ink)", justifyContent: "center" }}>
-              {item.label}
-            </button>
+            <button key={item.value} type="button" onClick={() => switchMode(item.value)} className="bb-btn" style={{ flex: 1, borderRadius: 0, border: "none", padding: "9px 4px", fontSize: 12, background: mode === item.value ? "var(--navy)" : "transparent", color: mode === item.value ? "#fff" : "var(--ink)", justifyContent: "center" }}>{item.label}</button>
           ))}
         </div>
         <form onSubmit={submit}>
           {mode === "phone" ? <>
-            <div className="bb-field"><label>Mobile Number</label>
-              <input className="bb-input" type="tel" inputMode="numeric" autoComplete="tel-national" value={phone} onChange={(e) => setPhone(e.target.value)} required pattern="[+0-9 ()-]{10,16}" placeholder="9876543210" disabled={otpSent} />
-            </div>
-            {otpSent && <>
-              <div className="bb-field"><label>6-digit OTP</label>
-                <input className="bb-input" type="text" inputMode="numeric" autoComplete="one-time-code" value={otp} onChange={(e) => setOtp(e.target.value.replace(/\D/g, "").slice(0, 6))} required pattern="[0-9]{6}" maxLength={6} placeholder="Enter OTP" />
-              </div>
-              <div style={{ background: "var(--paper)", borderRadius: 8, padding: 10, fontSize: 12, color: "var(--muted)", marginBottom: 12 }}>New account? Enter your name and email below. If your phone is already linked to an account, leave these blank.</div>
-              <div className="bb-field"><label>Name (new accounts only)</label><input className="bb-input" autoComplete="name" value={name} onChange={(e) => setName(e.target.value)} placeholder="Your name" /></div>
-              <div className="bb-field"><label>Email (new accounts only)</label><input className="bb-input" type="email" autoComplete="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="you@business.com" /></div>
+            <div className="bb-field"><label>Mobile Number</label><input className="bb-input" type="tel" inputMode="tel" autoComplete="tel-national" value={phone} onChange={(e) => setPhone(e.target.value)} required pattern="[+0-9 ()-]{10,16}" placeholder="9876543210" disabled={!!confirmation} /></div>
+            <div ref={recaptchaRef} style={{ marginBottom: 12 }} />
+            {confirmation && <>
+              <div className="bb-field"><label>6-digit OTP</label><input className="bb-input" type="text" inputMode="numeric" autoComplete="one-time-code" value={otp} onChange={(e) => setOtp(e.target.value.replace(/\D/g, "").slice(0, 6))} required pattern="[0-9]{6}" maxLength={6} placeholder="Enter OTP" /></div>
+              <div style={{ background: "var(--paper)", borderRadius: 8, padding: 10, fontSize: 12, color: "var(--muted)", marginBottom: 12 }}>New account? Enter your name and a unique email below. Existing email accounts should continue using email login until phone linking is added.</div>
+              <div className="bb-field"><label>Name (new accounts)</label><input className="bb-input" autoComplete="name" value={name} onChange={(e) => setName(e.target.value)} placeholder="Your name" /></div>
+              <div className="bb-field"><label>Email (new accounts)</label><input className="bb-input" type="email" autoComplete="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="you@business.com" /></div>
             </>}
           </> : <>
-            {mode === "signup" && <div className="bb-field"><label>Your Name</label><input className="bb-input" autoComplete="name" value={name} onChange={(e) => setName(e.target.value)} required placeholder="Rohit Sharma" /></div>}
+            {mode === "signup" && <div className="bb-field"><label>Your Name</label><input className="bb-input" autoComplete="name" value={name} onChange={(e) => setName(e.target.value)} required placeholder="Your name" /></div>}
             <div className="bb-field"><label>Email</label><input className="bb-input" type="email" autoComplete="email" value={email} onChange={(e) => setEmail(e.target.value)} required placeholder="you@business.com" /></div>
             <div className="bb-field"><label>Password</label><input className="bb-input" type="password" autoComplete={mode === "signup" ? "new-password" : "current-password"} value={password} onChange={(e) => setPassword(e.target.value)} required minLength={6} placeholder="At least 6 characters" /></div>
           </>}
           {error && <div role="alert" style={{ background: "var(--red-bg)", color: "var(--red)", padding: "9px 12px", borderRadius: 8, fontSize: 12.5, marginBottom: 12 }}>{error}</div>}
           {notice && <div role="status" style={{ background: "var(--paper)", color: "var(--ink)", padding: "9px 12px", borderRadius: 8, fontSize: 12.5, marginBottom: 12 }}>{notice}</div>}
-          <button type="submit" className="bb-btn bb-btn-primary" style={{ width: "100%", justifyContent: "center" }} disabled={busy}>
-            {busy ? "Please wait…" : mode === "phone" ? (otpSent ? "Verify OTP & Continue" : "Send OTP") : mode === "signup" ? "Create Account" : "Log In"}
-          </button>
-          {mode === "phone" && otpSent && <button type="button" className="bb-btn bb-btn-ghost" style={{ width: "100%", justifyContent: "center", marginTop: 8 }} disabled={busy} onClick={async () => {
-            setError(""); setNotice(""); setBusy(true);
-            try { await api.sendPhoneOtp(phone); setNotice("A new OTP has been requested. Check your messages."); setOtp(""); }
-            catch (err) { setError(err.message || "Could not resend OTP."); }
-            finally { setBusy(false); }
-          }}>Resend OTP</button>}
+          <button type="submit" className="bb-btn bb-btn-primary" style={{ width: "100%", justifyContent: "center" }} disabled={busy}>{busy ? "Please wait…" : mode === "phone" ? (confirmation ? "Verify OTP & Continue" : "Send OTP") : mode === "signup" ? "Create Account" : "Log In"}</button>
+          {mode === "phone" && confirmation && <button type="button" className="bb-btn bb-btn-ghost" style={{ width: "100%", justifyContent: "center", marginTop: 8 }} disabled={busy} onClick={() => { resetRecaptcha(); setConfirmation(null); setOtp(""); setNotice(""); }}>Change number / retry</button>}
         </form>
-        <div style={{ textAlign: "center", marginTop: 14, fontSize: 12.5, color: "var(--muted)" }}>
-          {onSupport && <button type="button" onClick={onSupport} style={{ background: "none", border: "none", color: "var(--teal)", fontWeight: 700, cursor: "pointer", padding: 0, fontSize: 12.5 }}>Forgot password or need help?</button>}
-        </div>
-        {mode !== "phone" ? <div style={{ textAlign: "center", marginTop: 10, fontSize: 12.5, color: "var(--muted)" }}>
-          {mode === "signup" ? "Already have an account?" : "New to Nexsa Bill?"}{" "}
-          <button type="button" onClick={() => switchMode(mode === "signup" ? "login" : "signup")} style={{ background: "none", border: "none", color: "var(--teal)", fontWeight: 600, cursor: "pointer", padding: 0, fontSize: 12.5 }}>
-            {mode === "signup" ? "Log in" : "Sign up"}
-          </button>
-        </div> : <div style={{ textAlign: "center", marginTop: 10, fontSize: 11.5, color: "var(--muted)" }}>Existing email accounts and saved data remain unchanged.</div>}
+        <div style={{ textAlign: "center", marginTop: 14, fontSize: 12.5, color: "var(--muted)" }}>{onSupport && <button type="button" onClick={onSupport} style={{ background: "none", border: "none", color: "var(--teal)", fontWeight: 700, cursor: "pointer", padding: 0, fontSize: 12.5 }}>Forgot password or need help?</button>}</div>
+        {mode !== "phone" ? <div style={{ textAlign: "center", marginTop: 10, fontSize: 12.5, color: "var(--muted)" }}>{mode === "signup" ? "Already have an account?" : "New to Nexsa Bill?"}{" "}<button type="button" onClick={() => switchMode(mode === "signup" ? "login" : "signup")} style={{ background: "none", border: "none", color: "var(--teal)", fontWeight: 600, cursor: "pointer", padding: 0, fontSize: 12.5 }}>{mode === "signup" ? "Log in" : "Sign up"}</button></div> : <div style={{ textAlign: "center", marginTop: 10, fontSize: 11.5, color: "var(--muted)" }}>Phone verification is handled by Firebase. Existing email accounts and saved data are not modified.</div>}
       </div>
     </div>
   );
