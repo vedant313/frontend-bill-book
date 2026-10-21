@@ -11,8 +11,8 @@ async function request(path, options = {}) {
   const timeout = setTimeout(() => controller.abort(), 25000);
   let res;
   try {
-    res = await fetch(\`\${BASE}\${path}\`, {
-      headers: { "Content-Type": "application/json", ...(token ? { Authorization: \`Bearer \${token}\` } : {}) },
+    res = await fetch(`${BASE}${path}`, {
+      headers: { "Content-Type": "application/json", ...(token ? { Authorization: `Bearer ${token}` } : {}) },
       ...options, signal: controller.signal,
     });
   } catch (err) {
@@ -22,7 +22,7 @@ async function request(path, options = {}) {
   }
   clearTimeout(timeout);
   if (!res.ok) {
-    let message = \`Request failed (\${res.status})\`;
+    let message = `Request failed (${res.status})`;
     try { const data = await res.json(); if (data?.error) message = data.error; } catch {}
     const err = new Error(message); err.status = res.status; throw err;
   }
@@ -37,14 +37,14 @@ export const me = () => request("/auth/me");
 
 export const getBusiness = () => request("/business");
 export const saveBusiness = (business) => request("/business", { method: "PUT", body: JSON.stringify(business) });
-export const getDocuments = (type) => request(\`/documents\${type ? \`?type=\${type}\` : ""}\`);
+export const getDocuments = (type) => request(`/documents${type ? `?type=${type}` : ""}`);
 export const createDocument = (doc) => request("/documents", { method: "POST", body: JSON.stringify(doc) });
-export const updateDocument = (id, doc) => request(\`/documents/\${id}\`, { method: "PUT", body: JSON.stringify(doc) });
-export const deleteDocument = (id) => request(\`/documents/\${id}\`, { method: "DELETE" });
+export const updateDocument = (id, doc) => request(`/documents/${id}`, { method: "PUT", body: JSON.stringify(doc) });
+export const deleteDocument = (id) => request(`/documents/${id}`, { method: "DELETE" });
 export const getPayments = () => request("/payments");
 export const createPayment = (p) => request("/payments", { method: "POST", body: JSON.stringify(p) });
-export const updatePayment = (id, p) => request(\`/payments/\${id}\`, { method: "PUT", body: JSON.stringify(p) });
-export const deletePayment = (id) => request(\`/payments/\${id}\`, { method: "DELETE" });
+export const updatePayment = (id, p) => request(`/payments/${id}`, { method: "PUT", body: JSON.stringify(p) });
+export const deletePayment = (id) => request(`/payments/${id}`, { method: "DELETE" });
 export const getSubscriptionPlans = () => request("/subscription/plans");
 export const getSubscriptionStatus = () => request("/subscription/status");
 export const createCashfreeOrder = (plan, phone) => request("/subscription/cashfree/create-order", { method: "POST", body: JSON.stringify({ plan, phone }) });
