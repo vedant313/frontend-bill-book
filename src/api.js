@@ -34,6 +34,7 @@ export const login = (email, password) => request("/auth/login", { method: "POST
 export const sendPhoneOtp = (phone) => request("/auth/phone-otp/send", { method: "POST", body: JSON.stringify({ phone }) });
 export const verifyPhoneOtp = (phone, otp, profile = {}) => request("/auth/phone-otp/verify", { method: "POST", body: JSON.stringify({ phone, otp, ...profile }) });
 export const me = () => request("/auth/me");
+export const linkFirebasePhone = (idToken) => request("/auth/firebase-phone/link", { method: "POST", body: JSON.stringify({ idToken }) });
 
 export const getBusiness = () => request("/business");
 export const saveBusiness = (business) => request("/business", { method: "PUT", body: JSON.stringify(business) });
