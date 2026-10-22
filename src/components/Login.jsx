@@ -80,7 +80,7 @@ export default function Login({ onAuthed, mode: initialMode = "login", onClose, 
         </div>
         <form onSubmit={submit}>
           {mode === "phone" ? <>
-            <div className="bb-field"><label>Mobile Number</label><input className="bb-input" type="tel" inputMode="tel" autoComplete="tel-national" value={phone} onChange={(e) => setPhone(e.target.value)} required pattern="[+0-9 ()-]{10,16}" placeholder="9876543210" disabled={!!confirmation} /></div>
+            <div className="bb-field"><label>Mobile Number</label><input className="bb-input" type="tel" inputMode="tel" autoComplete="tel-national" value={phone} onChange={(e) => setPhone(e.target.value)} required placeholder="9876543210" disabled={!!confirmation} /></div>
             <div ref={recaptchaRef} style={{ marginBottom: 12 }} />
             {confirmation && <>
               <div className="bb-field"><label>6-digit OTP</label><input className="bb-input" type="text" inputMode="numeric" autoComplete="one-time-code" value={otp} onChange={(e) => setOtp(e.target.value.replace(/\D/g, "").slice(0, 6))} required pattern="[0-9]{6}" maxLength={6} placeholder="Enter OTP" /></div>
