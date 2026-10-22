@@ -76,4 +76,5 @@ export const adminOverview = () => request("/admin/overview");
 export const adminUsers = (q = "", page = 1) => request("/admin/users?q=" + encodeURIComponent(q) + "&page=" + page);
 export const adminSetUserStatus = (id, status) => request("/admin/users/" + encodeURIComponent(id) + "/status", { method: "PATCH", body: JSON.stringify({ status }) });
 export const adminSetSubscription = (id, plan, days = 30) => request("/admin/users/" + encodeURIComponent(id) + "/subscription", { method: "PATCH", body: JSON.stringify({ plan, days }) });
+export const adminDeleteUser = (id, confirmEmail) => request("/admin/users/" + encodeURIComponent(id), { method: "DELETE", body: JSON.stringify({ confirmEmail }) });
 export const adminAudit = () => request("/admin/audit");
