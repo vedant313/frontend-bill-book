@@ -51,10 +51,19 @@ export default function Login({ onAuthed, mode: initialMode = "login", onClose, 
           setNotice("Firebase OTP sent. Enter the 6-digit code from your SMS.");
           return;
         }
-        if (!/^\d{6}$/.test(otp)) throw new Error("Enter the 6-digit OTP.");
-        const credential = await confirmation.confirm(otp);
-        const idToken = await credential.user.getIdToken();
-        const result = await firebasePhoneLogin(idToken, { name });
+        let idToken = verifiedIdToken;
+        if (!idToken) {
+          if (!/^\d{6}$/.test(otp)) throw new Error("Enter the 6-digit OTP.");
+          const credential = await confirmation.confirm(otp);
+          idToken = await credential.user.getIdToken();
+          setVerifiedIdToken(idToken);
+        }
+        const result = await firebasePhoneLogin(idToken, { name, email, password });
+        if (result.requiresSignup) {
+          setSignupDetailsNeeded(true);
+          setNotice("Phone verified! Enter your name, email and a password (at least 6 characters) to complete sign-up.");
+          return;
+        }
         api.setToken(result.token); onAuthed(result.user); return;
       }
       if (mode === "email") {
