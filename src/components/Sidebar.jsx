@@ -1,4 +1,4 @@
-import { LayoutDashboard, FileText, FilePlus2, Wallet, Settings as SettingsIcon, Palette, LogOut, FileSpreadsheet, Paintbrush, Crown, Package, Users, ReceiptText, LifeBuoy, ShieldCheck } from "lucide-react";
+import { LayoutDashboard, FileText, FilePlus2, Wallet, Settings as SettingsIcon, Palette, LogOut, FileSpreadsheet, Paintbrush, Crown, Package, Users, ReceiptText, LifeBuoy, ShieldCheck, Building2 } from "lucide-react";
 
 export default function Sidebar({ page, listType, goto, sidebarOpen, setSidebarOpen, user, onLogout }) {
   const isActive = (p, lt) => page === p && (!lt || listType === lt);
@@ -28,6 +28,7 @@ export default function Sidebar({ page, listType, goto, sidebarOpen, setSidebarO
           <button className={`bb-nav-item ${isActive("list", "payment") ? "active" : ""}`} onClick={() => goto("list", { listType: "payment" })}>
             <Wallet size={16} /> Payment In
           </button>
+          <button className={`bb-nav-item ${isActive("companies") ? "active" : ""}`} onClick={() => goto("companies")}><Building2 size={16} /> Companies / Firms</button>
           <button className={`bb-nav-item ${isActive("products") ? "active" : ""}`} onClick={() => goto("products")}><Package size={16} /> Products</button>
           <button className={`bb-nav-item ${isActive("customers") ? "active" : ""}`} onClick={() => goto("customers")}><Users size={16} /> Customers</button>
           <button className={`bb-nav-item ${isActive("expenses") ? "active" : ""}`} onClick={() => goto("expenses")}><ReceiptText size={16} /> Expenses</button>
