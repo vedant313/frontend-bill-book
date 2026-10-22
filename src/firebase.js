@@ -2,7 +2,7 @@ import { initializeApp } from "firebase/app";
 import { getAuth } from "firebase/auth";
 
 const firebaseConfig = {
-  apiKey: "AIzaSyCTpsXejwBGbXNiSm6QykBVgGDAwOCSSX4",
+  apiKey: "AIzaSyB5r2-poTjpIJP3-DpbsEFT6YhndC45fm4",
   authDomain: "nexsa-bills.firebaseapp.com",
   projectId: "nexsa-bills",
   storageBucket: "nexsa-bills.firebasestorage.app",
