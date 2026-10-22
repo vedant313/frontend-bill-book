@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Search, Users, CreditCard, UserCheck, Clock3, RefreshCw } from "lucide-react";
+import { Search, Users, CreditCard, UserCheck, Clock3, RefreshCw, Trash2 } from "lucide-react";
 import * as api from "../api";
 
 const cardStyle = { background: "var(--card, #fff)", border: "1px solid var(--border)", borderRadius: 12, padding: 16 };
@@ -33,6 +33,22 @@ export default function AdminPage() {
     catch (e) { setError(e.message || "Could not update account."); }
     finally { setBusyId(""); }
   };
+  const deleteUser = async (user) => {
+    const typedEmail = window.prompt(`PERMANENTLY DELETE ${user.email} and all their Nexsa Bills data? This cannot be undone.\n\nType the exact email address to confirm:`);
+    if (typedEmail === null) return;
+    if (typedEmail.trim().toLowerCase() !== String(user.email || "").trim().toLowerCase()) {
+      setError("Deletion cancelled: email confirmation did not match.");
+      return;
+    }
+    setBusyId(user.id); setError(""); setNotice("");
+    try {
+      await api.adminDeleteUser(user.id, typedEmail.trim());
+      setNotice(`Deleted account and associated Nexsa Bills data for ${user.email}.`);
+      await load();
+    } catch (e) { setError(e.message || "Could not delete account."); }
+    finally { setBusyId(""); }
+  };
+
   const updatePlan = async (user, plan) => {
     const days = plan === "free" ? 30 : Number(window.prompt("Subscription duration in days:", "30"));
     if (plan !== "free" && (!Number.isInteger(days) || days < 1 || days > 3650)) return;
@@ -69,7 +85,7 @@ export default function AdminPage() {
       </div>
       {loading ? <div style={{ padding: 28, textAlign: "center", color: "var(--muted)" }}>Loading customer data…</div> : users.length === 0 ? <div style={{ padding: 28, textAlign: "center", color: "var(--muted)" }}>No customers found.</div> : <div style={{ overflowX: "auto" }}>
         <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 13, minWidth: 960 }}>
-          <thead><tr style={{ textAlign: "left", background: "var(--paper)" }}>{["Customer","Mobile","Registered","Plan","Account","Manage"].map(x => <th key={x} style={{ padding: "12px 14px", borderBottom: "1px solid var(--border)" }}>{x}</th>)}</tr></thead>
+          <thead><tr style={{ textAlign: "left", background: "var(--paper)" }}>{["Customer","Mobile","Registered","Plan","Account","Manage","Delete"].map(x => <th key={x} style={{ padding: "12px 14px", borderBottom: "1px solid var(--border)" }}>{x}</th>)}</tr></thead>
           <tbody>{users.map(user => <tr key={user.id}>
             <td style={{ padding: 14, borderBottom: "1px solid var(--border)" }}><div style={{ fontWeight: 700 }}>{user.name || "—"}</div><div style={{ color: "var(--muted)", marginTop: 3 }}>{user.email}</div><div style={{ color: "var(--muted)", fontSize: 11, marginTop: 3 }}>{user.authProvider || "email"}{user.phoneVerifiedAt ? " · phone verified" : ""}</div></td>
             <td style={{ padding: 14, borderBottom: "1px solid var(--border)" }}>{user.phone || "Not linked"}</td>
@@ -77,6 +93,7 @@ export default function AdminPage() {
             <td style={{ padding: 14, borderBottom: "1px solid var(--border)" }}><div style={{ fontWeight: 700 }}>{user.subscription?.planName || "Free"}</div><div style={{ color: "var(--muted)", fontSize: 11 }}>{user.subscription?.expiresAt ? "Until " + new Date(user.subscription.expiresAt).toLocaleDateString("en-IN") : "No expiry set"}</div><select aria-label={"Plan for " + user.email} defaultValue={user.subscription?.plan || "free"} disabled={busyId === user.id} onChange={e => updatePlan(user, e.target.value)} style={{ marginTop: 6, maxWidth: 120, ...buttonStyle }}><option value="free">Free</option><option value="pro">Pro</option><option value="advanced">Advanced</option></select></td>
             <td style={{ padding: 14, borderBottom: "1px solid var(--border)" }}><span style={{ padding: "4px 8px", borderRadius: 20, background: user.status === "suspended" ? "#FCE8E6" : "#E6F4EA", color: user.status === "suspended" ? "#B3261E" : "#137333", fontWeight: 700, fontSize: 11 }}>{user.status || "active"}</span></td>
             <td style={{ padding: 14, borderBottom: "1px solid var(--border)" }}><button disabled={busyId === user.id} onClick={() => updateStatus(user, user.status === "suspended" ? "active" : "suspended")} style={buttonStyle}>{busyId === user.id ? "Saving…" : user.status === "suspended" ? "Restore" : "Suspend"}</button></td>
+            <td style={{ padding: 14, borderBottom: "1px solid var(--border)" }}><button disabled={busyId === user.id || user.email?.trim().toLowerCase() === "nexsatechnologies@gmail.com" || user.phone === "+919370017895"} onClick={() => deleteUser(user)} style={{ ...buttonStyle, color: "#b42318", borderColor: "#f2b8b5" }}><Trash2 size={13} style={{ verticalAlign: "middle", marginRight: 5 }}/>{busyId === user.id ? "Working…" : "Delete account"}</button></td>
           </tr>)}</tbody>
         </table>
       </div>}
