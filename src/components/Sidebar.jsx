@@ -1,4 +1,4 @@
-import { LayoutDashboard, FileText, FilePlus2, Wallet, Settings as SettingsIcon, Palette, LogOut, FileSpreadsheet, Paintbrush, Crown, Package, Users, ReceiptText, LifeBuoy } from "lucide-react";
+import { LayoutDashboard, FileText, FilePlus2, Wallet, Settings as SettingsIcon, Palette, LogOut, FileSpreadsheet, Paintbrush, Crown, Package, Users, ReceiptText, LifeBuoy, ShieldCheck } from "lucide-react";
 
 export default function Sidebar({ page, listType, goto, sidebarOpen, setSidebarOpen, user, onLogout }) {
   const isActive = (p, lt) => page === p && (!lt || listType === lt);
@@ -39,6 +39,7 @@ export default function Sidebar({ page, listType, goto, sidebarOpen, setSidebarO
             <LifeBuoy size={16} /> Support
           </button>
         </div>
+        {String(user?.email || "").toLowerCase() === "nexsatechnologies@gmail.com" && <button className={`bb-nav-item ${isActive("admin") ? "active" : ""}`} onClick={() => goto("admin")}><ShieldCheck size={16} /> Admin Panel</button>}
         <div className="bb-nav-spacer" />
         <div className="bb-nav-foot">
           <button className={`bb-nav-item ${isActive("theme") ? "active" : ""}`} onClick={() => goto("theme")}>
