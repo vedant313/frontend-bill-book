@@ -71,3 +71,9 @@ export const getExpenses = () => request("/expenses");
 export const createExpense = (expense) => request("/expenses", { method: "POST", body: JSON.stringify(expense) });
 export const updateExpense = (id, expense) => request("/expenses/" + id, { method: "PUT", body: JSON.stringify(expense) });
 export const deleteExpense = (id) => request("/expenses/" + id, { method: "DELETE" });
+
+export const adminOverview = () => request("/admin/overview");
+export const adminUsers = (q = "", page = 1) => request("/admin/users?q=" + encodeURIComponent(q) + "&page=" + page);
+export const adminSetUserStatus = (id, status) => request("/admin/users/" + encodeURIComponent(id) + "/status", { method: "PATCH", body: JSON.stringify({ status }) });
+export const adminSetSubscription = (id, plan, days = 30) => request("/admin/users/" + encodeURIComponent(id) + "/subscription", { method: "PATCH", body: JSON.stringify({ plan, days }) });
+export const adminAudit = () => request("/admin/audit");
