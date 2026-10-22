@@ -36,10 +36,10 @@ export default function Login({ onAuthed, onClose }) {
     setName(""); setEmail(""); setPassword(""); setPhone("");
   };
   const getE164Phone = (value) => {
-    const cleaned = String(value || "").trim().replace(/[\\s()-]/g, "");
-    if (/^\\+91\\d{10}$/.test(cleaned)) return cleaned;
-    if (/^91\\d{10}$/.test(cleaned)) return `+${cleaned}`;
-    if (/^\\d{10}$/.test(cleaned)) return `+91${cleaned}`;
+    const cleaned = String(value || "").trim().replace(/[\s()-]/g, "");
+    if (/^\+91\d{10}$/.test(cleaned)) return cleaned;
+    if (/^91\d{10}$/.test(cleaned)) return `+${cleaned}`;
+    if (/^\d{10}$/.test(cleaned)) return `+91${cleaned}`;
     throw new Error("Enter a valid 10-digit Indian mobile number.");
   };
   const sendOtp = async (value) => {
@@ -54,7 +54,7 @@ export default function Login({ onAuthed, onClose }) {
       if (resetMode) {
         if (!confirmation) { await sendOtp(phone); setNotice("Password reset OTP sent by SMS."); return; }
         if (!verifiedIdToken) {
-          if (!/^\\d{6}$/.test(otp)) throw new Error("Enter the 6-digit OTP.");
+          if (!/^\d{6}$/.test(otp)) throw new Error("Enter the 6-digit OTP.");
           const credential = await confirmation.confirm(otp);
           setVerifiedIdToken(await credential.user.getIdToken());
           setNotice("Phone verified. Enter your new password and submit again."); return;
@@ -70,7 +70,7 @@ export default function Login({ onAuthed, onClose }) {
       if (!confirmation) { await sendOtp(phone); setNotice("OTP sent by SMS. Enter the 6-digit code."); return; }
       let idToken = verifiedIdToken;
       if (!idToken) {
-        if (!/^\\d{6}$/.test(otp)) throw new Error("Enter the 6-digit OTP.");
+        if (!/^\d{6}$/.test(otp)) throw new Error("Enter the 6-digit OTP.");
         const credential = await confirmation.confirm(otp); idToken = await credential.user.getIdToken();
         setVerifiedIdToken(idToken);
       }
@@ -106,7 +106,7 @@ export default function Login({ onAuthed, onClose }) {
           {resetMode ? <>
             {!confirmation && <div className="bb-field"><label>Registered Mobile Number</label><input className="bb-input" type="tel" value={phone} onChange={(e) => setPhone(e.target.value)} required placeholder="9876543210" /></div>}
             <div ref={recaptchaRef} style={{ marginBottom: 12 }} aria-hidden="true" />
-            {confirmation && !verifiedIdToken && <div className="bb-field"><label>6-digit OTP</label><input className="bb-input" value={otp} onChange={(e) => setOtp(e.target.value.replace(/\\D/g, "").slice(0, 6))} required placeholder="Enter OTP" /> </div>}
+            {confirmation && !verifiedIdToken && <div className="bb-field"><label>6-digit OTP</label><input className="bb-input" value={otp} onChange={(e) => setOtp(e.target.value.replace(/\D/g, "").slice(0, 6))} required placeholder="Enter OTP" /> </div>}
             {verifiedIdToken && <div className="bb-field"><label>New Password</label><input className="bb-input" type="password" autoComplete="new-password" value={password} onChange={(e) => setPassword(e.target.value)} minLength={6} required placeholder="At least 6 characters" /></div>}
           </> : mode === "login" ? <>
             <div className="bb-field"><label>Email address or mobile number</label><input className="bb-input" autoComplete="username" value={identifier} onChange={(e) => setIdentifier(e.target.value)} required placeholder="you@business.com or 9876543210" /></div>
@@ -115,7 +115,7 @@ export default function Login({ onAuthed, onClose }) {
             {!signupDetailsNeeded && <>
               <div className="bb-field"><label>Mobile Number</label><input className="bb-input" type="tel" value={phone} onChange={(e) => setPhone(e.target.value)} required placeholder="9876543210" disabled={!!confirmation} /></div>
               <div ref={recaptchaRef} style={{ marginBottom: 12 }} aria-hidden="true" />
-              {confirmation && <div className="bb-field"><label>6-digit OTP</label><input className="bb-input" value={otp} onChange={(e) => setOtp(e.target.value.replace(/\\D/g, "").slice(0, 6))} required placeholder="Enter OTP" /></div>}
+              {confirmation && <div className="bb-field"><label>6-digit OTP</label><input className="bb-input" value={otp} onChange={(e) => setOtp(e.target.value.replace(/\D/g, "").slice(0, 6))} required placeholder="Enter OTP" /></div>}
             </>}
             {signupDetailsNeeded && <>
               <div className="bb-field"><label>Your Name</label><input className="bb-input" value={name} onChange={(e) => setName(e.target.value)} required placeholder="Your name" /></div>
