@@ -72,6 +72,10 @@ export const createExpense = (expense) => request("/expenses", { method: "POST",
 export const updateExpense = (id, expense) => request("/expenses/" + id, { method: "PUT", body: JSON.stringify(expense) });
 export const deleteExpense = (id) => request("/expenses/" + id, { method: "DELETE" });
 
+export const getCompanies = () => request("/companies");
+export const createCompany = (company) => request("/companies", { method: "POST", body: JSON.stringify(company) });
+export const updateCompany = (id, company) => request("/companies/" + encodeURIComponent(id), { method: "PATCH", body: JSON.stringify(company) });
+
 export const adminOverview = () => request("/admin/overview");
 export const adminUsers = (q = "", page = 1) => request("/admin/users?q=" + encodeURIComponent(q) + "&page=" + page);
 export const adminSetUserStatus = (id, status) => request("/admin/users/" + encodeURIComponent(id) + "/status", { method: "PATCH", body: JSON.stringify({ status }) });
