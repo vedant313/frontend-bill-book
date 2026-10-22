@@ -36,8 +36,8 @@ export default function SettingsPage({ business, onSave, onCancel }) {
     setPhoneBusy(true); setPhoneError(""); setPhoneNotice("");
     try {
       if (!phoneConfirmation) {
-        const cleaned = linkPhone.trim().replace(/[\\s()-]/g, "");
-        const e164 = /^\\+91\\d{10}$/.test(cleaned) ? cleaned : /^91\\d{10}$/.test(cleaned) ? `+${cleaned}` : /^\\d{10}$/.test(cleaned) ? `+91${cleaned}` : "";
+        const cleaned = linkPhone.trim().replace(/[\s()-]/g, "");
+        const e164 = /^\+91\d{10}$/.test(cleaned) ? cleaned : /^91\d{10}$/.test(cleaned) ? `+${cleaned}` : /^\d{10}$/.test(cleaned) ? `+91${cleaned}` : "";
         if (!e164) throw new Error("Enter a valid 10-digit Indian mobile number.");
         resetPhoneRecaptcha();
         verifierRef.current = new RecaptchaVerifier(firebaseAuth, recaptchaRef.current, { size: "invisible" });
@@ -46,7 +46,7 @@ export default function SettingsPage({ business, onSave, onCancel }) {
         setPhoneConfirmation(confirmation);
         setPhoneNotice("OTP sent. Enter the code to link this number to your existing account.");
       } else {
-        if (!/^\\d{6}$/.test(linkOtp)) throw new Error("Enter the 6-digit OTP.");
+        if (!/^\d{6}$/.test(linkOtp)) throw new Error("Enter the 6-digit OTP.");
         const credential = await phoneConfirmation.confirm(linkOtp);
         const idToken = await credential.user.getIdToken();
         await api.linkFirebasePhone(idToken);
@@ -143,7 +143,7 @@ export default function SettingsPage({ business, onSave, onCancel }) {
             <input className="bb-input" type="tel" inputMode="tel" value={linkPhone} onChange={(e) => setLinkPhone(e.target.value)} placeholder="10-digit Indian mobile number" disabled={!!phoneConfirmation} />
           </div>
           <div ref={recaptchaRef} aria-hidden="true" />
-          {phoneConfirmation && <div className="bb-field"><label>6-digit OTP</label><input className="bb-input" inputMode="numeric" value={linkOtp} onChange={(e) => setLinkOtp(e.target.value.replace(/\\D/g, "").slice(0, 6))} placeholder="Enter OTP" /></div>}
+          {phoneConfirmation && <div className="bb-field"><label>6-digit OTP</label><input className="bb-input" inputMode="numeric" value={linkOtp} onChange={(e) => setLinkOtp(e.target.value.replace(/\D/g, "").slice(0, 6))} placeholder="Enter OTP" /></div>}
           {phoneError && <div role="alert" style={{ color: "var(--red)", fontSize: 12.5, marginBottom: 8 }}>{phoneError}</div>}
           {phoneNotice && <div role="status" style={{ color: "var(--teal)", fontSize: 12.5, marginBottom: 8 }}>{phoneNotice}</div>}
           <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
