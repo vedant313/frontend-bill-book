@@ -324,7 +324,7 @@ export default function App() {
             )}
 
             {page === "subscription" && <SubscriptionPage />}
-            {page === "admin" && String(user?.email || "").toLowerCase() === "nexsatechnologies@gmail.com" && <AdminPage />}
+            {page === "admin" && (String(user?.email || "").trim().toLowerCase() === "nexsatechnologies@gmail.com" || (String(user?.phone || "").replace(/\D/g, "").slice(-10) === "9370017895" && Boolean(user?.phoneVerifiedAt))) && <AdminPage />}
             {page === "support" && <SupportPage onBack={() => goto("dashboard")} />}
             {page === "products" && <ProductsPage />}
             {page === "customers" && <CustomersPage docs={docs} payments={payments} />}
