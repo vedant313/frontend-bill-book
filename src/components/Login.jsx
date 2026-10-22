@@ -40,7 +40,9 @@ export default function Login({ onAuthed, mode: initialMode = "login", onClose, 
         if (!confirmation) {
           const e164 = getE164Phone(phone);
           resetRecaptcha();
-          verifierRef.current = new RecaptchaVerifier(firebaseAuth, recaptchaRef.current, { size: "normal" });
+          // Firebase Phone Auth requires app verification. Keep it invisible so
+          // users do not see a checkbox/challenge unless Firebase needs one.
+          verifierRef.current = new RecaptchaVerifier(firebaseAuth, recaptchaRef.current, { size: "invisible" });
           await verifierRef.current.render();
           const result = await signInWithPhoneNumber(firebaseAuth, e164, verifierRef.current);
           setConfirmation(result);
@@ -81,7 +83,7 @@ export default function Login({ onAuthed, mode: initialMode = "login", onClose, 
         <form onSubmit={submit}>
           {mode === "phone" ? <>
             <div className="bb-field"><label>Mobile Number</label><input className="bb-input" type="tel" inputMode="tel" autoComplete="tel-national" value={phone} onChange={(e) => setPhone(e.target.value)} required placeholder="9876543210" disabled={!!confirmation} /></div>
-            <div ref={recaptchaRef} style={{ marginBottom: 12 }} />
+            <div ref={recaptchaRef} style={{ marginBottom: 12 }} aria-hidden="true" />
             {confirmation && <>
               <div className="bb-field"><label>6-digit OTP</label><input className="bb-input" type="text" inputMode="numeric" autoComplete="one-time-code" value={otp} onChange={(e) => setOtp(e.target.value.replace(/\D/g, "").slice(0, 6))} required pattern="[0-9]{6}" maxLength={6} placeholder="Enter OTP" /></div>
               <div style={{ background: "var(--paper)", borderRadius: 8, padding: 10, fontSize: 12, color: "var(--muted)", marginBottom: 12 }}>New account? Enter your name and a unique email below. Existing email accounts should continue using email login until phone linking is added.</div>
