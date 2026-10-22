@@ -10,6 +10,8 @@ export default function Login({ onAuthed, mode: initialMode = "login", onClose, 
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [signupDetailsNeeded, setSignupDetailsNeeded] = useState(false);
+  const [verifiedIdToken, setVerifiedIdToken] = useState("");
   const [phone, setPhone] = useState("");
   const [otp, setOtp] = useState("");
   const [confirmation, setConfirmation] = useState(null);
@@ -24,7 +26,7 @@ export default function Login({ onAuthed, mode: initialMode = "login", onClose, 
     if (recaptchaRef.current) recaptchaRef.current.innerHTML = "";
   };
   const switchMode = (nextMode) => {
-    resetRecaptcha(); setMode(nextMode); setError(""); setNotice(""); setConfirmation(null); setOtp("");
+    resetRecaptcha(); setMode(nextMode); setError(""); setNotice(""); setConfirmation(null); setOtp(""); setSignupDetailsNeeded(false); setVerifiedIdToken(""); setName(""); setEmail(""); setPassword("");
   };
   const getE164Phone = (value) => {
     const cleaned = String(value || "").trim().replace(/[\s()-]/g, "");
@@ -91,14 +93,18 @@ export default function Login({ onAuthed, mode: initialMode = "login", onClose, 
             <div ref={recaptchaRef} style={{ marginBottom: 12 }} aria-hidden="true" />
             {confirmation && <>
               <div className="bb-field"><label>6-digit OTP</label><input className="bb-input" type="text" inputMode="numeric" autoComplete="one-time-code" value={otp} onChange={(e) => setOtp(e.target.value.replace(/\D/g, "").slice(0, 6))} required pattern="[0-9]{6}" maxLength={6} placeholder="Enter OTP" /></div>
-              <div style={{ background: "var(--paper)", borderRadius: 8, padding: 10, fontSize: 12, color: "var(--muted)", marginBottom: 12 }}>If this number already belongs to your account, OTP will sign you in. For a new account, enter your name below.</div>
-              <div className="bb-field"><label>Name (new accounts only)</label><input className="bb-input" autoComplete="name" value={name} onChange={(e) => setName(e.target.value)} placeholder="Your name" /></div>
+              {!signupDetailsNeeded && <div style={{ background: "var(--paper)", borderRadius: 8, padding: 10, fontSize: 12, color: "var(--muted)", marginBottom: 12 }}>Verify your phone. If this is a new account, you'll then set your name, email and password.</div>}
+              {signupDetailsNeeded && <>
+                <div className="bb-field"><label>Your Name</label><input className="bb-input" autoComplete="name" value={name} onChange={(e) => setName(e.target.value)} required placeholder="Your name" /></div>
+                <div className="bb-field"><label>Email Address</label><input className="bb-input" type="email" autoComplete="email" value={email} onChange={(e) => setEmail(e.target.value)} required placeholder="you@business.com" /></div>
+                <div className="bb-field"><label>Create Password</label><input className="bb-input" type="password" autoComplete="new-password" value={password} onChange={(e) => setPassword(e.target.value)} minLength={6} required placeholder="At least 6 characters" /></div>
+              </>}
             </>}
           </>}
           {error && <div role="alert" style={{ background: "var(--red-bg)", color: "var(--red)", padding: "9px 12px", borderRadius: 8, fontSize: 12.5, marginBottom: 12 }}>{error}</div>}
           {notice && <div role="status" style={{ background: "var(--paper)", color: "var(--ink)", padding: "9px 12px", borderRadius: 8, fontSize: 12.5, marginBottom: 12 }}>{notice}</div>}
-          <button type="submit" className="bb-btn bb-btn-primary" style={{ width: "100%", justifyContent: "center" }} disabled={busy}>{busy ? "Please wait…" : mode === "email" ? "Log In with Email" : confirmation ? "Verify OTP & Continue" : "Send OTP"}</button>
-          {mode === "phone" && confirmation && <button type="button" className="bb-btn bb-btn-ghost" style={{ width: "100%", justifyContent: "center", marginTop: 8 }} disabled={busy} onClick={() => { resetRecaptcha(); setConfirmation(null); setOtp(""); setNotice(""); }}>Change number / retry</button>}
+          <button type="submit" className="bb-btn bb-btn-primary" style={{ width: "100%", justifyContent: "center" }} disabled={busy}>{busy ? "Please wait…" : mode === "email" ? "Log In with Email" : signupDetailsNeeded ? "Complete Sign Up" : confirmation ? "Verify OTP & Continue" : "Send OTP"}</button>
+          {mode === "phone" && confirmation && <button type="button" className="bb-btn bb-btn-ghost" style={{ width: "100%", justifyContent: "center", marginTop: 8 }} disabled={busy} onClick={() => { resetRecaptcha(); setConfirmation(null); setOtp(""); setNotice(""); setSignupDetailsNeeded(false); setVerifiedIdToken(""); setName(""); setEmail(""); setPassword(""); }}>Change number / retry</button>}
         </form>
         <div style={{ textAlign: "center", marginTop: 14, fontSize: 12.5, color: "var(--muted)" }}>{onSupport && <button type="button" onClick={onSupport} style={{ background: "none", border: "none", color: "var(--teal)", fontWeight: 700, cursor: "pointer", padding: 0, fontSize: 12.5 }}>Forgot password or need help?</button>}</div>
         <div style={{ textAlign: "center", marginTop: 10, fontSize: 11.5, color: "var(--muted)" }}>{mode === "phone" ? "Use your verified mobile number for OTP login. New accounts need a name." : "Emergency fallback: sign in with your existing email and password."}</div>
