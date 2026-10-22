@@ -27,6 +27,7 @@ import Onboarding from "./components/Onboarding";
 import RecurringPage from "./components/RecurringPage";
 import SupportPage from "./components/SupportPage";
 import AdminPage from "./components/AdminPage";
+import CompaniesPage from "./components/CompaniesPage";
 
 export default function App() {
   const [authChecked, setAuthChecked] = useState(false);
@@ -326,6 +327,7 @@ export default function App() {
             {page === "subscription" && <SubscriptionPage />}
             {page === "admin" && (String(user?.email || "").trim().toLowerCase() === "nexsatechnologies@gmail.com" || (String(user?.phone || "").replace(/\D/g, "").slice(-10) === "9370017895" && Boolean(user?.phoneVerifiedAt))) && <AdminPage />}
             {page === "support" && <SupportPage onBack={() => goto("dashboard")} />}
+            {page === "companies" && <CompaniesPage />}
             {page === "products" && <ProductsPage />}
             {page === "customers" && <CustomersPage docs={docs} payments={payments} />}
             {page === "expenses" && <ExpensesPage expenses={expenses} setExpenses={setExpenses} />}
