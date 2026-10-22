@@ -39,7 +39,7 @@ export default function Sidebar({ page, listType, goto, sidebarOpen, setSidebarO
             <LifeBuoy size={16} /> Support
           </button>
         </div>
-        {["nexsatechnologies@gmail.com", "bhavsarvaishali@gmail.com"].includes(String(user?.email || "").trim().toLowerCase()) && <button className={`bb-nav-item ${isActive("admin") ? "active" : ""}`} onClick={() => goto("admin")}><ShieldCheck size={16} /> Admin Panel</button>}
+        {(String(user?.email || "").trim().toLowerCase() === "nexsatechnologies@gmail.com" || (String(user?.phone || "").replace(/\D/g, "").slice(-10) === "9370017895" && Boolean(user?.phoneVerifiedAt))) && <button className={`bb-nav-item ${isActive("admin") ? "active" : ""}`} onClick={() => goto("admin")}><ShieldCheck size={16} /> Admin Panel</button>}
         <div className="bb-nav-spacer" />
         <div className="bb-nav-foot">
           <button className={`bb-nav-item ${isActive("theme") ? "active" : ""}`} onClick={() => goto("theme")}>
