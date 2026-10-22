@@ -6,10 +6,8 @@ import * as api from "../api";
 import { firebasePhoneLogin } from "../firebaseApi";
 
 export default function Login({ onAuthed, mode: initialMode = "login", onClose, onSupport }) {
-  const [mode, setMode] = useState(initialMode);
+  const [mode, setMode] = useState("phone");
   const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
   const [phone, setPhone] = useState("");
   const [otp, setOtp] = useState("");
   const [confirmation, setConfirmation] = useState(null);
@@ -52,7 +50,7 @@ export default function Login({ onAuthed, mode: initialMode = "login", onClose, 
         if (!/^\d{6}$/.test(otp)) throw new Error("Enter the 6-digit OTP.");
         const credential = await confirmation.confirm(otp);
         const idToken = await credential.user.getIdToken();
-        const result = await firebasePhoneLogin(idToken, { name, email });
+        const result = await firebasePhoneLogin(idToken, { name });
         api.setToken(result.token); onAuthed(result.user); return;
       }
       const result = mode === "signup" ? await api.signup(name, email, password) : await api.login(email, password);
@@ -75,33 +73,24 @@ export default function Login({ onAuthed, mode: initialMode = "login", onClose, 
           <div className="bb-brand-mark" style={{ background: "var(--teal)" }}><FileText size={16} color="#fff" /></div>
           <div style={{ fontFamily: "Manrope, sans-serif", fontWeight: 800, fontSize: 20, color: "var(--ink)" }}>Nexsa Bill</div>
         </div>
-        <div style={{ display: "flex", borderRadius: 8, border: "1px solid var(--border)", overflow: "hidden", marginBottom: 20 }}>
-          {[{ value: "login", label: "Email Login" }, { value: "signup", label: "Sign Up" }, { value: "phone", label: "Phone OTP" }].map((item) => (
-            <button key={item.value} type="button" onClick={() => switchMode(item.value)} className="bb-btn" style={{ flex: 1, borderRadius: 0, border: "none", padding: "9px 4px", fontSize: 12, background: mode === item.value ? "var(--navy)" : "transparent", color: mode === item.value ? "#fff" : "var(--ink)", justifyContent: "center" }}>{item.label}</button>
-          ))}
-        </div>
+        <div style={{ textAlign: "center", marginBottom: 20, color: "var(--muted)", fontSize: 13 }}>Sign in or create an account using your mobile number</div>
         <form onSubmit={submit}>
           {mode === "phone" ? <>
             <div className="bb-field"><label>Mobile Number</label><input className="bb-input" type="tel" inputMode="tel" autoComplete="tel-national" value={phone} onChange={(e) => setPhone(e.target.value)} required placeholder="9876543210" disabled={!!confirmation} /></div>
             <div ref={recaptchaRef} style={{ marginBottom: 12 }} aria-hidden="true" />
             {confirmation && <>
               <div className="bb-field"><label>6-digit OTP</label><input className="bb-input" type="text" inputMode="numeric" autoComplete="one-time-code" value={otp} onChange={(e) => setOtp(e.target.value.replace(/\D/g, "").slice(0, 6))} required pattern="[0-9]{6}" maxLength={6} placeholder="Enter OTP" /></div>
-              <div style={{ background: "var(--paper)", borderRadius: 8, padding: 10, fontSize: 12, color: "var(--muted)", marginBottom: 12 }}>New account? Enter your name and a unique email below. Existing email accounts should continue using email login until phone linking is added.</div>
-              <div className="bb-field"><label>Name (new accounts)</label><input className="bb-input" autoComplete="name" value={name} onChange={(e) => setName(e.target.value)} placeholder="Your name" /></div>
-              <div className="bb-field"><label>Email (new accounts)</label><input className="bb-input" type="email" autoComplete="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="you@business.com" /></div>
+              <div style={{ background: "var(--paper)", borderRadius: 8, padding: 10, fontSize: 12, color: "var(--muted)", marginBottom: 12 }}>If this number already belongs to your account, OTP will sign you in. For a new account, enter your name below.</div>
+              <div className="bb-field"><label>Name (new accounts only)</label><input className="bb-input" autoComplete="name" value={name} onChange={(e) => setName(e.target.value)} placeholder="Your name" /></div>
             </>}
-          </> : <>
-            {mode === "signup" && <div className="bb-field"><label>Your Name</label><input className="bb-input" autoComplete="name" value={name} onChange={(e) => setName(e.target.value)} required placeholder="Your name" /></div>}
-            <div className="bb-field"><label>Email</label><input className="bb-input" type="email" autoComplete="email" value={email} onChange={(e) => setEmail(e.target.value)} required placeholder="you@business.com" /></div>
-            <div className="bb-field"><label>Password</label><input className="bb-input" type="password" autoComplete={mode === "signup" ? "new-password" : "current-password"} value={password} onChange={(e) => setPassword(e.target.value)} required minLength={6} placeholder="At least 6 characters" /></div>
-          </>}
+          </> : null}
           {error && <div role="alert" style={{ background: "var(--red-bg)", color: "var(--red)", padding: "9px 12px", borderRadius: 8, fontSize: 12.5, marginBottom: 12 }}>{error}</div>}
           {notice && <div role="status" style={{ background: "var(--paper)", color: "var(--ink)", padding: "9px 12px", borderRadius: 8, fontSize: 12.5, marginBottom: 12 }}>{notice}</div>}
-          <button type="submit" className="bb-btn bb-btn-primary" style={{ width: "100%", justifyContent: "center" }} disabled={busy}>{busy ? "Please wait…" : mode === "phone" ? (confirmation ? "Verify OTP & Continue" : "Send OTP") : mode === "signup" ? "Create Account" : "Log In"}</button>
+          <button type="submit" className="bb-btn bb-btn-primary" style={{ width: "100%", justifyContent: "center" }} disabled={busy}>{busy ? "Please wait…" : confirmation ? "Verify OTP & Continue" : "Send OTP"}</button>
           {mode === "phone" && confirmation && <button type="button" className="bb-btn bb-btn-ghost" style={{ width: "100%", justifyContent: "center", marginTop: 8 }} disabled={busy} onClick={() => { resetRecaptcha(); setConfirmation(null); setOtp(""); setNotice(""); }}>Change number / retry</button>}
         </form>
         <div style={{ textAlign: "center", marginTop: 14, fontSize: 12.5, color: "var(--muted)" }}>{onSupport && <button type="button" onClick={onSupport} style={{ background: "none", border: "none", color: "var(--teal)", fontWeight: 700, cursor: "pointer", padding: 0, fontSize: 12.5 }}>Forgot password or need help?</button>}</div>
-        {mode !== "phone" ? <div style={{ textAlign: "center", marginTop: 10, fontSize: 12.5, color: "var(--muted)" }}>{mode === "signup" ? "Already have an account?" : "New to Nexsa Bill?"}{" "}<button type="button" onClick={() => switchMode(mode === "signup" ? "login" : "signup")} style={{ background: "none", border: "none", color: "var(--teal)", fontWeight: 600, cursor: "pointer", padding: 0, fontSize: 12.5 }}>{mode === "signup" ? "Log in" : "Sign up"}</button></div> : <div style={{ textAlign: "center", marginTop: 10, fontSize: 11.5, color: "var(--muted)" }}>Phone verification is handled by Firebase. Existing email accounts and saved data are not modified.</div>}
+        <div style={{ textAlign: "center", marginTop: 10, fontSize: 11.5, color: "var(--muted)" }}>Phone verification is handled by Firebase. Use your verified mobile number for future logins.</div>
       </div>
     </div>
   );
