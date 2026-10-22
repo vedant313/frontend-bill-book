@@ -31,6 +31,7 @@ async function request(path, options = {}) {
 }
 export const signup = (name, email, password) => request("/auth/signup", { method: "POST", body: JSON.stringify({ name, email, password }) });
 export const login = (email, password) => request("/auth/login", { method: "POST", body: JSON.stringify({ email, password }) });
+export const phonePasswordLogin = (phone, password) => request("/auth/firebase-phone/password-login", { method: "POST", body: JSON.stringify({ phone, password }) });
 export const sendPhoneOtp = (phone) => request("/auth/phone-otp/send", { method: "POST", body: JSON.stringify({ phone }) });
 export const verifyPhoneOtp = (phone, otp, profile = {}) => request("/auth/phone-otp/verify", { method: "POST", body: JSON.stringify({ phone, otp, ...profile }) });
 export const me = () => request("/auth/me");
