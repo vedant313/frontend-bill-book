@@ -29,7 +29,7 @@ function formatINR(value) {
   return "₹" + (Number(value) || 0).toLocaleString("en-IN", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 }
 
-export default function CustomInvoiceStudio() {
+export default function CustomInvoiceStudio({ onBack }) {
   const [templates, setTemplates] = useState([]);
   const [templateName, setTemplateName] = useState("My custom invoice");
   const [activeId, setActiveId] = useState("");
@@ -169,7 +169,7 @@ export default function CustomInvoiceStudio() {
       @media print{body *{visibility:hidden!important}.cis-print,.cis-print *{visibility:visible!important}.cis-print{position:absolute!important;left:0!important;top:0!important;width:100%!important;padding:0!important}.cis-print .cis-canvas{box-shadow:none;border:0}.cis-no-print{display:none!important}}
     `}</style>
     <div className="cis-no-print" style={{ display:"flex",justifyContent:"space-between",alignItems:"center",gap:12,flexWrap:"wrap",marginBottom:18 }}>
-      <div><div style={{fontSize:24,fontWeight:850}}>Custom Invoice Studio <span style={{fontSize:11,verticalAlign:"middle",padding:"4px 7px",borderRadius:99,background:"#eee",color:"#222"}}>ADMIN PILOT</span></div><div style={{color:"var(--muted)",fontSize:13,marginTop:5}}>Test custom invoice layouts here before enabling them for everyone.</div></div>
+      <div><div style={{display:"flex",alignItems:"center",gap:10,flexWrap:"wrap"}}>{onBack && <button className="cis-btn" onClick={onBack}><ArrowLeft size={14}/> Admin Panel</button>}<div style={{fontSize:24,fontWeight:850}}>Custom Invoice Studio <span style={{fontSize:11,verticalAlign:"middle",padding:"4px 7px",borderRadius:99,background:"#eee",color:"#222"}}>ADMIN PILOT</span></div><div style={{color:"var(--muted)",fontSize:13,marginTop:5}}>Test custom invoice layouts here before enabling them for everyone.</div></div>
       <button className="cis-btn" onClick={load} disabled={busy}>Refresh templates</button>
     </div>
     {error && <div role="alert" style={{padding:11,background:"#FCE8E6",color:"#B3261E",borderRadius:8,marginBottom:12}}>{error}</div>}
@@ -227,7 +227,7 @@ export default function CustomInvoiceStudio() {
           <label className="cis-check"><input type="checkbox" checked={Boolean(selectedElement.bold)} onChange={(e)=>updateElement(selectedElement.id,{bold:e.target.checked})}/> Bold text</label>
           <button className="cis-btn" onClick={()=>{setElements((old)=>old.filter((el)=>el.id!==selectedElement.id));setEnabledFields((old)=>old.filter((id)=>id!==selectedElement.id));setSelectedId("");}}><Trash2 size={14}/> Remove element</button>
         </div>}
-        <button className="cis-btn" style={{width:"100%",marginTop:14}} onClick={()=>{setElements((old)=>[...old,{id:"custom_"+Date.now(),label:"Custom text",x:12,y:50,w:35,h:6,size:10,bold:false}]);setSelectedId("custom_"+Date.now());}}><Plus size={14}/> Add text block</button>
+        <button className="cis-btn" style={{width:"100%",marginTop:14}} onClick={()=>{const id="custom_"+Date.now();setElements((old)=>[...old,{id,label:"Custom text",x:12,y:50,w:35,h:6,size:10,bold:false}]);setSelectedId(id);}}><Plus size={14}/> Add text block</button>
         <button className="cis-btn primary" style={{width:"100%",marginTop:9}} onClick={save} disabled={busy}><Save size={15}/>{busy?"Saving…":"Save template"}</button>
       </section>
     </div>
