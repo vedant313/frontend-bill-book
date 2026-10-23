@@ -3,10 +3,11 @@ import { ArrowLeft, FileUp, Sparkles, Download, LoaderCircle } from "lucide-reac
 import { getToken } from "../api";
 
 const BASE = import.meta.env.VITE_API_BASE || "https://backend1-tx8q.onrender.com/api";
-async function uploadRequest(path, file, values) {
+async function uploadRequest(path, file, values, fields) {
   const form = new FormData();
   form.append("pdf", file);
   if (values) form.append("values", JSON.stringify(values));
+  if (fields) form.append("fields", JSON.stringify(fields));
   const response = await fetch(BASE + path, { method: "POST", headers: { ...(getToken() ? { Authorization: "Bearer " + getToken() } : {}) }, body: form });
   if (!response.ok) {
     let message = "Request failed (" + response.status + ")";
@@ -42,11 +43,11 @@ export default function AIQuotationGenerator({ onBack }) {
     if (!file || !analysis) return;
     setBusy(true); setError(""); setNotice("");
     try {
-      const response = await uploadRequest("/admin/custom-quotation/render", file, values);
+      const response = await uploadRequest("/admin/custom-quotation/render", file, values, analysis.fields);
       const blob = await response.blob();
       const url = URL.createObjectURL(blob);
-      const a = document.createElement("a"); a.href = url; a.download = "nexsa-custom-quotation-review.pdf"; document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url);
-      setNotice("Review PDF download ho gaya. Original layout mein values overlay abhi supported nahi hai.");
+      const a = document.createElement("a"); a.href = url; a.download = "nexsa-custom-quotation-edited.pdf"; document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url);
+      setNotice("Edited PDF download ho gaya. Please check each changed field carefully; AI position estimates may need correction.");
     } catch (e) { setError(e.message || "PDF generate nahi ho paya."); }
     finally { setBusy(false); }
   };
@@ -76,7 +77,7 @@ export default function AIQuotationGenerator({ onBack }) {
           {field.reason && <span style={{ display: "block", color: "var(--muted)", fontSize: 11, marginTop: 4 }}>{field.reason}</span>}
         </label>)}
       </div>
-      <div style={{ marginTop: 18, padding: 12, borderRadius: 8, background: "var(--paper)", fontSize: 12 }}>Important: this pilot detects fields using AI but does not yet know exact editable text coordinates. The generated review PDF preserves the original pages and appends a filled-values sheet; it does not replace text in-place in the original layout.</div>
+      <div style={{ marginTop: 18, padding: 12, borderRadius: 8, background: "var(--paper)", fontSize: 12 }}>AI estimates each editable value position and overlays your changes on the original PDF pages. Check the downloaded PDF carefully: complex tables, scanned PDFs, and uncertain positions may need manual correction.</div>
       <button style={{ ...button, marginTop: 14, background: "#171717", color: "#fff" }} disabled={busy} onClick={download}><Download size={16}/> {busy ? "Generating…" : "Download review PDF"}</button>
     </section>}
   </div>;
