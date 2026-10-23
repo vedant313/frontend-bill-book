@@ -82,3 +82,6 @@ export const adminSetUserStatus = (id, status) => request("/admin/users/" + enco
 export const adminSetSubscription = (id, plan, days = 30) => request("/admin/users/" + encodeURIComponent(id) + "/subscription", { method: "PATCH", body: JSON.stringify({ plan, days }) });
 export const adminDeleteUser = (id, confirmEmail) => request("/admin/users/" + encodeURIComponent(id), { method: "DELETE", body: JSON.stringify({ confirmEmail }) });
 export const adminAudit = () => request("/admin/audit");
+export const getCustomInvoiceTemplates = () => request("/admin/custom-invoice-studio/templates");
+export const saveCustomInvoiceTemplate = (template) => request("/admin/custom-invoice-studio/templates", { method: "PUT", body: JSON.stringify({ template }) });
+export const deleteCustomInvoiceTemplate = (id) => request("/admin/custom-invoice-studio/templates/" + encodeURIComponent(id), { method: "DELETE" });
