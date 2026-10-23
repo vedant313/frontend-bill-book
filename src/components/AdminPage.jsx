@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Search, Users, CreditCard, UserCheck, Clock3, RefreshCw, Trash2 } from "lucide-react";
 import * as api from "../api";
+import CustomInvoiceStudio from "./CustomInvoiceStudio";
 
 const cardStyle = { background: "var(--card, #fff)", border: "1px solid var(--border)", borderRadius: 12, padding: 16 };
 const buttonStyle = { border: "1px solid var(--border)", borderRadius: 8, padding: "7px 10px", background: "var(--paper)", cursor: "pointer", color: "var(--ink)", fontWeight: 600 };
@@ -15,6 +16,7 @@ export default function AdminPage() {
   const [notice, setNotice] = useState("");
   const [page, setPage] = useState(1);
   const [pages, setPages] = useState(1);
+  const [showInvoiceStudio, setShowInvoiceStudio] = useState(false);
 
   const load = async (q = query, p = page) => {
     setLoading(true); setError("");
@@ -61,10 +63,12 @@ export default function AdminPage() {
 
   const Stat = ({ icon: Icon, label, value }) => <div style={cardStyle}><div style={{ display: "flex", gap: 8, alignItems: "center", color: "var(--muted)", fontSize: 13 }}><Icon size={17}/>{label}</div><div style={{ fontSize: 28, fontWeight: 800, marginTop: 8 }}>{value ?? "—"}</div></div>;
 
+  if (showInvoiceStudio) return <CustomInvoiceStudio onBack={() => setShowInvoiceStudio(false)} />;
+
   return <div style={{ padding: "24px 18px", maxWidth: 1400, margin: "0 auto", color: "var(--ink)" }}>
     <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 12, flexWrap: "wrap", marginBottom: 20 }}>
       <div><div style={{ fontSize: 25, fontWeight: 800 }}>Admin Control Panel</div><div style={{ color: "var(--muted)", fontSize: 13, marginTop: 4 }}>Nexsa Bills · Customer and subscription management</div></div>
-      <button style={buttonStyle} onClick={() => load()}><RefreshCw size={14} style={{ verticalAlign: "middle", marginRight: 6 }}/>Refresh</button>
+      <div style={{display:"flex",gap:8,flexWrap:"wrap"}}><button style={buttonStyle} onClick={() => setShowInvoiceStudio(true)}><span style={{marginRight:6}}>✦</span>Custom Invoice Studio</button><button style={buttonStyle} onClick={() => load()}><RefreshCw size={14} style={{ verticalAlign: "middle", marginRight: 6 }}/>Refresh</button></div>
     </div>
     {error && <div role="alert" style={{ padding: 12, borderRadius: 8, background: "#FCE8E6", color: "#B3261E", marginBottom: 14 }}>{error}</div>}
     {notice && <div role="status" style={{ padding: 12, borderRadius: 8, background: "#E6F4EA", color: "#137333", marginBottom: 14 }}>{notice}</div>}
