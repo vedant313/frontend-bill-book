@@ -14,12 +14,12 @@ const fallbackTemplates = [
 const sectionNames = { hero:"Hero banner",about:"About business",services:"Services",products:"Products",gallery:"Gallery",testimonials:"Testimonials",contact:"Contact form",map:"Location map" };
 const slugify = (s) => String(s||"").toLowerCase().replace(/[^a-z0-9]+/g,"-").replace(/^-|-$/g,"").slice(0,48);
 
-export default function WebsiteStudio({ subscriptionStatus, goto }) {
+export default function WebsiteStudio({ subscriptionStatus, goto, business }) {
   const [templates,setTemplates] = useState(fallbackTemplates);
   const [site,setSite] = useState(null);
   const [selectedTemplate,setSelectedTemplate] = useState("modern-business");
-  const [newBusinessName,setNewBusinessName] = useState("");
-  const [newSlug,setNewSlug] = useState("");
+  const [newBusinessName,setNewBusinessName] = useState(business?.name && business.name !== "My Business" ? business.name : "");
+  const [newSlug,setNewSlug] = useState(business?.name && business.name !== "My Business" ? slugify(business.name) : "");
   const [loading,setLoading] = useState(true);
   const [busy,setBusy] = useState(false);
   const [message,setMessage] = useState("");
@@ -51,7 +51,7 @@ export default function WebsiteStudio({ subscriptionStatus, goto }) {
     try {
       const businessName = newBusinessName.trim();
       if (!businessName) throw new Error("Enter your business name before creating the website.");
-      const created = await api.createWebsite({businessName,slug:slugify(newSlug || businessName),templateId:template.id,primaryColor:template.primaryColor,accentColor:template.accentColor,tagline:"A better way to serve our customers.",description:"Tell customers what makes your business special."});
+      const created = await api.createWebsite({businessName,slug:slugify(newSlug || businessName),templateId:template.id,primaryColor:template.primaryColor,accentColor:template.accentColor,tagline:"A better way to serve our customers.",description:"Tell customers what makes your business special.",phone:business?.phone||"",email:business?.email||"",address:business?.address||""});
       setSite(created); setMessage("Your website draft is ready. Add your business details and save.");
     } catch(e) { setMessage(e.message || "Could not create website."); }
     finally { setBusy(false); }
