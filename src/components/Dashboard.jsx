@@ -1,7 +1,7 @@
 import { useMemo } from "react";
 import { BarChart, Bar, XAxis, YAxis, ResponsiveContainer, Tooltip, CartesianGrid } from "recharts";
 import { fmt, fmtDate, DOC_META } from "../utils/helpers";
-import { ArrowUpRight, Sparkles } from "lucide-react";
+import { ArrowUpRight, Sparkles, FileText, CircleDollarSign, Clock3, Receipt, ChartNoAxesCombined, ClipboardList, AlertCircle } from "lucide-react";
 
 export default function Dashboard({ stats, chartData, docs, payments, goto }) {
   const recent = useMemo(() => {
@@ -23,27 +23,27 @@ export default function Dashboard({ stats, chartData, docs, payments, goto }) {
       <div className="bb-card bb-quick-create" style={{marginBottom:14}}><div className="bb-section-title">Quick actions</div><div className="bb-head-actions"><button className="bb-btn bb-btn-primary" onClick={()=>goto("form",{listType:"invoice"})}>+ Invoice</button><button className="bb-btn bb-btn-ghost" onClick={()=>goto("form",{listType:"estimate"})}>+ Estimate</button><button className="bb-btn bb-btn-ghost" onClick={()=>goto("form",{listType:"payment"})}>+ Payment</button><button className="bb-btn bb-btn-ghost" onClick={()=>goto("customers")}>+ Customer</button><button className="bb-btn bb-btn-ghost" onClick={()=>goto("products")}>+ Product</button><button className="bb-btn bb-btn-ghost" onClick={()=>goto("expenses")}>+ Expense</button></div></div>
       <div className="bb-stat-grid">
         <div className="bb-stat-card" style={{ "--accent": "var(--navy)" }}>
-          <div className="bb-stat-label">Total Invoiced</div>
+          <div className="bb-stat-heading"><span className="bb-stat-icon"><FileText size={15}/></span><div className="bb-stat-label">Total Invoiced</div></div>
           <div className="bb-stat-value">{fmt(stats.totalInvoiced)}</div>
         </div>
         <div className="bb-stat-card" style={{ "--accent": "var(--green)" }}>
-          <div className="bb-stat-label">Payment Received</div>
+          <div className="bb-stat-heading"><span className="bb-stat-icon"><CircleDollarSign size={15}/></span><div className="bb-stat-label">Payment Received</div></div>
           <div className="bb-stat-value">{fmt(stats.totalReceived)}</div>
         </div>
         <div className="bb-stat-card" style={{ "--accent": "var(--amber)" }}>
-          <div className="bb-stat-label">Pending Amount</div>
+          <div className="bb-stat-heading"><span className="bb-stat-icon"><Clock3 size={15}/></span><div className="bb-stat-label">Pending Amount</div></div>
           <div className="bb-stat-value">{fmt(stats.pending)}</div>
         </div>
         <div className="bb-stat-card" style={{ "--accent": "var(--red)" }}>
-          <div className="bb-stat-label">Expenses</div>
+          <div className="bb-stat-heading"><span className="bb-stat-icon"><Receipt size={15}/></span><div className="bb-stat-label">Expenses</div></div>
           <div className="bb-stat-value">{fmt(stats.totalExpenses)}</div>
         </div>
         <div className="bb-stat-card" style={{ "--accent": "var(--teal)" }}>
-          <div className="bb-stat-label">Open Estimates</div>
+          <div className="bb-stat-heading"><span className="bb-stat-icon"><ClipboardList size={15}/></span><div className="bb-stat-label">Open Estimates</div></div>
           <div className="bb-stat-value">{stats.estimates.length}</div>
         </div>
-        <div className="bb-stat-card" style={{ "--accent": "var(--green)" }}><div className="bb-stat-label">Net Cash Flow</div><div className="bb-stat-value">{fmt(stats.profit)}</div></div>
-        <div className="bb-stat-card" style={{ "--accent": "var(--amber)" }}><div className="bb-stat-label">Overdue Invoices</div><div className="bb-stat-value">{stats.overdue}</div>
+        <div className="bb-stat-card" style={{ "--accent": "var(--green)" }}><div className="bb-stat-heading"><span className="bb-stat-icon"><ChartNoAxesCombined size={15}/></span><div className="bb-stat-label">Net Cash Flow</div></div><div className="bb-stat-value">{fmt(stats.profit)}</div></div>
+        <div className="bb-stat-card" style={{ "--accent": "var(--amber)" }}><div className="bb-stat-heading"><span className="bb-stat-icon"><AlertCircle size={15}/></span><div className="bb-stat-label">Overdue Invoices</div></div><div className="bb-stat-value">{stats.overdue}</div>
         </div>
       </div>
 
