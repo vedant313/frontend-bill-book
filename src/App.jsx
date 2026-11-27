@@ -2,7 +2,6 @@ import { useState, useEffect, useMemo } from "react";
 import * as api from "./api";
 import { monthLabel, nextNumber, nextPaymentNumber } from "./utils/helpers";
 import { resolveThemeVars, applyThemeVars } from "./utils/themes";
-import { exportAllData } from "./utils/exportExcel";
 
 import Login from "./components/Login";
 import Sidebar from "./components/Sidebar";
