@@ -5,6 +5,19 @@ export const getToken = () => localStorage.getItem(TOKEN_KEY) || "";
 export const setToken = (token) => localStorage.setItem(TOKEN_KEY, token);
 export const clearToken = () => localStorage.removeItem(TOKEN_KEY);
 
+// Start the Render service in the background while the landing page is open.
+// The free instance may sleep after inactivity; this request is deliberately
+// non-blocking and does not read or modify any user data.
+let warmupPromise;
+export const warmBackend = () => {
+  if (!warmupPromise) {
+    warmupPromise = fetch(BASE, { method: "GET", mode: "no-cors", cache: "no-store" })
+      .catch(() => {})
+      .finally(() => { warmupPromise = null; });
+  }
+  return warmupPromise;
+};
+
 async function request(path, options = {}) {
   const token = getToken();
   const controller = new AbortController();
