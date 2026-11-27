@@ -28,6 +28,9 @@ import RecurringPage from "./components/RecurringPage";
 import SupportPage from "./components/SupportPage";
 import AdminPage from "./components/AdminPage";
 import CompaniesPage from "./components/CompaniesPage";
+import WebsiteStudio from "./components/WebsiteStudio";
+import PublicBusinessWebsite from "./components/PublicBusinessWebsite";
+import "./styles/website-studio.css";
 
 export default function App() {
   const [authChecked, setAuthChecked] = useState(false);
@@ -237,6 +240,11 @@ export default function App() {
       .slice(-6);
   }, [docs, payments]);
 
+  const host = window.location.hostname.toLowerCase();
+  const publicSiteSlug = host.endsWith(".nexsatechnologies.com") ? host.slice(0, -".nexsatechnologies.com".length) : "";
+  const reservedSubdomains = new Set(["www", "billbook", "studio", "api", "admin", "mail", "support", "help", "static", "assets"]);
+  if (publicSiteSlug && !reservedSubdomains.has(publicSiteSlug)) return <PublicBusinessWebsite slug={publicSiteSlug} />;
+
   if (!authChecked) {
     return (
       <div style={{ display: "flex", alignItems: "center", justifyContent: "center", height: "100vh", color: "var(--muted)" }}>
@@ -325,6 +333,7 @@ export default function App() {
             )}
 
             {page === "subscription" && <SubscriptionPage />}
+            {page === "website-studio" && <WebsiteStudio subscriptionStatus={subscriptionStatus} goto={goto} business={business} />}
             {page === "admin" && (String(user?.email || "").trim().toLowerCase() === "nexsatechnologies@gmail.com" || (String(user?.phone || "").replace(/\D/g, "").slice(-10) === "9370017895" && Boolean(user?.phoneVerifiedAt))) && <AdminPage />}
             {page === "support" && <SupportPage onBack={() => goto("dashboard")} />}
             {page === "companies" && <CompaniesPage />}

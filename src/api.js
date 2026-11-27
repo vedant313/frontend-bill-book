@@ -85,3 +85,15 @@ export const adminAudit = () => request("/admin/audit");
 export const getCustomInvoiceTemplates = () => request("/admin/custom-invoice-studio/templates");
 export const saveCustomInvoiceTemplate = (template) => request("/admin/custom-invoice-studio/templates", { method: "PUT", body: JSON.stringify({ template }) });
 export const deleteCustomInvoiceTemplate = (id) => request("/admin/custom-invoice-studio/templates/" + encodeURIComponent(id), { method: "DELETE" });
+
+
+// Nexsa Website Studio
+export const getWebsiteTemplates = () => request("/websites/templates");
+export const getMyWebsite = () => request("/websites/my");
+export const createWebsite = (website) => request("/websites", { method: "POST", body: JSON.stringify(website) });
+export const updateWebsite = (id, website) => request("/websites/" + encodeURIComponent(id), { method: "PUT", body: JSON.stringify(website) });
+export const publishWebsite = (id) => request("/websites/" + encodeURIComponent(id) + "/publish", { method: "POST", body: JSON.stringify({}) });
+export const unpublishWebsite = (id) => request("/websites/" + encodeURIComponent(id) + "/unpublish", { method: "POST", body: JSON.stringify({}) });
+export const getWebsiteEnquiries = (id) => request("/websites/" + encodeURIComponent(id) + "/enquiries");
+export const getPublicWebsite = (slug) => request("/public/sites/" + encodeURIComponent(slug));
+export const sendWebsiteEnquiry = (slug, enquiry) => request("/public/sites/" + encodeURIComponent(slug) + "/enquiries", { method: "POST", body: JSON.stringify(enquiry) });
