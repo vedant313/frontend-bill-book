@@ -1,7 +1,7 @@
 import { useMemo } from "react";
 import { BarChart, Bar, XAxis, YAxis, ResponsiveContainer, Tooltip, CartesianGrid } from "recharts";
 import { fmt, fmtDate, DOC_META } from "../utils/helpers";
-import { ArrowUpRight, Sparkles, FileText, CircleDollarSign, Clock3, Receipt, ChartNoAxesCombined, ClipboardList, AlertCircle } from "lucide-react";
+import { ArrowUpRight, Sparkles, FileText, CircleDollarSign, Clock3, Receipt, BarChart3, ClipboardList, AlertCircle } from "lucide-react";
 
 export default function Dashboard({ stats, chartData, docs, payments, goto }) {
   const recent = useMemo(() => {
@@ -42,7 +42,7 @@ export default function Dashboard({ stats, chartData, docs, payments, goto }) {
           <div className="bb-stat-heading"><span className="bb-stat-icon"><ClipboardList size={15}/></span><div className="bb-stat-label">Open Estimates</div></div>
           <div className="bb-stat-value">{stats.estimates.length}</div>
         </div>
-        <div className="bb-stat-card" style={{ "--accent": "var(--green)" }}><div className="bb-stat-heading"><span className="bb-stat-icon"><ChartNoAxesCombined size={15}/></span><div className="bb-stat-label">Net Cash Flow</div></div><div className="bb-stat-value">{fmt(stats.profit)}</div></div>
+        <div className="bb-stat-card" style={{ "--accent": "var(--green)" }}><div className="bb-stat-heading"><span className="bb-stat-icon"><BarChart3 size={15}/></span><div className="bb-stat-label">Net Cash Flow</div></div><div className="bb-stat-value">{fmt(stats.profit)}</div></div>
         <div className="bb-stat-card" style={{ "--accent": "var(--amber)" }}><div className="bb-stat-heading"><span className="bb-stat-icon"><AlertCircle size={15}/></span><div className="bb-stat-label">Overdue Invoices</div></div><div className="bb-stat-value">{stats.overdue}</div>
         </div>
       </div>
