@@ -1,4 +1,3 @@
-import * as XLSX from "xlsx";
 import { fmtDate } from "./helpers.js";
 
 function autoWidth(rows) {
@@ -51,7 +50,8 @@ function todayStamp() {
 }
 
 // Exports just the invoices to an Excel file.
-export function exportInvoices(docs, label = "invoices") {
+export async function exportInvoices(docs, label = "invoices") {
+  const XLSX = await import("xlsx");
   const invoices = docs.filter((d) => d.type === "invoice");
   const wb = XLSX.utils.book_new();
   XLSX.utils.book_append_sheet(wb, sheetFromRows(docRows(invoices)), "Invoices");
@@ -59,7 +59,8 @@ export function exportInvoices(docs, label = "invoices") {
 }
 
 // Exports just the estimates to an Excel file.
-export function exportEstimates(docs, label = "estimates") {
+export async function exportEstimates(docs, label = "estimates") {
+  const XLSX = await import("xlsx");
   const estimates = docs.filter((d) => d.type === "estimate");
   const wb = XLSX.utils.book_new();
   XLSX.utils.book_append_sheet(wb, sheetFromRows(docRows(estimates)), "Estimates");
@@ -67,14 +68,16 @@ export function exportEstimates(docs, label = "estimates") {
 }
 
 // Exports just the payments to an Excel file.
-export function exportPayments(payments, label = "payments") {
+export async function exportPayments(payments, label = "payments") {
+  const XLSX = await import("xlsx");
   const wb = XLSX.utils.book_new();
   XLSX.utils.book_append_sheet(wb, sheetFromRows(paymentRows(payments)), "Payments");
   downloadWorkbook(wb, `${label}-${todayStamp()}.xlsx`);
 }
 
 
-export function exportFilteredData(docs, payments, filename = "billbook-filtered") {
+export async function exportFilteredData(docs, payments, filename = "billbook-filtered") {
+  const XLSX = await import("xlsx");
   const invoices = docs.filter((d) => d.type === "invoice");
   const estimates = docs.filter((d) => d.type === "estimate");
   const wb = XLSX.utils.book_new();
@@ -86,7 +89,8 @@ export function exportFilteredData(docs, payments, filename = "billbook-filtered
 
 // Exports everything — invoices, estimates and payments — as one workbook
 // with a sheet per type, so the user gets "sara data" in a single file.
-export function exportAllData(docs, payments) {
+export async function exportAllData(docs, payments) {
+  const XLSX = await import("xlsx");
   const invoices = docs.filter((d) => d.type === "invoice");
   const estimates = docs.filter((d) => d.type === "estimate");
   const wb = XLSX.utils.book_new();
