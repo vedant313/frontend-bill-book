@@ -8,7 +8,7 @@ function autoWidth(rows) {
   }));
 }
 
-function sheetFromRows(rows) {
+function sheetFromRows(rows, XLSX) {
   const sheet = XLSX.utils.json_to_sheet(rows);
   sheet["!cols"] = autoWidth(rows);
   return sheet;
@@ -41,7 +41,7 @@ function paymentRows(payments) {
   }));
 }
 
-function downloadWorkbook(wb, filename) {
+function downloadWorkbook(wb, filename, XLSX) {
   XLSX.writeFile(wb, filename);
 }
 
@@ -54,8 +54,8 @@ export async function exportInvoices(docs, label = "invoices") {
   const XLSX = await import("xlsx");
   const invoices = docs.filter((d) => d.type === "invoice");
   const wb = XLSX.utils.book_new();
-  XLSX.utils.book_append_sheet(wb, sheetFromRows(docRows(invoices)), "Invoices");
-  downloadWorkbook(wb, `${label}-${todayStamp()}.xlsx`);
+  XLSX.utils.book_append_sheet(wb, sheetFromRows(docRows(invoices), XLSX), "Invoices");
+  downloadWorkbook(wb, `${label}-${todayStamp()}.xlsx`, XLSX);
 }
 
 // Exports just the estimates to an Excel file.
@@ -63,16 +63,16 @@ export async function exportEstimates(docs, label = "estimates") {
   const XLSX = await import("xlsx");
   const estimates = docs.filter((d) => d.type === "estimate");
   const wb = XLSX.utils.book_new();
-  XLSX.utils.book_append_sheet(wb, sheetFromRows(docRows(estimates)), "Estimates");
-  downloadWorkbook(wb, `${label}-${todayStamp()}.xlsx`);
+  XLSX.utils.book_append_sheet(wb, sheetFromRows(docRows(estimates), XLSX), "Estimates");
+  downloadWorkbook(wb, `${label}-${todayStamp()}.xlsx`, XLSX);
 }
 
 // Exports just the payments to an Excel file.
 export async function exportPayments(payments, label = "payments") {
   const XLSX = await import("xlsx");
   const wb = XLSX.utils.book_new();
-  XLSX.utils.book_append_sheet(wb, sheetFromRows(paymentRows(payments)), "Payments");
-  downloadWorkbook(wb, `${label}-${todayStamp()}.xlsx`);
+  XLSX.utils.book_append_sheet(wb, sheetFromRows(paymentRows(payments), XLSX), "Payments");
+  downloadWorkbook(wb, `${label}-${todayStamp()}.xlsx`, XLSX);
 }
 
 
@@ -81,10 +81,10 @@ export async function exportFilteredData(docs, payments, filename = "billbook-fi
   const invoices = docs.filter((d) => d.type === "invoice");
   const estimates = docs.filter((d) => d.type === "estimate");
   const wb = XLSX.utils.book_new();
-  XLSX.utils.book_append_sheet(wb, sheetFromRows(docRows(invoices)), "Invoices");
-  XLSX.utils.book_append_sheet(wb, sheetFromRows(docRows(estimates)), "Estimates");
-  XLSX.utils.book_append_sheet(wb, sheetFromRows(paymentRows(payments)), "Payments");
-  downloadWorkbook(wb, `${filename}-${todayStamp()}.xlsx`);
+  XLSX.utils.book_append_sheet(wb, sheetFromRows(docRows(invoices), XLSX), "Invoices");
+  XLSX.utils.book_append_sheet(wb, sheetFromRows(docRows(estimates), XLSX), "Estimates");
+  XLSX.utils.book_append_sheet(wb, sheetFromRows(paymentRows(payments), XLSX), "Payments");
+  downloadWorkbook(wb, `${filename}-${todayStamp()}.xlsx`, XLSX);
 }
 
 // Exports everything — invoices, estimates and payments — as one workbook
@@ -94,8 +94,8 @@ export async function exportAllData(docs, payments) {
   const invoices = docs.filter((d) => d.type === "invoice");
   const estimates = docs.filter((d) => d.type === "estimate");
   const wb = XLSX.utils.book_new();
-  XLSX.utils.book_append_sheet(wb, sheetFromRows(docRows(invoices)), "Invoices");
-  XLSX.utils.book_append_sheet(wb, sheetFromRows(docRows(estimates)), "Estimates");
-  XLSX.utils.book_append_sheet(wb, sheetFromRows(paymentRows(payments)), "Payments");
-  downloadWorkbook(wb, `billbook-all-data-${todayStamp()}.xlsx`);
+  XLSX.utils.book_append_sheet(wb, sheetFromRows(docRows(invoices), XLSX), "Invoices");
+  XLSX.utils.book_append_sheet(wb, sheetFromRows(docRows(estimates), XLSX), "Estimates");
+  XLSX.utils.book_append_sheet(wb, sheetFromRows(paymentRows(payments), XLSX), "Payments");
+  downloadWorkbook(wb, `billbook-all-data-${todayStamp()}.xlsx`, XLSX);
 }
