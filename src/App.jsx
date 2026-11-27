@@ -30,6 +30,7 @@ import AdminPage from "./components/AdminPage";
 import CompaniesPage from "./components/CompaniesPage";
 import WebsiteStudio from "./components/WebsiteStudio";
 import PublicBusinessWebsite from "./components/PublicBusinessWebsite";
+import "./styles/website-studio.css";
 
 export default function App() {
   const [authChecked, setAuthChecked] = useState(false);
