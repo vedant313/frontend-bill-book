@@ -1,6 +1,7 @@
 import { useMemo } from "react";
 import { BarChart, Bar, XAxis, YAxis, ResponsiveContainer, Tooltip, CartesianGrid } from "recharts";
 import { fmt, fmtDate, DOC_META } from "../utils/helpers";
+import { ArrowUpRight, Sparkles } from "lucide-react";
 
 export default function Dashboard({ stats, chartData, docs, payments, goto }) {
   const recent = useMemo(() => {
