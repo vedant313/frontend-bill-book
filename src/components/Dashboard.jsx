@@ -11,8 +11,16 @@ export default function Dashboard({ stats, chartData, docs, payments, goto }) {
   }, [docs, payments]);
 
   return (
-    <div>
-      <div className="bb-card" style={{marginBottom:14}}><div className="bb-section-title">Quick Create</div><div className="bb-head-actions"><button className="bb-btn bb-btn-primary" onClick={()=>goto("form",{listType:"invoice"})}>+ Invoice</button><button className="bb-btn bb-btn-ghost" onClick={()=>goto("form",{listType:"estimate"})}>+ Estimate</button><button className="bb-btn bb-btn-ghost" onClick={()=>goto("form",{listType:"payment"})}>+ Payment</button><button className="bb-btn bb-btn-ghost" onClick={()=>goto("customers")}>+ Customer</button><button className="bb-btn bb-btn-ghost" onClick={()=>goto("products")}>+ Product</button><button className="bb-btn bb-btn-ghost" onClick={()=>goto("expenses")}>+ Expense</button></div></div>
+    <div className="bb-dashboard">
+      <div className="bb-dashboard-welcome">
+        <div>
+          <div className="bb-dashboard-kicker"><Sparkles size={13}/> BUSINESS OVERVIEW</div>
+          <h1>Your business at a glance</h1>
+          <p>Track invoices, incoming payments and expenses from one place.</p>
+        </div>
+        <div className="bb-dashboard-date">{new Date().toLocaleDateString("en-IN", { weekday: "short", day: "numeric", month: "short", year: "numeric" })}<ArrowUpRight size={16}/></div>
+      </div>
+      <div className="bb-card bb-quick-create" style={{marginBottom:14}}><div className="bb-section-title">Quick actions</div><div className="bb-head-actions"><button className="bb-btn bb-btn-primary" onClick={()=>goto("form",{listType:"invoice"})}>+ Invoice</button><button className="bb-btn bb-btn-ghost" onClick={()=>goto("form",{listType:"estimate"})}>+ Estimate</button><button className="bb-btn bb-btn-ghost" onClick={()=>goto("form",{listType:"payment"})}>+ Payment</button><button className="bb-btn bb-btn-ghost" onClick={()=>goto("customers")}>+ Customer</button><button className="bb-btn bb-btn-ghost" onClick={()=>goto("products")}>+ Product</button><button className="bb-btn bb-btn-ghost" onClick={()=>goto("expenses")}>+ Expense</button></div></div>
       <div className="bb-stat-grid">
         <div className="bb-stat-card" style={{ "--accent": "var(--navy)" }}>
           <div className="bb-stat-label">Total Invoiced</div>
