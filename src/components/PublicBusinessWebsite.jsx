@@ -10,6 +10,7 @@ export default function PublicBusinessWebsite({slug}) {
   const [sent,setSent]=useState(false);
   const [busy,setBusy]=useState(false);
   useEffect(()=>{let active=true;api.getPublicWebsite(slug).then(s=>{if(active)setSite(s)}).catch(e=>{if(active)setError(e.message||"Website not found.")});return()=>{active=false}},[slug]);
+  useEffect(()=>{if(!site)return;document.title=site.seoTitle||site.businessName||"Business Website";let meta=document.querySelector("meta[name=description]");if(!meta){meta=document.createElement("meta");meta.name="description";document.head.appendChild(meta)}meta.content=site.seoDescription||site.description||""},[site]);
   const submit=async(e)=>{e.preventDefault();setBusy(true);setError("");try{await api.sendWebsiteEnquiry(slug,form);setSent(true);setForm({name:"",phone:"",email:"",message:""})}catch(e){setError(e.message||"Could not send enquiry.")}finally{setBusy(false)}};
   if(error)return <main className="ws-public-error"><Globe2 size={34}/><h1>Website unavailable</h1><p>{error}</p><small>Powered by Nexsa Website Studio</small></main>;
   if(!site)return <main className="ws-public-loading">Loading website…</main>;
