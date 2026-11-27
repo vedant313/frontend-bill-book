@@ -18,6 +18,7 @@ export default function WebsiteStudio({ subscriptionStatus, goto }) {
   const [templates,setTemplates] = useState(fallbackTemplates);
   const [site,setSite] = useState(null);
   const [selectedTemplate,setSelectedTemplate] = useState("modern-business");
+  const [newBusinessName,setNewBusinessName] = useState("");
   const [loading,setLoading] = useState(true);
   const [busy,setBusy] = useState(false);
   const [message,setMessage] = useState("");
@@ -44,7 +45,9 @@ export default function WebsiteStudio({ subscriptionStatus, goto }) {
     const template = templates.find(t=>t.id===selectedTemplate) || templates[0];
     setBusy(true); setMessage("");
     try {
-      const created = await api.createWebsite({businessName:"My Business",slug:"my-business",templateId:template.id,primaryColor:template.primaryColor,accentColor:template.accentColor,tagline:"A better way to serve our customers.",description:"Tell customers what makes your business special."});
+      const businessName = newBusinessName.trim();
+      if (!businessName) throw new Error("Enter your business name before creating the website.");
+      const created = await api.createWebsite({businessName,slug:slugify(businessName),templateId:template.id,primaryColor:template.primaryColor,accentColor:template.accentColor,tagline:"A better way to serve our customers.",description:"Tell customers what makes your business special."});
       setSite(created); setMessage("Your website draft is ready. Add your business details and save.");
     } catch(e) { setMessage(e.message || "Could not create website."); }
     finally { setBusy(false); }
@@ -59,7 +62,7 @@ export default function WebsiteStudio({ subscriptionStatus, goto }) {
   const publish = async () => {
     if (!site?.id) return;
     setBusy(true); setMessage("");
-    try { await save(); const result = await api.publishWebsite(site.id); setSite(current=>({...current,status:"published",publishedAt:result.publishedAt})); setMessage("Website published: "+result.url); }
+    try { const saved = await api.updateWebsite(site.id,site); setSite(saved); const result = await api.publishWebsite(site.id); setSite(current=>({...current,...saved,status:"published",publishedAt:result.publishedAt})); setMessage("Website published: "+result.url); }
     catch(e) { setMessage(e.message || "Could not publish website."); }
     finally { setBusy(false); }
   };
@@ -69,7 +72,7 @@ export default function WebsiteStudio({ subscriptionStatus, goto }) {
   if (!isAllowed) return <div className="ws-upgrade"><div className="ws-upgrade-icon"><LockKeyhole size={25}/></div><span className="ws-eyebrow">NEXSA WEBSITE STUDIO</span><h1>Build your business website</h1><p>Create, customize and publish a professional website on your own business subdomain. Website Studio is included with the Advanced Plan.</p><div className="ws-upgrade-features"><span><Check size={16}/> 12 professional templates</span><span><Check size={16}/> Visual editing and live preview</span><span><Check size={16}/> Your own business subdomain</span><span><Check size={16}/> Contact enquiries dashboard</span></div><button className="bb-btn bb-btn-primary" onClick={()=>goto("subscription")}>Explore Advanced Plan</button></div>;
   if (loading) return <div className="ws-loading"><RefreshCw className="ws-spin"/> Loading Website Studio…</div>;
 
-  if (!site) return <div className="ws-page"><div className="ws-page-head"><div><span className="ws-eyebrow">NEXSA WEBSITE STUDIO</span><h1>Create your business website</h1><p>Choose a starting design. You can edit all the details before publishing.</p></div><span className="ws-plan-pill">ADVANCED PLAN</span></div><div className="ws-template-grid">{templates.map((t,i)=><button key={t.id} className={"ws-template-card "+(selectedTemplate===t.id?"selected":"")} onClick={()=>setSelectedTemplate(t.id)}><div className="ws-template-preview" style={{"--template-primary":t.primaryColor,"--template-accent":t.accentColor}}><div className="ws-template-top"><i/><i/><i/></div><div className="ws-template-hero"><b>{t.name}</b><span/><span/></div><div className="ws-template-blocks"><i/><i/><i/></div><div className="ws-template-foot"/></div><div className="ws-template-info"><div><strong>{String(i+1).padStart(2,"0")} · {t.name}</strong><small>{t.category}</small></div>{selectedTemplate===t.id?<Check size={18}/>:<LayoutTemplate size={18}/>}</div></button>)}</div><div className="ws-create-bar"><div><strong>Selected: {currentTemplate.name}</strong><small>Responsive layout · customizable colors and content</small></div><button className="bb-btn bb-btn-primary" disabled={busy} onClick={create}><Plus size={15}/> {busy?"Creating…":"Create website"}</button></div>{message&&<p className="ws-message">{message}</p>}</div>;
+  if (!site) return <div className="ws-page"><div className="ws-page-head"><div><span className="ws-eyebrow">NEXSA WEBSITE STUDIO</span><h1>Create your business website</h1><p>Choose a starting design. You can edit all the details before publishing.</p></div><span className="ws-plan-pill">ADVANCED PLAN</span></div><div className="ws-template-grid">{templates.map((t,i)=><button key={t.id} className={"ws-template-card "+(selectedTemplate===t.id?"selected":"")} onClick={()=>setSelectedTemplate(t.id)}><div className="ws-template-preview" style={{"--template-primary":t.primaryColor,"--template-accent":t.accentColor}}><div className="ws-template-top"><i/><i/><i/></div><div className="ws-template-hero"><b>{t.name}</b><span/><span/></div><div className="ws-template-blocks"><i/><i/><i/></div><div className="ws-template-foot"/></div><div className="ws-template-info"><div><strong>{String(i+1).padStart(2,"0")} · {t.name}</strong><small>{t.category}</small></div>{selectedTemplate===t.id?<Check size={18}/>:<LayoutTemplate size={18}/>}</div></button>)}</div><div className="ws-create-bar"><div className="ws-create-name"><strong>Business name</strong><input value={newBusinessName} onChange={e=>setNewBusinessName(e.target.value)} placeholder="Enter your business name"/><small>Selected: {currentTemplate.name} · Responsive and customizable</small></div><button className="bb-btn bb-btn-primary" disabled={busy || !newBusinessName.trim()} onClick={create}><Plus size={15}/> {busy?"Creating…":"Create website"}</button></div>{message&&<p className="ws-message">{message}</p>}</div>;
 
   return <div className="ws-page">
     <div className="ws-page-head"><div><span className="ws-eyebrow">NEXSA WEBSITE STUDIO</span><h1>{preview?"Website preview":"My business website"}</h1><p>{preview?"Review the content and layout before publishing.":"Customize your business details, design and website sections."}</p></div><div className="ws-head-actions"><span className={"ws-status "+(site.status==="published"?"published":"")}>{site.status==="published"?"Published":"Draft"}</span><button className="bb-btn bb-btn-ghost" onClick={()=>setPreview(!preview)}><Eye size={15}/>{preview?"Edit website":"Preview"}</button></div></div>
