@@ -1,0 +1,87 @@
+/* UnsLOP-inspired Nexsa Bill visual system. UI-only overrides; invoice print paper stays light. */
+:root {
+  --navy:#11120f; --navy-light:#24251f; --teal:#c7f36b; --teal-light:#252d18;
+  --paper:#10110f; --card:#181a16; --ink:#f0f1e9; --muted:#9b9e91; --border:#30332b;
+  --amber:#e6b85c; --amber-bg:#342b19; --red:#e47b70; --red-bg:#351f1d;
+  --green:#c7f36b; --green-bg:#26321a;
+}
+html,body,#root{background:#10110f;color:var(--ink)}
+body{font-family:Inter, sans-serif;letter-spacing:-.01em}
+h1,h2,h3,.display,.bb-section-title{letter-spacing:-.035em}
+.bb-shell,.bb-main{background:#10110f;color:var(--ink)}
+.bb-sidebar{background:#0a0b09;border-right:1px solid #282a24;color:#e9ebdf}
+.bb-brand{padding:8px 9px 26px}
+.bb-brand-mark{background:var(--teal);color:#10110f;border-radius:9px}
+.bb-brand-name{font-size:16px;letter-spacing:-.04em}
+.bb-nav{gap:4px}
+.bb-nav-item{border-radius:9px;color:#aeb1a4;padding:10px 11px;transition:background .18s,color .18s}
+.bb-nav-item:hover{background:#20221b;color:#fff}
+.bb-nav-item.active{background:var(--teal);color:#10110f;font-weight:800}
+.bb-nav-foot{border-color:#292b24}
+.bb-topbar{background:#12130f;border-color:var(--border);color:var(--ink);padding:17px 26px}
+.bb-content{padding:26px}
+.bb-stat-grid{gap:12px}
+.bb-stat-card,.bb-card{background:#181a16;border:1px solid #30332b;border-radius:13px;box-shadow:0 8px 30px rgba(0,0,0,.12)}
+.bb-stat-card{padding:18px 19px}
+.bb-stat-card::before{display:none}
+.bb-stat-label{color:#a4a798;font-size:11px;text-transform:uppercase;letter-spacing:.09em}
+.bb-stat-value{font-size:24px;color:#f2f3eb;letter-spacing:-.04em}
+.bb-section-title{font-size:16px;color:#f0f1e9}
+.bb-btn{border-radius:8px;font-weight:700;transition:transform .16s,background .16s}
+.bb-btn:hover{transform:translateY(-1px)}
+.bb-btn-primary,.bb-btn-teal{background:#c7f36b;color:#11120f;border-color:#c7f36b}
+.bb-btn-primary:hover,.bb-btn-teal:hover{background:#d7ff84;color:#11120f}
+.bb-btn-ghost{background:#1b1d18;color:#e8eade;border-color:#36392f}
+.bb-btn-ghost:hover{background:#292c23}
+.bb-icon-btn{color:#a4a798}
+.bb-icon-btn:hover{background:#292c23;color:#fff}
+.bb-table th{color:#a4a798;border-color:#36392f}
+.bb-table td{border-color:#2c2f27;color:#e8eade}
+.bb-table tr:hover td{background:#20221b}
+.bb-badge-green{background:#29351d;color:#c7f36b}
+.bb-badge-amber{background:#392f1b;color:#edc978}
+.bb-badge-red{background:#3b211e;color:#f09589}
+.bb-badge-grey{background:#292c25;color:#b8bbaf}
+.bb-input,.bb-select,.bb-textarea{background:#11130f;color:#f0f1e9;border-color:#3a3d33;border-radius:8px}
+.bb-input::placeholder,.bb-textarea::placeholder{color:#777b6e}
+.bb-input:focus,.bb-select:focus,.bb-textarea:focus{outline:2px solid #c7f36b;border-color:#c7f36b}
+.bb-field label{color:#b1b4a7}
+.bb-empty{color:#a4a798}
+.bb-back{color:#a4a798}
+.bb-back:hover{color:#c7f36b}
+.bb-menu-btn{color:#f0f1e9}
+.bb-sidebar-branding{color:#85897c}
+.bb-auth-overlay{background:#0d0e0b}
+.bb-auth-close{background:#20221b;color:#f0f1e9}
+.bb-landing{background:#10110f;color:#f0f1e9}
+.bb-landing-nav{border-bottom:1px solid #292b24}
+.bb-landing-brand{color:#f0f1e9;letter-spacing:-.04em}
+.bb-eyebrow,.bb-section-kicker{color:#c7f36b}
+.bb-hero{padding-top:88px;padding-bottom:92px}
+.bb-hero h1{color:#f3f4ed;font-size:clamp(42px,5vw,66px);letter-spacing:-.065em;line-height:.99}
+.bb-hero h1 span{color:#c7f36b}
+.bb-hero p{color:#a7aa9e}
+.bb-trust{color:#a7aa9e}
+.bb-trial-badge,.bb-trial-line{background:#252d18;border-color:#414c2c;color:#d7ff84}
+.bb-hero-dashboard{background:#191b16;border-color:#383b31;box-shadow:0 30px 90px rgba(0,0,0,.42);transform:none;border-radius:14px}
+.bb-window-bar{border-color:#34372e;color:#a4a798}
+.bb-mini-stats>div,.bb-mini-table{background:#20221c;border-color:#36392f;color:#f0f1e9}
+.bb-mini-stats small,.bb-mini-table span{color:#a4a798}
+.bb-mini-stats strong,.bb-mini-table strong{color:#f0f1e9}
+.bb-mini-stats em{color:#c7f36b}
+.bb-mini-chart span{background:#c7f36b}
+.bb-feature-section,.bb-landing-support,.bb-landing-cta{border-color:#292b24}
+.bb-feature-section h2,.bb-landing-support h2,.bb-landing-cta h2{color:#f0f1e9;letter-spacing:-.05em}
+.bb-feature-card,.bb-landing-support-card{background:#181a16;border:1px solid #30332b;border-radius:13px}
+.bb-feature-card h3{color:#f0f1e9}
+.bb-feature-card p,.bb-landing-support p{color:#a4a798}
+.bb-feature-icon{background:#252d18;color:#c7f36b}
+.bb-landing-support-details{color:#daddd1}
+.bb-landing-footer{background:#0b0c0a;border-color:#292b24;color:#9b9e91}
+.bb-footer-links button{color:#c5c8bc}
+.bb-legal-page{background:#10110f}
+.bb-legal-card{background:#181a16;border:1px solid #30332b;color:#e8eade}
+.bb-legal-card p{color:#a4a798}
+@media(max-width:760px){.bb-content{padding:15px}.bb-topbar{padding:13px 15px}.bb-hero{padding:54px 20px 60px;gap:32px}.bb-hero h1{font-size:43px}.bb-landing-nav{padding:0 16px}}
+/* Keep printed/customer-facing GST documents in their standard white-paper format. */
+@media print{.inv-doc,.inv-doc *{color:#1a1d24!important}.inv-doc{background:#fff!important}.inv-box-head,.inv-items th,.inv-tax-table th{background:#ededed!important}.inv-items-total{background:#f5f5f0!important}.inv-totals-row.grand{background:#f3efe0!important}}
