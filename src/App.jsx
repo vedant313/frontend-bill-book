@@ -2,7 +2,6 @@ import { useState, useEffect, useMemo } from "react";
 import * as api from "./api";
 import { monthLabel, nextNumber, nextPaymentNumber } from "./utils/helpers";
 import { resolveThemeVars, applyThemeVars } from "./utils/themes";
-import { exportAllData } from "./utils/exportExcel";
 
 import Login from "./components/Login";
 import Sidebar from "./components/Sidebar";
@@ -60,7 +59,7 @@ export default function App() {
   const [legalPage, setLegalPage] = useState(null);
   const [onboarding, setOnboarding] = useState(false);
 
-  // ---- Auth bootstrap: check for a stored token on first load ----
+  // Warm the API host in the background so a sleeping free Render instance\n  // can start while visitors are viewing the landing page. Never block rendering.\n  useEffect(() => { api.warmBackend(); }, []);\n\n  // ---- Auth bootstrap: check for a stored token on first load ----
   useEffect(() => {
     let cancelled = false;
     const token = api.getToken();

@@ -16,6 +16,7 @@ export default function Sidebar({ page, listType, goto, sidebarOpen, setSidebarO
           <div className="bb-brand-name">Nexsa Bill</div>
         </div>
         <div className="bb-nav">
+          <div className="bb-nav-section-label">WORKSPACE</div>
           <button className={`bb-nav-item ${isActive("dashboard") ? "active" : ""}`} onClick={() => goto("dashboard")}>
             <LayoutDashboard size={16} /> Dashboard
           </button>
@@ -28,11 +29,13 @@ export default function Sidebar({ page, listType, goto, sidebarOpen, setSidebarO
           <button className={`bb-nav-item ${isActive("list", "payment") ? "active" : ""}`} onClick={() => goto("list", { listType: "payment" })}>
             <Wallet size={16} /> Payment In
           </button>
+          <div className="bb-nav-section-label bb-nav-section-spaced">MANAGE BUSINESS</div>
           <button className={`bb-nav-item ${isActive("companies") ? "active" : ""}`} onClick={() => goto("companies")}><Building2 size={16} /> Companies / Firms</button>
           <button className={`bb-nav-item ${isActive("products") ? "active" : ""}`} onClick={() => goto("products")}><Package size={16} /> Products</button>
           <button className={`bb-nav-item ${isActive("customers") ? "active" : ""}`} onClick={() => goto("customers")}><Users size={16} /> Customers</button>
           <button className={`bb-nav-item ${isActive("expenses") ? "active" : ""}`} onClick={() => goto("expenses")}><ReceiptText size={16} /> Expenses</button>
           <button className={`bb-nav-item ${isActive("recurring") ? "active" : ""}`} onClick={() => goto("recurring")}><ReceiptText size={16} /> Recurring Invoices</button>
+          <div className="bb-nav-section-label bb-nav-section-spaced">ACCOUNT</div>
           <button className={`bb-nav-item ${isActive("subscription") ? "active" : ""}`} onClick={() => goto("subscription")}>
             <Crown size={16} /> Subscription
           </button>
@@ -43,6 +46,7 @@ export default function Sidebar({ page, listType, goto, sidebarOpen, setSidebarO
         {(String(user?.email || "").trim().toLowerCase() === "nexsatechnologies@gmail.com" || (String(user?.phone || "").replace(/\D/g, "").slice(-10) === "9370017895" && Boolean(user?.phoneVerifiedAt))) && <button className={`bb-nav-item ${isActive("admin") ? "active" : ""}`} onClick={() => goto("admin")}><ShieldCheck size={16} /> Admin Panel</button>}
         <div className="bb-nav-spacer" />
         <div className="bb-nav-foot">
+          <div className="bb-nav-section-label">PREFERENCES & TOOLS</div>
           <button className={`bb-nav-item ${isActive("theme") ? "active" : ""}`} onClick={() => goto("theme")}>
             <Palette size={16} /> Appearance
           </button>
