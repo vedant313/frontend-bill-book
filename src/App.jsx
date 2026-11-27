@@ -333,7 +333,7 @@ export default function App() {
             )}
 
             {page === "subscription" && <SubscriptionPage />}
-            {page === "website-studio" && <WebsiteStudio subscriptionStatus={subscriptionStatus} goto={goto} />}
+            {page === "website-studio" && <WebsiteStudio subscriptionStatus={subscriptionStatus} goto={goto} business={business} />}
             {page === "admin" && (String(user?.email || "").trim().toLowerCase() === "nexsatechnologies@gmail.com" || (String(user?.phone || "").replace(/\D/g, "").slice(-10) === "9370017895" && Boolean(user?.phoneVerifiedAt))) && <AdminPage />}
             {page === "support" && <SupportPage onBack={() => goto("dashboard")} />}
             {page === "companies" && <CompaniesPage />}
