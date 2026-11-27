@@ -401,3 +401,35 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { scroll-behavior: auto !important; transition-duration: .01ms !important; animation-duration: .01ms !important; }
 }
+
+
+/* Navigation hierarchy and dashboard metric treatments */
+.bb-sidebar { overflow-y: auto; overscroll-behavior: contain; }
+.bb-nav-section-label {
+  padding: 10px 11px 5px;
+  color: #8290a8;
+  font-size: 9px;
+  line-height: 1.2;
+  font-weight: 800;
+  letter-spacing: .13em;
+}
+.bb-nav-section-spaced { margin-top: 9px; }
+.bb-nav-foot { margin-top: 16px; }
+.bb-nav-foot .bb-nav-section-label { padding-top: 2px; }
+.bb-stat-heading { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
+.bb-stat-heading .bb-stat-label { margin: 0; }
+.bb-stat-icon {
+  width: 27px; height: 27px; border-radius: 8px;
+  display: inline-flex; align-items: center; justify-content: center;
+  color: var(--teal); background: #eaf6f4; flex: none;
+}
+.bb-stat-card:nth-child(1) .bb-stat-icon { color: #31466b; background: #edf1f7; }
+.bb-stat-card:nth-child(2) .bb-stat-icon { color: #16835d; background: #eaf6ef; }
+.bb-stat-card:nth-child(3) .bb-stat-icon { color: #b7791f; background: #fbf3e6; }
+.bb-stat-card:nth-child(4) .bb-stat-icon { color: #b94a3f; background: #fbefed; }
+.bb-stat-card:nth-child(5) .bb-stat-icon { color: #0f8279; background: #eaf6f4; }
+.bb-stat-card:nth-child(6) .bb-stat-icon { color: #16835d; background: #eaf6ef; }
+.bb-stat-card:nth-child(7) .bb-stat-icon { color: #b7791f; background: #fbf3e6; }
+@media(max-width:760px) {
+  .bb-nav-section-label { padding-left: 12px; }
+}
